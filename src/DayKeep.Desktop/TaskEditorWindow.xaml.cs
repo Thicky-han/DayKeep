@@ -25,7 +25,7 @@ public partial class TaskEditorWindow : Window
         DueInput.Text = item.DueDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? "";
         foreach (CheckBox checkbox in WeekdayPanel.Children) checkbox.IsChecked = (item.Reminder.Weekdays & int.Parse((string)checkbox.Tag, CultureInfo.InvariantCulture)) != 0;
     }
-    private void OnLoaded(object sender, RoutedEventArgs e) { Height = Math.Min(Height, SystemParameters.WorkArea.Height); TitleInput.Focus(); }
+    private void OnLoaded(object sender, RoutedEventArgs e) { Infrastructure.WindowPlacement.WatchDpi(this); Infrastructure.WindowPlacement.EnsureVisible(this); TitleInput.Focus(); }
     private void SaveClick(object sender, RoutedEventArgs e)
     {
         var days = WeekdayPanel.Children.OfType<CheckBox>().Where(c => c.IsChecked == true).Sum(c => int.Parse((string)c.Tag, CultureInfo.InvariantCulture));

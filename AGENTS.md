@@ -6,7 +6,7 @@ maintainer's established one-stage-at-a-time workflow. Complete the current
 stage, record evidence and limitations, and hand back the result. Do not silently
 implement or declare later stages complete.
 
-L0 through L3 are complete. Keep the pure core planner, production 1-second WPF
+L0 through L4 are complete. Keep the pure core planner, production 1-second WPF
 timer, local time/weekdays and merged non-activating windows. Checking is distinct
 from completion. L3 persists per-task daily extra counts, next repeat, snooze and
 last-delivery watermark in schema 3. Default: 30 minutes, 3 extras per local day;
@@ -14,11 +14,20 @@ fixed slots share the cap, collisions prefer fixed, explicit snooze overrides al
 intervening automatic slots and does not spend the cap. Daily checks, pause,
 completion/archive and edits clear pending followups atomically; readiness rearms
 from the confirmed time. Date-only deadlines prioritize today/overdue; never auto-complete.
-Schema 1/2 upgrades are transactional. Failed initialization must stop reads/writes;
+Schema 1/2/3 upgrades are transactional. Failed initialization must stop reads/writes;
 preserve original files on invalid/unknown/newer schema or failed migration.
-Fixed slots still consider current-minute future times; saved snooze and same-day
-repeats recover, but this is not comprehensive L4 catch-up or crash-safe delivery.
-Next is L4 after L3 handoff and maintainer instruction. Previews never update tasks.
+Production enables missed-slot recovery: latest eligible fixed slot per task,
+never replaying all missed days. Schema 4 queues delivery and progress atomically
+before showing; Pending/Shown restore until explicit durable dismissal or cancellation.
+Keep only the latest active delivery per task. Daily budgets persist by local date,
+including date rollback. Fixed IDs use local wall time; repeat/snooze IDs also use
+generation and UTC instant. Poll recent keys plus all active records, not full history.
+System power/session/time/display events refresh on the UI dispatcher, with timer
+fallback. Defer on unavailable desktop/fullscreen and fit in monitor work area.
+Login startup is opt-in HKCU Run with quoted exe and --background; never enable it
+on installation/upgrade. Test its adapter in an isolated registry key. Single-instance
+tests use isolated databases and named objects, preserving the user's running app.
+Next is L5 after L4 handoff and maintainer instruction. Previews never update tasks.
 
 Maintain separate shell, domain, persistence and reminder scheduling boundaries.
 Only the surface brush should be translucent; text and controls remain opaque.

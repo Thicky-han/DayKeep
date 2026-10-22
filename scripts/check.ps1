@@ -3,7 +3,7 @@ $projectRoot = Split-Path -Parent $PSScriptRoot
 Set-Location -LiteralPath $projectRoot
 $paths = @(git ls-files --cached --others --exclude-standard)
 if ($LASTEXITCODE -ne 0) { throw 'Cannot list source files.' }
-$required = @('README.md', 'PROJECT_SPEC.md', 'IMPLEMENTATION_PLAN.md', 'AGENTS.md', 'LICENSE', 'PRIVACY.md', 'INSTALL.md', 'DEPENDENCIES.md', 'L0_REPORT.md', 'L1_REPORT.md', 'L2_REPORT.md', 'L3_REPORT.md', 'docs/DATA_MODEL.md', 'docs/REMINDERS.md', 'src/DayKeep.Core/packages.lock.json', 'src/DayKeep.Desktop/packages.lock.json', 'tests/DayKeep.Core.Checks/packages.lock.json')
+$required = @('README.md', 'PROJECT_SPEC.md', 'IMPLEMENTATION_PLAN.md', 'AGENTS.md', 'LICENSE', 'PRIVACY.md', 'INSTALL.md', 'DEPENDENCIES.md', 'L0_REPORT.md', 'L1_REPORT.md', 'L2_REPORT.md', 'L3_REPORT.md', 'L4_REPORT.md', 'docs/DATA_MODEL.md', 'docs/REMINDERS.md', 'src/DayKeep.Core/packages.lock.json', 'src/DayKeep.Desktop/packages.lock.json', 'tests/DayKeep.Core.Checks/packages.lock.json')
 foreach ($path in $required) { if (-not (Test-Path -LiteralPath (Join-Path $projectRoot $path))) { throw "Missing $path" } }
 $failures = [System.Collections.Generic.List[string]]::new()
 foreach ($path in $paths) {

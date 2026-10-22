@@ -13,13 +13,14 @@ public sealed class ReminderController : IDisposable
     private readonly Action _showTasks;
     private readonly DispatcherTimer _timer;
     private readonly DateTimeOffset _watchingSince;
-    private readonly HashSet<ReminderKey> _shown = [];
     private readonly Dictionary<Guid,TaskItem> _pending = [];
+    private IReadOnlyList<ReminderKey> _visibleKeys = [];
+    private readonly bool _systemZone;
     private bool _disposed;
     private bool _ticking;
     private string? _lastStatus;
     private DateOnly? _observedDay;
-    public TimeZoneInfo Zone { get; }
+    public TimeZoneInfo Zone { get; private set; }
     public DateTimeOffset Now => _clock();
     public DueReminderWindow? Window { get; private set; }
     public bool? LastShowPreservedFocus { get; private set; }
@@ -32,12 +33,17 @@ public sealed class ReminderController : IDisposable
         Func<bool>? canShow = null, Action<Uri>? openLink = null)
     {
         _tasks = tasks; _showTasks = showTasks; _clock = clock ?? (() => DateTimeOffset.UtcNow);
-        Zone = zone ?? TimeZoneInfo.Local; _canShow = canShow ?? DesktopAvailability.IsAvailable;
+        _systemZone = zone is null; Zone = zone ?? TimeZoneInfo.Local; _canShow = canShow ?? DesktopAvailability.IsAvailable;
         _openLink = openLink ?? ExternalLinks.Open; _watchingSince = Now;
         _timer = new DispatcherTimer(DispatcherPriority.Background) { Interval = TimeSpan.FromSeconds(1) };
         _timer.Tick += OnTick;
     }
     public void Start() { _timer.Start(); Tick(); }
+    public void RefreshEnvironment()
+    {
+        if(_systemZone) { TimeZoneInfo.ClearCachedData(); Zone=TimeZoneInfo.Local; }
+        Tick(); TasksChanged?.Invoke();
+    }
     private void OnTick(object? sender, EventArgs e) => Tick();
     public void Tick()
     {
@@ -45,46 +51,52 @@ public sealed class ReminderController : IDisposable
         _ticking = true;
         try
         {
-            if (!_canShow()) { SetStatus("定时提醒等待桌面可用"); return; }
+            if (!_canShow()) { Window?.Hide(); SetStatus("提醒已保留 · 等待桌面可用或退出全屏"); return; }
             var now = Now;
             var date = ReminderPlanner.LocalDate(now,Zone);
             var dayChanged = _observedDay != date;
             if (dayChanged) { _observedDay = date; DayChanged?.Invoke(date); }
             var snapshot = _tasks.ReminderSnapshot(date);
             var checkedIds = snapshot.CheckedWaitingTasks;
-            var current = snapshot.Tasks.ToDictionary(t => t.Id);
-            var changed = dayChanged;
-            foreach (var id in _pending.Keys.ToArray())
+            var due = ReminderPlanner.Due(snapshot,now,_watchingSince,Zone,recoverMissed:true);
+            foreach (var occurrence in due)
             {
-                if (!current.TryGetValue(id,out var item) || !ReminderPlanner.Active(item) || (item.State == TaskState.Waiting && checkedIds.Contains(id))
-                    || snapshot.Progress.Any(p => p.TaskId == id && p.SnoozedUntil > now)) { _pending.Remove(id); changed = true; }
-                else if (_pending[id] != item) { _pending[id] = item; changed = true; }
+                _tasks.QueueDelivery(occurrence,snapshot.Progress.SingleOrDefault(p=>p.TaskId==occurrence.Task.Id),now,Zone);
             }
-            _shown.RemoveWhere(key => key.Date < date.AddDays(-7));
-            var due = ReminderPlanner.Due(snapshot,now,_watchingSince,Zone).Where(o => !_shown.Contains(o.Key)).ToList();
-            foreach (var occurrence in due) { _pending[occurrence.Task.Id] = occurrence.Task; changed = true; }
-            if (_pending.Count == 0) Window?.Close();
+            if(due.Count>0) snapshot=_tasks.ReminderSnapshot(date);
+            var current = snapshot.Tasks.ToDictionary(t => t.Id);
+            var visible = snapshot.Deliveries.Where(d=>d.State is DeliveryState.Pending or DeliveryState.Shown
+                && current.TryGetValue(d.Key.TaskId,out var task) && task.Revision==d.TaskRevision && ReminderPlanner.Active(task)
+                && !(task.State==TaskState.Waiting && checkedIds.Contains(task.Id))
+                && !snapshot.Progress.Any(p=>p.TaskId==task.Id && p.SnoozedUntil>now)).ToList();
+            var ids=visible.Select(d=>d.Key.TaskId).Distinct().ToArray();
+            var changed=dayChanged || !_visibleKeys.SequenceEqual(visible.Select(d=>d.Key)) || ids.Any(id=>!_pending.TryGetValue(id,out var old) || old!=current[id]);
+            _visibleKeys=visible.Select(d=>d.Key).ToArray(); _pending.Clear(); foreach(var id in ids) _pending.Add(id,current[id]);
+            if (_pending.Count == 0) Window?.CloseSilently();
             else
             {
                 var created = Window is null;
                 if (created)
                 {
-                    Window = new DueReminderWindow(Act,_showTasks);
+                    Window = new DueReminderWindow(Act,_showTasks,TryDismiss);
                     Window.Closed += (_, _) => { Window = null; _pending.Clear(); };
                 }
-                if (created || changed) Window!.SetTasks(_pending.Values.ToList(),date);
-                if (created)
+                if (created || changed) Window!.SetTasks(_pending.Values.ToList(),date,visible.GroupBy(d=>d.Key.TaskId).ToDictionary(g=>g.Key,g=>
+                {
+                    var latest=g.OrderByDescending(d=>d.ScheduledAt).First();
+                    return now-latest.ScheduledAt>=TimeSpan.FromMinutes(1)
+                        ? $"补提醒 · 原定 {TimeZoneInfo.ConvertTime(latest.ScheduledAt,Zone):M月d日 HH:mm}" : "按计划提醒 · 未处理将继续跟进";
+                }));
+                var showing = !Window!.IsVisible;
+                if (showing)
                 {
                     var foreground = DesktopAvailability.ForegroundWindow;
                     Window!.Show();
                     LastShowPreservedFocus = foreground == DesktopAvailability.ForegroundWindow;
                 }
-                foreach (var occurrence in due)
-                {
-                    _tasks.RecordDelivery(occurrence,snapshot.Progress.SingleOrDefault(p=>p.TaskId==occurrence.Task.Id),now,Zone);
-                    _shown.Add(occurrence.Key);
-                }
-                if (created) Presented?.Invoke(Window!);
+                var pending=visible.Where(d=>d.State==DeliveryState.Pending).Select(d=>d.Key).ToArray();
+                if(pending.Length>0) _tasks.SetDeliveryState(pending,DeliveryState.Shown);
+                if (showing) Presented?.Invoke(Window!);
             }
             if (due.Count > 0) { snapshot = _tasks.ReminderSnapshot(date); TasksChanged?.Invoke(); }
             var next = snapshot.Tasks.Select(t => ReminderPlanner.Next(t,checkedIds,now,Zone,snapshot.Progress.SingleOrDefault(p=>p.TaskId==t.Id))).Where(t => t is not null).Min();
@@ -96,6 +108,12 @@ public sealed class ReminderController : IDisposable
             SetStatus(message); Window?.ShowError(message,true);
         }
         finally { _ticking = false; }
+    }
+    private bool TryDismiss()
+    {
+        try { _tasks.SetDeliveryState(_visibleKeys,DeliveryState.Dismissed); return true; }
+        catch(Exception error) when(MainWindow.DataError(error) is not null)
+        { Window?.ShowError("本次收起未能保存，请重新读取数据后重试。提醒已保留。"); return false; }
     }
     public void Act(TaskItem item, ReminderAction action)
     {
@@ -124,6 +142,6 @@ public sealed class ReminderController : IDisposable
     private void SetStatus(string status) { if (_lastStatus == status) return; _lastStatus = status; StatusChanged?.Invoke(status); }
     public void Dispose()
     {
-        _disposed = true; _timer.Stop(); _timer.Tick -= OnTick; Window?.Close();
+        _disposed = true; _timer.Stop(); _timer.Tick -= OnTick; Window?.CloseSilently();
     }
 }

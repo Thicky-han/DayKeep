@@ -24,6 +24,8 @@ public partial class MainWindow : Window
     private TaskEditorWindow? _editor;
     private HashSet<Guid> _checkedToday = [];
     private IReadOnlyList<ReminderProgress> _progress = [];
+    private readonly ILoginStartup _loginStartup;
+    private bool _updatingStartup;
     public ReminderController? Reminders { get; private set; }
     public DateOnly Today => ReminderPlanner.LocalDate(Reminders?.Now ?? DateTimeOffset.UtcNow,Reminders?.Zone ?? TimeZoneInfo.Local);
     public TaskService Tasks => _tasks;
@@ -33,18 +35,36 @@ public partial class MainWindow : Window
     public double SurfaceOpacity => SurfaceBrush.Opacity;
     public bool GlobalHotkeyRegistered => _hotkey?.Registered == true;
 
-    public MainWindow(SettingsStore settingsStore, TaskService? tasks = null)
+    public MainWindow(SettingsStore settingsStore, TaskService? tasks = null, ILoginStartup? loginStartup = null)
     {
         _settingsStore = settingsStore;
+        _loginStartup = loginStartup ?? (tasks is null ? LoginStartup.ForCurrentProcess() : new DisabledLoginStartup());
         _settings = settingsStore.Load();
         _tasks = tasks ?? new TaskService(new TaskRepository(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DayKeep", "tasks.db")));
         InitializeComponent();
         DateLabel.Text = DateTime.Today.ToString("M 月 d 日 · dddd", CultureInfo.GetCultureInfo("zh-CN"));
-        RoadmapText.Text = "L0   工程基础与半透明桌面界面  ·  已完成\n\nL1   任务管理、状态模型与本地数据库  ·  已完成\n\nL2   固定时间、高亮弹窗与每日跟进  ·  已完成\n\nL3   未完成重复、稍后提醒与截止日期  ·  当前阶段\n\nL4   重启 / 休眠补提醒、去重与启动设置\n\nL5   历史记录、备份恢复与体验验收\n\nL6   图标定稿、安装包、开源发行与使用说明";
+        RoadmapText.Text = "L0   工程基础与半透明桌面界面  ·  已完成\n\nL1   任务管理、状态模型与本地数据库  ·  已完成\n\nL2   固定时间、高亮弹窗与每日跟进  ·  已完成\n\nL3   未完成重复、稍后提醒与截止日期  ·  已完成\n\nL4   重启 / 休眠补提醒、去重与启动设置  ·  当前阶段\n\nL5   历史记录、备份恢复与体验验收\n\nL6   图标定稿、安装包、开源发行与使用说明";
         OpacitySlider.Value = _settings.SurfaceOpacity;
         ApplyAppearance();
         _ready = true;
+        RefreshStartup();
         ReloadTasks();
+    }
+    private void RefreshStartup()
+    {
+        _updatingStartup=true;
+        try { var state=_loginStartup.Read(); StartupInput.IsChecked=state.Enabled; StartupStatus.Text=state.Detail; }
+        catch(Exception error) when(error is IOException or UnauthorizedAccessException or System.Security.SecurityException)
+        { StartupInput.IsEnabled=false; StartupStatus.Text="无法读取登录启动设置，请检查 Windows 权限。"; }
+        finally { _updatingStartup=false; }
+    }
+    private void StartupChanged(object sender,RoutedEventArgs e)
+    {
+        if(!_ready || _updatingStartup) return;
+        var requested=StartupInput.IsChecked==true;
+        try { StartupStatus.Text=_loginStartup.SetEnabled(requested).Detail; }
+        catch(Exception error) when(error is IOException or UnauthorizedAccessException or System.Security.SecurityException)
+        { RefreshStartup(); StartupStatus.Text="登录启动修改未能完成，请核对当前开关和 Windows 启动项，或使用 DayKeep.exe 成品。"; }
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)
@@ -53,11 +73,13 @@ public partial class MainWindow : Window
         var work = SystemParameters.WorkArea;
         if (Height > work.Height) Height = work.Height;
         if (Width > work.Width) SetCompact(true);
+        WindowPlacement.EnsureVisible(this);
     }
 
     private void OnSourceInitialized(object? sender, EventArgs e)
     {
         _hotkey = new HotkeyService(this, ToggleVisibility);
+        WindowPlacement.WatchDpi(this);
         if (!_hotkey.Registered)
         {
             ShortcutLabel.Text = "快捷键已被占用 · 可单击托盘打开";
@@ -72,6 +94,7 @@ public partial class MainWindow : Window
         Show();
         WindowState = WindowState.Normal;
         Activate();
+        WindowPlacement.EnsureVisible(this);
         if (_editor is not null) _editor.Show();
     }
     public void SetCompact(bool compact)
@@ -95,9 +118,7 @@ public partial class MainWindow : Window
         ShortcutLabel.Visibility = _settings.Compact ? Visibility.Collapsed : Visibility.Visible;
         if (IsLoaded)
         {
-            var work = SystemParameters.WorkArea;
-            Left = Math.Clamp(Left, work.Left, Math.Max(work.Left, work.Right - Width));
-            Top = Math.Clamp(Top, work.Top, Math.Max(work.Top, work.Bottom - Height));
+            WindowPlacement.EnsureVisible(this);
         }
     }
 

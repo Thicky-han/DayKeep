@@ -4,7 +4,7 @@ using DayKeep.Core;
 
 namespace DayKeep.Models;
 
-public sealed record TaskCard(TaskItem Item, bool CheckedToday = false, DateOnly? Today = null, DateTimeOffset? SnoozedUntil = null, TimeZoneInfo? Zone = null)
+public sealed record TaskCard(TaskItem Item, bool CheckedToday = false, DateOnly? Today = null, DateTimeOffset? SnoozedUntil = null, TimeZoneInfo? Zone = null, string ReminderDetail = "")
 {
     public string Title => Item.Title;
     public string Status => Item.ArchivedAt is not null ? "已归档" : Item.Paused ? "已暂停" : Item.State switch { TaskState.Waiting => CheckedToday ? "今日已检查，尚未开放" : "等待条件满足", TaskState.Ready => "待办理", _ => "已完成" };

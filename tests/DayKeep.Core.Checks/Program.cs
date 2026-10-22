@@ -42,6 +42,11 @@ if (args.Length > 1 && args[1] == "--write-restart")
         delayed.RecordDelivery(ReminderPlanner.Due(snapshot,time,time.AddHours(-1),TimeZoneInfo.Utc).Single(),snapshot.Progress.SingleOrDefault(),time,TimeZoneInfo.Utc);
     }
     reminderTime=reminderTime.AddMinutes(1); delayed.Snooze(delayedTask,new(2026,10,22),60);
+    var durable=new TaskService(new TaskRepository(Path.Combine(directory,"outbox-restart.db")),()=>new DateTimeOffset(2026,10,22,8,59,0,TimeSpan.Zero));durable.Initialize();
+    durable.Create(new("提交后尚未显示",TaskKind.Todo));durable.Create(new("显示后尚未收起",TaskKind.Todo));
+    var queueAt=new DateTimeOffset(2026,10,22,9,0,0,TimeSpan.Zero);
+    foreach(var occurrence in ReminderPlanner.Due(durable.ReminderSnapshot(new(2026,10,22)),queueAt,queueAt,TimeZoneInfo.Utc,true))
+    { durable.QueueDelivery(occurrence,null,queueAt,TimeZoneInfo.Utc); if(occurrence.Task.Title=="显示后尚未收起") durable.SetDeliveryState([occurrence.Key],DeliveryState.Shown); }
     Console.WriteLine("Restart fixture written by process " + Environment.ProcessId);
     return;
 }
@@ -64,8 +69,13 @@ if (args.Length > 1 && args[1] == "--read-restart")
     Assert(postponedDue.Key.Kind==ReminderKind.Snooze && postponedDue.Task.State==TaskState.Waiting);
     delayed.RecordDelivery(postponedDue,restored,postponed.AddMinutes(9),TimeZoneInfo.Utc);
     Assert(delayed.ReminderSnapshot(new(2026,10,22)).Progress.Single() is { ExtraCount:1,SnoozedUntil:null } after && after.NextRepeatAt==postponed.AddMinutes(30));
+    var durable=Open("outbox-restart.db");var durableSnapshot=durable.ReminderSnapshot(new(2026,10,22));
+    Assert(durableSnapshot.Deliveries.Count==2 && durableSnapshot.Deliveries.Count(d=>d.State==DeliveryState.Pending)==1 && durableSnapshot.Deliveries.Count(d=>d.State==DeliveryState.Shown)==1);
+    var deliveryKeys=durableSnapshot.Deliveries.Select(d=>d.Key).ToArray();
+    durable.SetDeliveryState(deliveryKeys,DeliveryState.Dismissed);
+    Assert(Open("outbox-restart.db").ReminderSnapshot(new(2026,10,22)).Deliveries.All(d=>d.State==DeliveryState.Dismissed));
     File.WriteAllText(Path.Combine(directory, "restart-report.json"), JsonSerializer.Serialize(new { passed = true, processId = Environment.ProcessId, scope = "Fresh process restored all task fields and undid completion with original pause state" }));
-    Console.WriteLine("Cross-process task, check, completion undo, L3 snooze and repeat-budget restore passed in process " + Environment.ProcessId);
+    Console.WriteLine("Cross-process tasks, snooze, budgets and L4 pending/shown/dismissed delivery restore passed in process " + Environment.ProcessId);
     return;
 }
 
@@ -115,10 +125,11 @@ Test("Corrupt database is rejected without destructive reset", () => { var path 
 Test("Missing directory is created only for new owned database", () => { var service = Open("nested/new/tasks.db"); Assert(service.LoadAll().Count == 0); });
 ReminderChecks.Run(Test,directory);
 RepeatChecks.Run(Test,directory);
+RecoveryChecks.Run(Test,directory);
 using (var connection = new SqliteConnection($"Data Source={Path.Combine(directory,"tasks.db")};Pooling=False"))
 {
     connection.Open(); using var command = connection.CreateCommand(); command.CommandText = "SELECT sqlite_version();";
     Console.WriteLine("Bundled SQLite version: " + command.ExecuteScalar());
 }
-File.WriteAllText(Path.Combine(directory,"core-report.json"), JsonSerializer.Serialize(new { stage = "L3", failures, count = results.Count, checks = results }, new JsonSerializerOptions { WriteIndented = true }));
+File.WriteAllText(Path.Combine(directory,"core-report.json"), JsonSerializer.Serialize(new { stage = "L4", failures, count = results.Count, checks = results }, new JsonSerializerOptions { WriteIndented = true }));
 if (failures > 0) Environment.Exit(1);

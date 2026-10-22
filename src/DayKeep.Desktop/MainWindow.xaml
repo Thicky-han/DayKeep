@@ -101,7 +101,7 @@
         <TextBlock Text="一步一步，做成日常。" FontSize="26" FontWeight="SemiBold" Margin="0,7,0,10" TextWrapping="Wrap" />
         <TextBlock Text="沿用已有项目的分阶段制作与验收流程。" Foreground="{StaticResource Muted}" Margin="0,0,0,24" TextWrapping="Wrap" />
         <TextBlock x:Name="RoadmapText" FontSize="14" LineHeight="29" TextWrapping="Wrap" />
-        <Border Background="#E7EFE4" CornerRadius="12" Padding="16" Margin="0,22,0,0"><TextBlock Text="当前交付 L3：未完成事项持续追加、稍后提醒与截止日期高亮。下一步完善重启和休眠后的提醒可靠性。" TextWrapping="Wrap" Foreground="#4E6B5B" LineHeight="22" /></Border>
+        <Border Background="#E7EFE4" CornerRadius="12" Padding="16" Margin="0,22,0,0"><TextBlock Text="当前交付 L4：重启和恢复后的汇总补提醒、持久去重与登录启动。下一步完善历史、备份恢复与完整体验验收。" TextWrapping="Wrap" Foreground="#4E6B5B" LineHeight="22" /></Border>
        </StackPanel>
       </ScrollViewer>
       <ScrollViewer x:Name="SettingsPage" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
@@ -116,15 +116,19 @@
          </StackPanel>
         </Border>
         <TextBlock Text="随时打开，也随时收起" FontSize="16" FontWeight="SemiBold" Margin="0,27,0,13" />
+        <Border Background="#CFFFFFFF" CornerRadius="14" Padding="17" BorderBrush="#D8E2D9" BorderThickness="1" Margin="0,0,0,17"><StackPanel>
+         <CheckBox x:Name="StartupInput" Content="登录 Windows 后在托盘运行" FontWeight="SemiBold" Checked="StartupChanged" Unchecked="StartupChanged" />
+         <TextBlock x:Name="StartupStatus" FontSize="11" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,10,0,0" LineHeight="20" />
+        </StackPanel></Border>
         <TextBlock Text="Ctrl + Alt + D    打开 / 收起窗口&#10;Esc 或右上角 ×    收起到托盘&#10;单击托盘图标    重新打开&#10;再次启动程序    唤回已有窗口&#10;托盘右键 → 退出日守    彻底退出" Foreground="{StaticResource Muted}" LineHeight="28" TextWrapping="Wrap" />
         <Button Content="切换桌面窄窗" Click="ToggleCompact" HorizontalAlignment="Left" Margin="0,22,0,0" />
-        <TextBlock Text="固定提醒按电脑本地时间运行。关闭主窗口会继续提醒；从托盘彻底退出后停止。重复、稍后提醒及登录启动将在后续阶段接入。" FontSize="11" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,20,0,0" LineHeight="20" />
+        <TextBlock Text="按本地时间提醒。关闭主窗继续运行；从托盘退出后停止，若开启登录启动，下次登录会再次运行。重启、恢复或解锁后汇总错过的事项，不逐条重放多天弹窗。" FontSize="11" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,20,0,0" LineHeight="20" />
        </StackPanel>
       </ScrollViewer>
      </Grid>
     </Grid>
     <Border Grid.Row="2" BorderBrush="#D4DFD5" BorderThickness="0,1,0,0" Margin="22,0">
-     <DockPanel VerticalAlignment="Center"><TextBlock x:Name="StatusLabel" Text="●  本地任务 · L3" Foreground="#667E6D" FontSize="10" /><TextBlock x:Name="ShortcutLabel" Text="Ctrl + Alt + D  随时唤起    ·    0.3.0-l3" Foreground="{StaticResource Muted}" HorizontalAlignment="Right" FontSize="10" /></DockPanel>
+     <DockPanel VerticalAlignment="Center"><TextBlock x:Name="StatusLabel" Text="●  本地任务 · L4" Foreground="#667E6D" FontSize="10" /><TextBlock x:Name="ShortcutLabel" Text="Ctrl + Alt + D  随时唤起    ·    0.4.0-l4" Foreground="{StaticResource Muted}" HorizontalAlignment="Right" FontSize="10" /></DockPanel>
     </Border>
    </Grid>
   </Border>

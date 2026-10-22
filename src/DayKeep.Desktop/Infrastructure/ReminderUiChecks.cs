@@ -98,6 +98,8 @@ internal static class ReminderUiChecks
             now=new(2026,10,26,8,59,0,TimeSpan.Zero);
             var path=Path.Combine(directory,"readonly-reminder.db");
             var writer=new TaskService(new TaskRepository(path),()=>now); writer.Initialize(); var task=writer.Create(new("只读保存失败（测试）",TaskKind.WaitingForCondition,Times:"09:00"));
+            var dueAt=now.AddMinutes(1); var fixture=writer.ReminderSnapshot(new(2026,10,26));
+            writer.RecordDelivery(ReminderPlanner.Due(fixture,dueAt,now,TimeZoneInfo.Utc).Single(),null,dueAt,TimeZoneInfo.Utc); now=dueAt;
             var reader=new TaskService(new TaskRepository(path,true),()=>now);
             var window=new MainWindow(new SettingsStore(Path.Combine(directory,"readonly-reminder-ui.json")),reader) {AllowClose=true,ShowActivated=false,ShowInTaskbar=false}; window.Show();
             var readController=window.EnableReminders(()=>now,TimeZoneInfo.Utc,()=>true,_=>throw new Win32Exception("controlled"));

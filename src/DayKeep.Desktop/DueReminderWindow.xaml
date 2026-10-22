@@ -17,6 +17,7 @@
       <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap" />
       <TextBlock Text="{Binding Status}" FontSize="11" Foreground="{Binding Accent}" Margin="0,7,0,0" />
       <TextBlock Text="{Binding Summary}" Foreground="{Binding DeadlineAccent}" FontSize="12" FontWeight="SemiBold" Margin="0,8,0,0" TextWrapping="Wrap" />
+      <TextBlock Text="{Binding ReminderDetail}" Foreground="#87602D" FontSize="11" Margin="0,7,0,0" TextWrapping="Wrap" />
       <TextBlock Text="{Binding ReminderInstruction}" FontSize="12" Foreground="{StaticResource Muted}" Margin="0,9,0,12" TextWrapping="Wrap" LineHeight="21" />
       <WrapPanel>
        <Button Content="打开平台" Tag="{Binding Item}" Click="OpenLinkClick" Visibility="{Binding LinkVisibility}" Padding="11,8" FontSize="12" Margin="0,0,7,7" />

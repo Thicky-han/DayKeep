@@ -38,8 +38,12 @@ public sealed class TaskService(TaskRepository repository, Func<DateTimeOffset>?
     public void RecordDelivery(ReminderOccurrence occurrence, ReminderProgress? previous, DateTimeOffset now, TimeZoneInfo zone)
     {
         RequireInitialized();
-        repository.SaveDelivery(occurrence.Task,ReminderPlanner.AfterDelivery(occurrence,previous,now,zone));
+        if(!QueueDelivery(occurrence,previous,now,zone)) throw new TaskConflictException();
     }
+    public bool QueueDelivery(ReminderOccurrence occurrence, ReminderProgress? previous, DateTimeOffset now, TimeZoneInfo zone)
+    { RequireInitialized(); return repository.QueueDelivery(occurrence,ReminderPlanner.AfterDelivery(occurrence,previous,now,zone),now); }
+    public void SetDeliveryState(IReadOnlyList<ReminderKey> keys, DeliveryState state)
+    { RequireInitialized(); repository.SetDeliveryState(keys,state); }
     public TaskItem RecordWaitingCheck(TaskItem item, DateOnly localDate, string notes)
     {
         RequireInitialized();
