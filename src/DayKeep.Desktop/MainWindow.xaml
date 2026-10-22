@@ -73,7 +73,8 @@
              <StackPanel Grid.Column="1" Grid.ColumnSpan="2" Margin="8,0,0,0">
               <TextBlock Text="{Binding Title}" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" />
               <WrapPanel Margin="0,7,0,0"><TextBlock Text="{Binding Status}" FontSize="11" Foreground="{Binding Accent}" Margin="0,0,12,0" /><TextBlock Text="{Binding Time}" FontSize="11" Foreground="{StaticResource Muted}" /></WrapPanel>
-              <TextBlock Text="{Binding Summary}" FontSize="10" Foreground="{StaticResource Muted}" Margin="0,6,0,0" />
+              <TextBlock Text="{Binding Summary}" FontSize="11" Foreground="{Binding DeadlineAccent}" Margin="0,6,0,0" TextWrapping="Wrap" />
+              <TextBlock Text="{Binding Followup}" FontSize="10" Foreground="{StaticResource Muted}" Margin="0,6,0,0" TextWrapping="Wrap" />
               <WrapPanel Margin="0,10,0,0">
                <Button Content="打开平台" Click="OpenLinkClick" Tag="{Binding Item}" Visibility="{Binding LinkVisibility}" Padding="9,5" FontSize="11" Margin="0,0,6,4" />
                <Button Content="今日已检查" Click="CheckTaskClick" Tag="{Binding Item}" Visibility="{Binding CheckVisibility}" Padding="9,5" FontSize="11" Margin="0,0,6,4" />
@@ -100,7 +101,7 @@
         <TextBlock Text="一步一步，做成日常。" FontSize="26" FontWeight="SemiBold" Margin="0,7,0,10" TextWrapping="Wrap" />
         <TextBlock Text="沿用已有项目的分阶段制作与验收流程。" Foreground="{StaticResource Muted}" Margin="0,0,0,24" TextWrapping="Wrap" />
         <TextBlock x:Name="RoadmapText" FontSize="14" LineHeight="29" TextWrapping="Wrap" />
-        <Border Background="#E7EFE4" CornerRadius="12" Padding="16" Margin="0,22,0,0"><TextBlock Text="当前交付 L2：固定时间提醒和每天检查。下一步增加未完成事项的追加提醒与稍后处理。" TextWrapping="Wrap" Foreground="#4E6B5B" LineHeight="22" /></Border>
+        <Border Background="#E7EFE4" CornerRadius="12" Padding="16" Margin="0,22,0,0"><TextBlock Text="当前交付 L3：未完成事项持续追加、稍后提醒与截止日期高亮。下一步完善重启和休眠后的提醒可靠性。" TextWrapping="Wrap" Foreground="#4E6B5B" LineHeight="22" /></Border>
        </StackPanel>
       </ScrollViewer>
       <ScrollViewer x:Name="SettingsPage" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
@@ -123,7 +124,7 @@
      </Grid>
     </Grid>
     <Border Grid.Row="2" BorderBrush="#D4DFD5" BorderThickness="0,1,0,0" Margin="22,0">
-     <DockPanel VerticalAlignment="Center"><TextBlock x:Name="StatusLabel" Text="●  本地任务 · L2" Foreground="#667E6D" FontSize="10" /><TextBlock x:Name="ShortcutLabel" Text="Ctrl + Alt + D  随时唤起    ·    0.2.0-l2" Foreground="{StaticResource Muted}" HorizontalAlignment="Right" FontSize="10" /></DockPanel>
+     <DockPanel VerticalAlignment="Center"><TextBlock x:Name="StatusLabel" Text="●  本地任务 · L3" Foreground="#667E6D" FontSize="10" /><TextBlock x:Name="ShortcutLabel" Text="Ctrl + Alt + D  随时唤起    ·    0.3.0-l3" Foreground="{StaticResource Muted}" HorizontalAlignment="Right" FontSize="10" /></DockPanel>
     </Border>
    </Grid>
   </Border>

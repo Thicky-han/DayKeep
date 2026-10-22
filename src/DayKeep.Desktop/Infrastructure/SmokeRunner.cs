@@ -69,6 +69,12 @@ internal static class SmokeRunner
                 ((TextBox)editor.FindName("UrlInput")).Text = "https://example.org/patent";
                 ((TextBox)editor.FindName("NotesInput")).Text = "合成界面验证，不是真实缴费事项。";
                 ((TextBox)editor.FindName("TimesInput")).Text = "14:30, 09:00";
+                Check("L3 non-integer repeat settings stay in editor without saving",()=>
+                {
+                    ((TextBox)editor.FindName("RepeatInput")).Text="abc"; Invoke((Button)editor.FindName("SaveButton"));
+                    Assert(editor.IsVisible && service.LoadAll().Count==0,"Invalid repeat setting saved");
+                    ((TextBox)editor.FindName("RepeatInput")).Text="15"; ((TextBox)editor.FindName("MaxExtraInput")).Text="2";
+                });
                 Check("Saving through the editor updates real database and task list", () =>
                 {
                     Invoke((Button)editor.FindName("SaveButton"));
@@ -83,7 +89,7 @@ internal static class SmokeRunner
                 {
                     Invoke(TaskAction("编辑"));
                     var editing = window.Editor!;
-                    Assert(((TextBox)editing.FindName("UrlInput")).Text == "https://example.org/patent" && ((TextBox)editing.FindName("TimesInput")).Text == "09:00, 14:30", "Existing fields not populated");
+                    Assert(((TextBox)editing.FindName("UrlInput")).Text == "https://example.org/patent" && ((TextBox)editing.FindName("TimesInput")).Text == "09:00, 14:30" && ((TextBox)editing.FindName("RepeatInput")).Text == "15" && ((TextBox)editing.FindName("MaxExtraInput")).Text == "2", "Existing fields not populated");
                     ((TextBox)editing.FindName("DueInput")).Text = "2026-12-01";
                     Invoke((Button)editing.FindName("SaveButton"));
                     Assert(service.LoadAll().Single().DueDate == new DateOnly(2026,12,1), "Edit not saved");
@@ -170,13 +176,14 @@ internal static class SmokeRunner
                     Assert(form.IsVisible && ((FrameworkElement)form.FindName("ErrorLabel")).Visibility == Visibility.Visible && failed.Tasks.LoadAll().Count == 0, "Failed write appeared successful"); failed.Close();
                 });
                 ReminderUiChecks.Run(directory,Check);
+                RepeatUiChecks.Run(directory,Check);
                 results.Add(new { name = "Global hotkey registration observation", registered = window.GlobalHotkeyRegistered });
             }
             catch (Exception error) { failures++; results.Add(new { name = "Smoke runner", passed = false, error = error.ToString() }); }
             finally
             {
                 if (window is not null) { window.AllowClose = true; window.Close(); }
-                File.WriteAllText(Path.Combine(directory, "report.json"), JsonSerializer.Serialize(new { stage = "L2", failures, checks = results, scope = "Real WPF task/reminder actions and SQLite with controlled clock; actual clock measured separately; no human tray/keyboard acceptance" }, new JsonSerializerOptions { WriteIndented = true }));
+                File.WriteAllText(Path.Combine(directory, "report.json"), JsonSerializer.Serialize(new { stage = "L3", failures, checks = results, scope = "Real WPF task/reminder actions and SQLite with controlled clock; actual clock measured separately; no human tray/keyboard acceptance" }, new JsonSerializerOptions { WriteIndented = true }));
                 application.Shutdown(failures == 0 ? 0 : 1);
             }
         }));

@@ -23,6 +23,7 @@ public partial class MainWindow : Window
     private bool _dataReady;
     private TaskEditorWindow? _editor;
     private HashSet<Guid> _checkedToday = [];
+    private IReadOnlyList<ReminderProgress> _progress = [];
     public ReminderController? Reminders { get; private set; }
     public DateOnly Today => ReminderPlanner.LocalDate(Reminders?.Now ?? DateTimeOffset.UtcNow,Reminders?.Zone ?? TimeZoneInfo.Local);
     public TaskService Tasks => _tasks;
@@ -39,7 +40,7 @@ public partial class MainWindow : Window
         _tasks = tasks ?? new TaskService(new TaskRepository(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DayKeep", "tasks.db")));
         InitializeComponent();
         DateLabel.Text = DateTime.Today.ToString("M 月 d 日 · dddd", CultureInfo.GetCultureInfo("zh-CN"));
-        RoadmapText.Text = "L0   工程基础与半透明桌面界面  ·  已完成\n\nL1   任务管理、状态模型与本地数据库  ·  已完成\n\nL2   固定时间、高亮弹窗与每日跟进  ·  当前阶段\n\nL3   未完成重复、稍后提醒与截止日期\n\nL4   重启 / 休眠补提醒、去重与启动设置\n\nL5   历史记录、备份恢复与体验验收\n\nL6   图标定稿、安装包、开源发行与使用说明";
+        RoadmapText.Text = "L0   工程基础与半透明桌面界面  ·  已完成\n\nL1   任务管理、状态模型与本地数据库  ·  已完成\n\nL2   固定时间、高亮弹窗与每日跟进  ·  已完成\n\nL3   未完成重复、稍后提醒与截止日期  ·  当前阶段\n\nL4   重启 / 休眠补提醒、去重与启动设置\n\nL5   历史记录、备份恢复与体验验收\n\nL6   图标定稿、安装包、开源发行与使用说明";
         OpacitySlider.Value = _settings.SurfaceOpacity;
         ApplyAppearance();
         _ready = true;
@@ -174,6 +175,7 @@ public partial class MainWindow : Window
             var snapshot = _tasks.ReminderSnapshot(Today);
             _allTasks = snapshot.Tasks;
             _checkedToday = snapshot.CheckedWaitingTasks;
+            _progress = snapshot.Progress;
             DateLabel.Text = Today.ToDateTime(TimeOnly.MinValue).ToString("M 月 d 日 · dddd",CultureInfo.GetCultureInfo("zh-CN"));
             _dataReady = true;
             DataErrorPanel.Visibility = Visibility.Collapsed;
@@ -188,7 +190,9 @@ public partial class MainWindow : Window
     {
         if (!_ready) return;
         var filter = FilterInput.SelectedIndex;
-        var visible = _allTasks.Where(t => filter switch { 0 => t.ArchivedAt is null && t.State != TaskState.Completed, 1 => t.ArchivedAt is null && t.State == TaskState.Completed, 2 => t.ArchivedAt is not null, _ => true }).Select(t => new TaskCard(t,_checkedToday.Contains(t.Id))).ToList();
+        var visible = _allTasks.Where(t => filter switch { 0 => t.ArchivedAt is null && t.State != TaskState.Completed, 1 => t.ArchivedAt is null && t.State == TaskState.Completed, 2 => t.ArchivedAt is not null, _ => true })
+            .OrderBy(t=>ReminderPlanner.DeadlinePriority(t,Today)).ThenBy(t=>t.DueDate)
+            .Select(t => new TaskCard(t,_checkedToday.Contains(t.Id),Today,_progress.SingleOrDefault(p=>p.TaskId==t.Id)?.SnoozedUntil,Reminders?.Zone)).ToList();
         TaskList.ItemsSource = visible;
         TaskCountLabel.Text = $"事项 · {visible.Count}";
         EmptyPanel.Visibility = visible.Count == 0 && _dataReady ? Visibility.Visible : Visibility.Collapsed;

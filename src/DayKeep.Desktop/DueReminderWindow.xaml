@@ -16,6 +16,7 @@
      <Border Background="#EDFFFFFF" BorderBrush="#D4E0D5" BorderThickness="1" CornerRadius="13" Padding="16" Margin="0,0,0,11"><StackPanel>
       <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap" />
       <TextBlock Text="{Binding Status}" FontSize="11" Foreground="{Binding Accent}" Margin="0,7,0,0" />
+      <TextBlock Text="{Binding Summary}" Foreground="{Binding DeadlineAccent}" FontSize="12" FontWeight="SemiBold" Margin="0,8,0,0" TextWrapping="Wrap" />
       <TextBlock Text="{Binding ReminderInstruction}" FontSize="12" Foreground="{StaticResource Muted}" Margin="0,9,0,12" TextWrapping="Wrap" LineHeight="21" />
       <WrapPanel>
        <Button Content="打开平台" Tag="{Binding Item}" Click="OpenLinkClick" Visibility="{Binding LinkVisibility}" Padding="11,8" FontSize="12" Margin="0,0,7,7" />
@@ -23,10 +24,14 @@
        <Button Content="已开放，转待办理" Tag="{Binding Item}" Click="ReadyClick" Visibility="{Binding WaitingVisibility}" Style="{StaticResource PrimaryButton}" Padding="11,8" FontSize="12" Margin="0,0,0,7" />
        <Button Content="确认已完成" Tag="{Binding Item}" Click="CompleteClick" Visibility="{Binding ReadyVisibility}" Style="{StaticResource PrimaryButton}" Padding="11,8" FontSize="12" Margin="0,0,0,7" />
       </WrapPanel>
+      <Border BorderBrush="#DEE5DC" BorderThickness="0,1,0,0" Padding="0,10,0,0" Margin="0,4,0,0"><StackPanel>
+       <TextBlock Text="暂时没空？稍后继续提醒" FontSize="10" Foreground="{StaticResource Muted}" Margin="0,0,0,8" />
+       <WrapPanel><Button Content="10 分钟后" Tag="{Binding Item}" Click="Snooze10Click" FontSize="11" Padding="11,7" Margin="0,0,8,5" /><Button Content="30 分钟后" Tag="{Binding Item}" Click="Snooze30Click" FontSize="11" Padding="11,7" Margin="0,0,8,5" /><Button Content="1 小时后" Tag="{Binding Item}" Click="Snooze60Click" FontSize="11" Padding="11,7" Margin="0,0,0,5" /></WrapPanel>
+      </StackPanel></Border>
      </StackPanel></Border>
     </DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
    </ScrollViewer>
-   <StackPanel Grid.Row="3" Margin="0,12,0,0"><TextBlock x:Name="ErrorLabel" Foreground="#A14839" FontSize="12" TextWrapping="Wrap" Margin="0,0,0,10" Visibility="Collapsed" /><TextBlock Text="打开网页或关闭弹窗，均不会自动完成任务。" FontSize="10" Foreground="{StaticResource Muted}" Margin="0,0,0,12" TextWrapping="Wrap" /><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="12" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions><Button Content="收起本次提醒" Click="Dismiss" /><Button Grid.Column="2" Content="打开任务列表" Click="ShowTasks" /></Grid></StackPanel>
+   <StackPanel Grid.Row="3" Margin="0,12,0,0"><TextBlock x:Name="ErrorLabel" Foreground="#A14839" FontSize="12" TextWrapping="Wrap" Margin="0,0,0,10" Visibility="Collapsed" /><TextBlock Text="收起后仍按任务规则追加；今日已检查会停止当天检查提醒。" FontSize="10" Foreground="{StaticResource Muted}" Margin="0,0,0,12" TextWrapping="Wrap" /><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="12" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions><Button Content="收起本次提醒" Click="Dismiss" /><Button Grid.Column="2" Content="打开任务列表" Click="ShowTasks" /></Grid></StackPanel>
   </Grid>
  </Border>
 </Window>

@@ -13,11 +13,11 @@ public sealed class TaskRepository(string databasePath, bool readOnly = false)
         using var connection = Open();
         var version = Convert.ToInt64(Scalar(connection, "PRAGMA user_version;"), CultureInfo.InvariantCulture);
         var appId = Convert.ToInt64(Scalar(connection, "PRAGMA application_id;"), CultureInfo.InvariantCulture);
-        if (version > 2) throw new StoreVersionException("任务库来自更新版本，请升级日守后再打开；原文件已保留。");
-        if ((version == 1 || version == 2) && appId == ApplicationId)
+        if (version > 3) throw new StoreVersionException("任务库来自更新版本，请升级日守后再打开；原文件已保留。");
+        if (version is >= 1 and <= 3 && appId == ApplicationId)
         {
             if (!Equals(Scalar(connection, "PRAGMA quick_check;"), "ok")) throw new StoreVersionException("任务库检查失败，原文件已保留，请从可靠备份恢复。");
-            if (version == 1) UpgradeFrom1(connection);
+            if (version < 3) Upgrade(connection,version);
             return;
         }
         if (version != 0 || appId != 0 || Convert.ToInt64(Scalar(connection, "SELECT COUNT(*) FROM sqlite_master WHERE name NOT LIKE 'sqlite_%';"), CultureInfo.InvariantCulture) != 0)
@@ -49,17 +49,27 @@ public sealed class TaskRepository(string databasePath, bool readOnly = false)
             """;
         command.ExecuteNonQuery();
         transaction.Commit();
-        UpgradeFrom1(connection);
+        Upgrade(connection,1);
     }
 
-    private static void UpgradeFrom1(SqliteConnection connection)
+    private static void Upgrade(SqliteConnection connection, long version)
     {
         using var transaction = connection.BeginTransaction();
-        using var command = connection.CreateCommand();
-        command.Transaction = transaction;
-        command.CommandText = "ALTER TABLE task_checks ADD COLUMN outcome INTEGER NOT NULL DEFAULT 0 CHECK(outcome IN(0,1)); PRAGMA user_version=2;";
-        command.ExecuteNonQuery();
-        transaction.Commit();
+        using var command = connection.CreateCommand(); command.Transaction = transaction;
+        if (version == 1)
+        {
+            command.CommandText = "ALTER TABLE task_checks ADD COLUMN outcome INTEGER NOT NULL DEFAULT 0 CHECK(outcome IN(0,1));";
+            command.ExecuteNonQuery();
+        }
+        command.CommandText = """
+            CREATE TABLE reminder_progress (
+                task_id TEXT PRIMARY KEY REFERENCES tasks(id), local_date TEXT NOT NULL,
+                extra_count INTEGER NOT NULL CHECK(extra_count BETWEEN 0 AND 24),
+                next_repeat_at TEXT, snoozed_until TEXT, version INTEGER NOT NULL CHECK(version>0), last_delivered_at TEXT
+            );
+            PRAGMA user_version=3;
+            """;
+        command.ExecuteNonQuery(); transaction.Commit();
     }
 
     public IReadOnlyList<TaskItem> LoadAll()
@@ -73,7 +83,8 @@ public sealed class TaskRepository(string databasePath, bool readOnly = false)
         return items;
     }
 
-    public void Save(TaskItem item, int? expectedRevision, string eventKind, TaskCheck? check = null)
+    public void Save(TaskItem item, int? expectedRevision, string eventKind, TaskCheck? check = null,
+        DateOnly? reminderDate = null, DateTimeOffset? nextRepeat = null, DateTimeOffset? snoozedUntil = null)
     {
         using var connection = Open();
         using var transaction = connection.BeginTransaction();
@@ -107,6 +118,13 @@ public sealed class TaskRepository(string databasePath, bool readOnly = false)
             Add(checkCommand, "$date", check.LocalDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)); Add(checkCommand, "$at", Stamp(check.RecordedAt)); Add(checkCommand, "$notes", check.Notes);
             Add(checkCommand, "$outcome", (int)check.Outcome);
             checkCommand.ExecuteNonQuery();
+        }
+        var progress = ReadProgress(connection,transaction,item.Id);
+        if (progress is not null || reminderDate is not null)
+        {
+            var date = reminderDate ?? progress!.LocalDate;
+            WriteProgress(connection,transaction,new(item.Id,date,progress?.LocalDate == date ? progress.ExtraCount : 0,
+                nextRepeat,snoozedUntil,progress?.Version ?? 0,progress?.LastDeliveredAt));
         }
         transaction.Commit();
     }
@@ -144,8 +162,46 @@ public sealed class TaskRepository(string databasePath, bool readOnly = false)
             using var reader = command.ExecuteReader();
             while (reader.Read()) checks.Add(ReadCheck(reader));
         }
+        var progress = new List<ReminderProgress>();
+        using (var command = connection.CreateCommand())
+        {
+            command.Transaction = transaction; command.CommandText = "SELECT * FROM reminder_progress;";
+            using var reader = command.ExecuteReader(); while(reader.Read()) progress.Add(ReadProgress(reader));
+        }
         transaction.Commit();
-        return new(items, checks);
+        return new(items, checks, progress);
+    }
+
+    public void SaveDelivery(TaskItem task, ReminderProgress progress)
+    {
+        using var connection = Open(); using var transaction = connection.BeginTransaction();
+        using var command = connection.CreateCommand(); command.Transaction = transaction;
+        command.CommandText = "SELECT revision FROM tasks WHERE id=$id;"; Add(command,"$id",task.Id.ToString());
+        if (!Equals(command.ExecuteScalar(),(long)task.Revision)) throw new TaskConflictException();
+        WriteProgress(connection,transaction,progress); transaction.Commit();
+    }
+    private static ReminderProgress? ReadProgress(SqliteConnection connection, SqliteTransaction transaction, Guid id)
+    {
+        using var command = connection.CreateCommand(); command.Transaction = transaction;
+        command.CommandText = "SELECT * FROM reminder_progress WHERE task_id=$id;"; Add(command,"$id",id.ToString());
+        using var reader = command.ExecuteReader(); return reader.Read() ? ReadProgress(reader) : null;
+    }
+    private static ReminderProgress ReadProgress(SqliteDataReader reader)
+    {
+        DateTimeOffset? At(int ordinal) => reader.IsDBNull(ordinal) ? null : DateTimeOffset.Parse(reader.GetString(ordinal),CultureInfo.InvariantCulture);
+        return new(Guid.Parse(reader.GetString(0)),DateOnly.ParseExact(reader.GetString(1),"yyyy-MM-dd",CultureInfo.InvariantCulture),reader.GetInt32(2),At(3),At(4),reader.GetInt32(5),At(6));
+    }
+    private static void WriteProgress(SqliteConnection connection, SqliteTransaction transaction, ReminderProgress progress)
+    {
+        using var command = connection.CreateCommand(); command.Transaction = transaction;
+        command.CommandText = progress.Version == 0
+            ? "INSERT INTO reminder_progress VALUES ($id,$date,$count,$next,$snooze,1,$last);"
+            : "UPDATE reminder_progress SET local_date=$date,extra_count=$count,next_repeat_at=$next,snoozed_until=$snooze,version=version+1,last_delivered_at=$last WHERE task_id=$id AND version=$version;";
+        Add(command,"$id",progress.TaskId.ToString()); Add(command,"$date",progress.LocalDate.ToString("yyyy-MM-dd",CultureInfo.InvariantCulture));
+        Add(command,"$count",progress.ExtraCount); Add(command,"$next",progress.NextRepeatAt is { } next ? Stamp(next) : null);
+        Add(command,"$snooze",progress.SnoozedUntil is { } snooze ? Stamp(snooze) : null);
+        Add(command,"$last",progress.LastDeliveredAt is { } last ? Stamp(last) : null); Add(command,"$version",progress.Version);
+        if(command.ExecuteNonQuery()!=1) throw new TaskConflictException();
     }
 
     private static TaskCheck ReadCheck(SqliteDataReader reader) => new(Guid.Parse(reader.GetString(0)), Guid.Parse(reader.GetString(1)),

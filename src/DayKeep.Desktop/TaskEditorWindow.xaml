@@ -30,6 +30,11 @@
      <TextBlock Text="24 小时格式；多个时间用逗号分开，例如 09:00, 14:30。" FontSize="10" Foreground="{StaticResource Muted}" Margin="0,5,0,0" TextWrapping="Wrap" />
      <TextBlock Text="提醒星期 *" Style="{StaticResource FieldLabel}" />
      <WrapPanel x:Name="WeekdayPanel"><CheckBox Content="一" Tag="1" IsChecked="True" Margin="0,0,15,4" /><CheckBox Content="二" Tag="2" IsChecked="True" Margin="0,0,15,4" /><CheckBox Content="三" Tag="4" IsChecked="True" Margin="0,0,15,4" /><CheckBox Content="四" Tag="8" IsChecked="True" Margin="0,0,15,4" /><CheckBox Content="五" Tag="16" IsChecked="True" Margin="0,0,15,4" /><CheckBox Content="六" Tag="32" IsChecked="True" Margin="0,0,15,4" /><CheckBox Content="日" Tag="64" IsChecked="True" Margin="0,0,0,4" /></WrapPanel>
+     <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="16" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+      <StackPanel><TextBlock Text="未处理时，追加间隔（分钟）" Style="{StaticResource FieldLabel}" /><TextBox x:Name="RepeatInput" Text="30" MaxLength="4" AutomationProperties.Name="追加间隔" /></StackPanel>
+      <StackPanel Grid.Column="2"><TextBlock Text="每天最多追加（次）" Style="{StaticResource FieldLabel}" /><TextBox x:Name="MaxExtraInput" Text="3" MaxLength="2" AutomationProperties.Name="每天追加上限" /></StackPanel>
+     </Grid>
+     <TextBlock Text="间隔 5—1440 分钟，上限 0—24 次。0 关闭自动追加；多个固定时间共用当天上限。" TextWrapping="Wrap" FontSize="10" Foreground="{StaticResource Muted}" Margin="0,6,0,0" />
      <TextBlock Text="截止日期（未知时留空）" Style="{StaticResource FieldLabel}" /><TextBox x:Name="DueInput" MaxLength="10" AutomationProperties.Name="截止日期" /><TextBlock Text="格式 yyyy-MM-dd，例如 2026-12-01；允许记录已逾期的事项。" FontSize="10" Foreground="{StaticResource Muted}" Margin="0,5,0,0" TextWrapping="Wrap" />
      <TextBlock Text="备注" Style="{StaticResource FieldLabel}" /><TextBox x:Name="NotesInput" Height="64" MaxLength="4000" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AutomationProperties.Name="任务备注" />
     </StackPanel>

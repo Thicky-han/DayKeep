@@ -48,14 +48,16 @@ public sealed class ReminderController : IDisposable
             if (!_canShow()) { SetStatus("定时提醒等待桌面可用"); return; }
             var now = Now;
             var date = ReminderPlanner.LocalDate(now,Zone);
-            if (_observedDay != date) { _observedDay = date; DayChanged?.Invoke(date); }
+            var dayChanged = _observedDay != date;
+            if (dayChanged) { _observedDay = date; DayChanged?.Invoke(date); }
             var snapshot = _tasks.ReminderSnapshot(date);
             var checkedIds = snapshot.CheckedWaitingTasks;
             var current = snapshot.Tasks.ToDictionary(t => t.Id);
-            var changed = false;
+            var changed = dayChanged;
             foreach (var id in _pending.Keys.ToArray())
             {
-                if (!current.TryGetValue(id,out var item) || !ReminderPlanner.Active(item) || (item.State == TaskState.Waiting && checkedIds.Contains(id))) { _pending.Remove(id); changed = true; }
+                if (!current.TryGetValue(id,out var item) || !ReminderPlanner.Active(item) || (item.State == TaskState.Waiting && checkedIds.Contains(id))
+                    || snapshot.Progress.Any(p => p.TaskId == id && p.SnoozedUntil > now)) { _pending.Remove(id); changed = true; }
                 else if (_pending[id] != item) { _pending[id] = item; changed = true; }
             }
             _shown.RemoveWhere(key => key.Date < date.AddDays(-7));
@@ -70,23 +72,28 @@ public sealed class ReminderController : IDisposable
                     Window = new DueReminderWindow(Act,_showTasks);
                     Window.Closed += (_, _) => { Window = null; _pending.Clear(); };
                 }
-                if (created || changed) Window!.SetTasks(_pending.Values.ToList());
+                if (created || changed) Window!.SetTasks(_pending.Values.ToList(),date);
                 if (created)
                 {
                     var foreground = DesktopAvailability.ForegroundWindow;
                     Window!.Show();
                     LastShowPreservedFocus = foreground == DesktopAvailability.ForegroundWindow;
-                    Presented?.Invoke(Window);
                 }
+                foreach (var occurrence in due)
+                {
+                    _tasks.RecordDelivery(occurrence,snapshot.Progress.SingleOrDefault(p=>p.TaskId==occurrence.Task.Id),now,Zone);
+                    _shown.Add(occurrence.Key);
+                }
+                if (created) Presented?.Invoke(Window!);
             }
-            foreach (var occurrence in due) _shown.Add(occurrence.Key);
-            var next = snapshot.Tasks.Select(t => ReminderPlanner.Next(t,checkedIds,now,Zone)).Where(t => t is not null).Min();
+            if (due.Count > 0) { snapshot = _tasks.ReminderSnapshot(date); TasksChanged?.Invoke(); }
+            var next = snapshot.Tasks.Select(t => ReminderPlanner.Next(t,checkedIds,now,Zone,snapshot.Progress.SingleOrDefault(p=>p.TaskId==t.Id))).Where(t => t is not null).Min();
             SetStatus(next is { } at ? $"定时提醒已启用 · 下次 {TimeZoneInfo.ConvertTime(at,Zone):M月d日 HH:mm}" : "定时提醒已启用 · 暂无待提醒事项");
         }
         catch (Exception error) when (MainWindow.DataError(error) is not null)
         {
             var message = "提醒暂不可用，请检查数据后重新读取。";
-            SetStatus(message); Window?.ShowError(message);
+            SetStatus(message); Window?.ShowError(message,true);
         }
         finally { _ticking = false; }
     }
@@ -102,6 +109,9 @@ public sealed class ReminderController : IDisposable
                 case ReminderAction.CheckedWaiting: _tasks.RecordWaitingCheck(item,date,"用户已检查，尚未开放"); break;
                 case ReminderAction.MarkReady: _tasks.MarkReady(item,date); break;
                 case ReminderAction.Complete: _tasks.Complete(item); break;
+                case ReminderAction.Snooze10: _tasks.Snooze(item,date,10); break;
+                case ReminderAction.Snooze30: _tasks.Snooze(item,date,30); break;
+                case ReminderAction.Snooze60: _tasks.Snooze(item,date,60); break;
             }
             Tick(); TasksChanged?.Invoke();
         }

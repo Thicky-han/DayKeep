@@ -6,16 +6,19 @@ maintainer's established one-stage-at-a-time workflow. Complete the current
 stage, record evidence and limitations, and hand back the result. Do not silently
 implement or declare later stages complete.
 
-L0/L1 and L2 fixed-time reminders are complete. L2 uses a pure core planner,
-production 1-second WPF timer, local time/weekdays, merged non-activating windows,
-validated browser handoff, today's waiting check and confirmation of readiness.
-Checking is distinct from completion. Schema 2 upgrades L1 check outcomes in a
-transaction; failed initialization must stop reminder reads and writes. Preserve
-original files on invalid/unknown/newer schema, failed migration or missing fields.
-L2 considers current-minute future slots, not full startup/sleep catch-up. In-process
-slot deduplication is not L4 restart deduplication. Repeat/snooze belongs to L3;
-startup, comprehensive catch-up/time-change behavior belongs to L4. Next is L3
-after L2 handoff and maintainer instruction. Previews never update real tasks.
+L0 through L3 are complete. Keep the pure core planner, production 1-second WPF
+timer, local time/weekdays and merged non-activating windows. Checking is distinct
+from completion. L3 persists per-task daily extra counts, next repeat, snooze and
+last-delivery watermark in schema 3. Default: 30 minutes, 3 extras per local day;
+fixed slots share the cap, collisions prefer fixed, explicit snooze overrides all
+intervening automatic slots and does not spend the cap. Daily checks, pause,
+completion/archive and edits clear pending followups atomically; readiness rearms
+from the confirmed time. Date-only deadlines prioritize today/overdue; never auto-complete.
+Schema 1/2 upgrades are transactional. Failed initialization must stop reads/writes;
+preserve original files on invalid/unknown/newer schema or failed migration.
+Fixed slots still consider current-minute future times; saved snooze and same-day
+repeats recover, but this is not comprehensive L4 catch-up or crash-safe delivery.
+Next is L4 after L3 handoff and maintainer instruction. Previews never update tasks.
 
 Maintain separate shell, domain, persistence and reminder scheduling boundaries.
 Only the surface brush should be translucent; text and controls remain opaque.
@@ -30,6 +33,7 @@ clock checks are not real delivery evidence. Keep packages.lock.json under versi
 restore and review dependency/license changes. Visually inspect WPF
 renders after layout changes. Controlled smoke results are not human keyboard,
 multi-monitor, full-screen or long-running reminder acceptance.
+Build shared projects sequentially; simultaneous dotnet builds can lock common obj files.
 
 Use a standalone local main repository and stage commits. Exclude tools, bin/obj,
 personal data, generated binaries and test reports. Keep AGPL-3.0-only and original

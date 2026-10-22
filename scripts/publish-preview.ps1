@@ -1,5 +1,5 @@
 . (Join-Path $PSScriptRoot 'common.ps1')
-$outputDirectory = Join-Path $projectRoot 'dist\l2-win-x64'
+$outputDirectory = Join-Path $projectRoot 'dist\l3-win-x64'
 Invoke-Dotnet publish $projectFile --configuration Release --runtime win-x64 --self-contained true --output $outputDirectory '-p:DebugType=None' '-p:DebugSymbols=false' --nologo
 Copy-Item -LiteralPath (Join-Path $projectRoot 'LICENSE') -Destination $outputDirectory
 Copy-Item -LiteralPath (Join-Path $projectRoot 'INSTALL.md') -Destination $outputDirectory

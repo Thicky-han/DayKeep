@@ -20,6 +20,8 @@ public partial class TaskEditorWindow : Window
         UrlInput.Text = item.Url;
         NotesInput.Text = item.Notes;
         TimesInput.Text = item.Reminder.Times;
+        RepeatInput.Text = item.Reminder.RepeatMinutes.ToString(CultureInfo.InvariantCulture);
+        MaxExtraInput.Text = item.Reminder.MaxExtraReminders.ToString(CultureInfo.InvariantCulture);
         DueInput.Text = item.DueDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? "";
         foreach (CheckBox checkbox in WeekdayPanel.Children) checkbox.IsChecked = (item.Reminder.Weekdays & int.Parse((string)checkbox.Tag, CultureInfo.InvariantCulture)) != 0;
     }
@@ -27,7 +29,10 @@ public partial class TaskEditorWindow : Window
     private void SaveClick(object sender, RoutedEventArgs e)
     {
         var days = WeekdayPanel.Children.OfType<CheckBox>().Where(c => c.IsChecked == true).Sum(c => int.Parse((string)c.Tag, CultureInfo.InvariantCulture));
-        var error = _save(new(TitleInput.Text, (TaskKind)KindInput.SelectedIndex, UrlInput.Text, NotesInput.Text, TimesInput.Text, days, DueInput.Text));
+        if (!int.TryParse(RepeatInput.Text,NumberStyles.None,CultureInfo.InvariantCulture,out var repeat)
+            || !int.TryParse(MaxExtraInput.Text,NumberStyles.None,CultureInfo.InvariantCulture,out var max))
+        { ErrorLabel.Text = "追加间隔和次数请填写整数。"; ErrorLabel.Visibility = Visibility.Visible; return; }
+        var error = _save(new(TitleInput.Text, (TaskKind)KindInput.SelectedIndex, UrlInput.Text, NotesInput.Text, TimesInput.Text, days, DueInput.Text,repeat,max));
         if (error is null) { Close(); return; }
         ErrorLabel.Text = error;
         ErrorLabel.Visibility = Visibility.Visible;

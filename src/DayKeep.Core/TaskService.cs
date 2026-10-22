@@ -21,8 +21,24 @@ public sealed class TaskService(TaskRepository repository, Func<DateTimeOffset>?
         RequireInitialized();
         var now = Now;
         var updated = TaskRules.MarkReady(item, now);
-        repository.Save(updated, item.Revision, "condition-ready", new(Guid.NewGuid(), item.Id, localDate, now, "用户确认条件已满足", CheckOutcome.ConditionReady));
+        repository.Save(updated, item.Revision, "condition-ready", new(Guid.NewGuid(), item.Id, localDate, now, "用户确认条件已满足", CheckOutcome.ConditionReady),
+            localDate, nextRepeat: now.AddMinutes(item.Reminder.RepeatMinutes));
         return updated;
+    }
+    public TaskItem Snooze(TaskItem item, DateOnly localDate, int minutes)
+    {
+        RequireInitialized(); TaskRules.RequireActive(item);
+        if (item.Paused || minutes is not (10 or 30 or 60)) throw new TaskValidationException("请选择 10、30 或 60 分钟，且任务应处于跟进中。");
+        if (item.State == TaskState.Waiting && ReminderSnapshot(localDate).CheckedWaitingTasks.Contains(item.Id))
+            throw new TaskValidationException("今天已检查的任务会在下一提醒日继续跟进。");
+        var now = Now; var updated = TaskRules.Advance(item,now);
+        repository.Save(updated,item.Revision,"snoozed",reminderDate:localDate,snoozedUntil:now.AddMinutes(minutes));
+        return updated;
+    }
+    public void RecordDelivery(ReminderOccurrence occurrence, ReminderProgress? previous, DateTimeOffset now, TimeZoneInfo zone)
+    {
+        RequireInitialized();
+        repository.SaveDelivery(occurrence.Task,ReminderPlanner.AfterDelivery(occurrence,previous,now,zone));
     }
     public TaskItem RecordWaitingCheck(TaskItem item, DateOnly localDate, string notes)
     {

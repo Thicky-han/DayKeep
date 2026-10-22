@@ -33,6 +33,15 @@ if (args.Length > 1 && args[1] == "--write-restart")
     daily.Initialize();
     daily.RecordWaitingCheck(daily.Create(new("重启后已检查",TaskKind.WaitingForCondition)),new(2026,10,22),"still waiting");
     daily.MarkReady(daily.Create(new("重启后待办理",TaskKind.WaitingForCondition)),new(2026,10,22));
+    var reminderTime=new DateTimeOffset(2026,10,22,8,59,0,TimeSpan.Zero);
+    var delayed=new TaskService(new TaskRepository(Path.Combine(directory,"snooze-restart.db")),()=>reminderTime); delayed.Initialize();
+    var delayedTask=delayed.Create(new("跨进程延期",TaskKind.WaitingForCondition,RepeatMinutes:30,MaxExtraReminders:3));
+    foreach(var time in new[]{new DateTimeOffset(2026,10,22,9,0,0,TimeSpan.Zero),new(2026,10,22,9,30,0,TimeSpan.Zero)})
+    {
+        reminderTime=time; var snapshot=delayed.ReminderSnapshot(new(2026,10,22));
+        delayed.RecordDelivery(ReminderPlanner.Due(snapshot,time,time.AddHours(-1),TimeZoneInfo.Utc).Single(),snapshot.Progress.SingleOrDefault(),time,TimeZoneInfo.Utc);
+    }
+    reminderTime=reminderTime.AddMinutes(1); delayed.Snooze(delayedTask,new(2026,10,22),60);
     Console.WriteLine("Restart fixture written by process " + Environment.ProcessId);
     return;
 }
@@ -47,8 +56,16 @@ if (args.Length > 1 && args[1] == "--read-restart")
     var snapshot=daily.ReminderSnapshot(new(2026,10,22));
     var due=ReminderPlanner.Due(snapshot,new DateTimeOffset(2026,10,22,9,0,0,TimeSpan.Zero),new DateTimeOffset(2026,10,22,8,59,0,TimeSpan.Zero),TimeZoneInfo.Utc);
     Assert(snapshot.Checks.Count==2 && due.Single().Task.Title=="重启后待办理" && due.Single().Task.State==TaskState.Ready);
+    var delayed=Open("snooze-restart.db"); var saved=delayed.ReminderSnapshot(new(2026,10,22));
+    var restored=saved.Progress.Single(); var postponed=new DateTimeOffset(2026,10,22,10,31,0,TimeSpan.Zero);
+    Assert(restored.ExtraCount==1 && restored.SnoozedUntil==postponed && restored.NextRepeatAt is null);
+    Assert(ReminderPlanner.Due(saved,postponed.AddMinutes(-1),postponed.AddMinutes(-1),TimeZoneInfo.Utc).Count==0);
+    var postponedDue=ReminderPlanner.Due(saved,postponed.AddMinutes(9),postponed.AddMinutes(9),TimeZoneInfo.Utc).Single();
+    Assert(postponedDue.Key.Kind==ReminderKind.Snooze && postponedDue.Task.State==TaskState.Waiting);
+    delayed.RecordDelivery(postponedDue,restored,postponed.AddMinutes(9),TimeZoneInfo.Utc);
+    Assert(delayed.ReminderSnapshot(new(2026,10,22)).Progress.Single() is { ExtraCount:1,SnoozedUntil:null } after && after.NextRepeatAt==postponed.AddMinutes(30));
     File.WriteAllText(Path.Combine(directory, "restart-report.json"), JsonSerializer.Serialize(new { passed = true, processId = Environment.ProcessId, scope = "Fresh process restored all task fields and undid completion with original pause state" }));
-    Console.WriteLine("Cross-process restore, undo and L2 daily-check/ready state passed in process " + Environment.ProcessId);
+    Console.WriteLine("Cross-process task, check, completion undo, L3 snooze and repeat-budget restore passed in process " + Environment.ProcessId);
     return;
 }
 
@@ -97,10 +114,11 @@ Test("Unrelated SQLite schema is not adopted or overwritten", () => { var path =
 Test("Corrupt database is rejected without destructive reset", () => { var path = Path.Combine(directory,"corrupt.db"); File.WriteAllText(path,"not-a-database-preserve-me"); var before = File.ReadAllBytes(path); Throws<SqliteException>(() => Open("corrupt.db")); Assert(before.SequenceEqual(File.ReadAllBytes(path))); });
 Test("Missing directory is created only for new owned database", () => { var service = Open("nested/new/tasks.db"); Assert(service.LoadAll().Count == 0); });
 ReminderChecks.Run(Test,directory);
+RepeatChecks.Run(Test,directory);
 using (var connection = new SqliteConnection($"Data Source={Path.Combine(directory,"tasks.db")};Pooling=False"))
 {
     connection.Open(); using var command = connection.CreateCommand(); command.CommandText = "SELECT sqlite_version();";
     Console.WriteLine("Bundled SQLite version: " + command.ExecuteScalar());
 }
-File.WriteAllText(Path.Combine(directory,"core-report.json"), JsonSerializer.Serialize(new { stage = "L2", failures, count = results.Count, checks = results }, new JsonSerializerOptions { WriteIndented = true }));
+File.WriteAllText(Path.Combine(directory,"core-report.json"), JsonSerializer.Serialize(new { stage = "L3", failures, count = results.Count, checks = results }, new JsonSerializerOptions { WriteIndented = true }));
 if (failures > 0) Environment.Exit(1);

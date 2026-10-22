@@ -11,7 +11,7 @@ public sealed class TaskConflictException() : Exception("任务已在其他窗�
 
 public sealed record ReminderRule(string Times, int Weekdays = 127, int RepeatMinutes = 30, int MaxExtraReminders = 3);
 public sealed record TaskDraft(string Title, TaskKind Kind, string Url = "", string Notes = "",
-    string Times = "09:00", int Weekdays = 127, string DueDate = "");
+    string Times = "09:00", int Weekdays = 127, string DueDate = "", int RepeatMinutes = 30, int MaxExtraReminders = 3);
 public sealed record TaskItem(Guid Id, string Title, TaskKind Kind, TaskState State, bool Paused,
     string Url, string Notes, ReminderRule Reminder, DateOnly? DueDate, DateTimeOffset CreatedAt,
     DateTimeOffset UpdatedAt, int Revision = 1, DateTimeOffset? CompletedAt = null,
@@ -29,6 +29,8 @@ public static class TaskRules
         if (url.Length > 0) WebLink.Parse(url);
         if (draft.Notes.Length > 4000) throw new TaskValidationException("备注最多 4000 个字符。");
         if (draft.Weekdays is < 1 or > 127) throw new TaskValidationException("请至少选择一个提醒星期。");
+        if (draft.RepeatMinutes is < 5 or > 1440) throw new TaskValidationException("追加间隔需要 5—1440 分钟。");
+        if (draft.MaxExtraReminders is < 0 or > 24) throw new TaskValidationException("每天追加上限需要 0—24 次；0 表示关闭自动追加。");
         var tokens = draft.Times.Replace('，', ',').Split(',', StringSplitOptions.TrimEntries);
         if (tokens.Length is < 1 or > 8) throw new TaskValidationException("请填写 1—8 个提醒时间。");
         var times = new SortedSet<TimeOnly>();
@@ -48,7 +50,7 @@ public static class TaskRules
     {
         var draft = Validate(input);
         return new(Guid.NewGuid(), draft.Title, draft.Kind, InitialState(draft.Kind), false,
-            draft.Url, draft.Notes, new(draft.Times, draft.Weekdays), ParseDate(draft.DueDate), now, now);
+            draft.Url, draft.Notes, new(draft.Times, draft.Weekdays, draft.RepeatMinutes, draft.MaxExtraReminders), ParseDate(draft.DueDate), now, now);
     }
 
     public static TaskItem Edit(TaskItem item, TaskDraft input, DateTimeOffset now)
@@ -57,7 +59,7 @@ public static class TaskRules
         var draft = Validate(input);
         return Advance(item, now) with { Title = draft.Title, Kind = draft.Kind,
             State = draft.Kind == item.Kind ? item.State : InitialState(draft.Kind), Url = draft.Url, Notes = draft.Notes,
-            Reminder = item.Reminder with { Times = draft.Times, Weekdays = draft.Weekdays }, DueDate = ParseDate(draft.DueDate) };
+            Reminder = new(draft.Times, draft.Weekdays, draft.RepeatMinutes, draft.MaxExtraReminders), DueDate = ParseDate(draft.DueDate) };
     }
     public static TaskItem Pause(TaskItem item, DateTimeOffset now) { RequireActive(item); return Advance(item, now) with { Paused = !item.Paused }; }
     public static TaskItem MarkReady(TaskItem item, DateTimeOffset now)
