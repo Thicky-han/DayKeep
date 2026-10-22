@@ -2,7 +2,7 @@
 
 先读 PROJECT_SPEC.md、IMPLEMENTATION_PLAN.md、AGENTS.md 和当前阶段报告。以当前阶段边界提交相关修改；不要把界面示例或受控验证写成已经运行的提醒服务。
 
-使用 Windows、PowerShell 7、global.json 指定 SDK。依次执行 `pwsh -File scripts/check.ps1`、`pwsh -File scripts/build.ps1`、`pwsh -File scripts/test-shell.ps1` 与 `git diff --check`。改布局后查看 .cache 中实际 WPF 渲染。新增包先审查来源、许可和版本，再锁定。
+使用 Windows、PowerShell 7、global.json 指定 SDK。依次执行 `pwsh -File scripts/check.ps1`、`pwsh -File scripts/build.ps1`、`pwsh -File scripts/test-core.ps1`、`pwsh -File scripts/test-shell.ps1` 与 `git diff --check`。改布局后查看 .cache 中实际 WPF 渲染。新增包先审查来源、许可和版本，再锁定。
 
 保持 UI、领域状态、数据库和调度分层；任何“今日已检查”不能隐式完成任务，打开链接也不能假定用户处理成功。保留存储失败提示和恢复路径。
 

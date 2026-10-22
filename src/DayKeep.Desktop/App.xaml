@@ -44,5 +44,20 @@
   <Style x:Key="NavigationButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
    <Setter Property="HorizontalContentAlignment" Value="Left" /><Setter Property="Padding" Value="15,13" /><Setter Property="Background" Value="Transparent" /><Setter Property="BorderThickness" Value="0" /><Setter Property="Margin" Value="0,3" />
   </Style>
+  <Style TargetType="ComboBox">
+   <Setter Property="Foreground" Value="{StaticResource Ink}" /><Setter Property="Background" Value="#F9FCF8" /><Setter Property="BorderBrush" Value="#CBDACF" /><Setter Property="Padding" Value="9,7" />
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ComboBox">
+    <Grid>
+     <ToggleButton Focusable="False" ClickMode="Press" IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}">
+      <ToggleButton.Template><ControlTemplate TargetType="ToggleButton"><Border Background="{Binding Background, RelativeSource={RelativeSource AncestorType=ComboBox}}" BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ComboBox}}" BorderThickness="1" CornerRadius="8" /></ControlTemplate></ToggleButton.Template>
+     </ToggleButton>
+     <ContentPresenter Margin="{TemplateBinding Padding}" HorizontalAlignment="Left" VerticalAlignment="Center" IsHitTestVisible="False" Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" />
+     <Path Data="M0,0 L4,4 L8,0" Stroke="#607573" StrokeThickness="1.3" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,11,0" IsHitTestVisible="False" />
+     <Popup x:Name="PART_Popup" IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" AllowsTransparency="True" Focusable="False" PopupAnimation="Fade">
+      <Border MinWidth="{TemplateBinding ActualWidth}" Background="#FBFCF8" BorderBrush="#CBDACF" BorderThickness="1" CornerRadius="8" Padding="4" Margin="0,4,0,0"><ScrollViewer MaxHeight="250"><ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" /></ScrollViewer></Border>
+     </Popup>
+    </Grid>
+   </ControlTemplate></Setter.Value></Setter>
+  </Style>
  </Application.Resources>
 </Application>

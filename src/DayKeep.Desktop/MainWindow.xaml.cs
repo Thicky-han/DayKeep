@@ -5,6 +5,9 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using DayKeep.Infrastructure;
 using DayKeep.Models;
+using DayKeep.Core;
+using Microsoft.Data.Sqlite;
+using System.IO;
 
 namespace DayKeep;
 
@@ -15,22 +18,29 @@ public partial class MainWindow : Window
     private HotkeyService? _hotkey;
     private ReminderWindow? _preview;
     private bool _ready;
+    private readonly TaskService _tasks;
+    private IReadOnlyList<TaskItem> _allTasks = [];
+    private bool _dataReady;
+    private TaskEditorWindow? _editor;
+    public TaskService Tasks => _tasks;
+    public TaskEditorWindow? Editor => _editor;
     public bool AllowClose { get; set; }
     public bool IsCompact => _settings.Compact;
     public double SurfaceOpacity => SurfaceBrush.Opacity;
     public bool GlobalHotkeyRegistered => _hotkey?.Registered == true;
 
-    public MainWindow(SettingsStore settingsStore)
+    public MainWindow(SettingsStore settingsStore, TaskService? tasks = null)
     {
         _settingsStore = settingsStore;
         _settings = settingsStore.Load();
+        _tasks = tasks ?? new TaskService(new TaskRepository(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DayKeep", "tasks.db")));
         InitializeComponent();
         DateLabel.Text = DateTime.Today.ToString("M 月 d 日 · dddd", CultureInfo.GetCultureInfo("zh-CN"));
-        TaskList.ItemsSource = PreviewTask.Examples;
-        RoadmapText.Text = "L0   工程基础与半透明桌面界面  ·  当前阶段\n\nL1   任务管理、状态模型与本地数据库\n\nL2   固定时间、高亮弹窗与每日跟进\n\nL3   未完成重复、稍后提醒与截止日期\n\nL4   重启 / 休眠补提醒、去重与启动设置\n\nL5   历史记录、备份恢复与体验验收\n\nL6   图标定稿、安装包、开源发行与使用说明";
+        RoadmapText.Text = "L0   工程基础与半透明桌面界面  ·  已完成\n\nL1   任务管理、状态模型与本地数据库  ·  当前阶段\n\nL2   固定时间、高亮弹窗与每日跟进\n\nL3   未完成重复、稍后提醒与截止日期\n\nL4   重启 / 休眠补提醒、去重与启动设置\n\nL5   历史记录、备份恢复与体验验收\n\nL6   图标定稿、安装包、开源发行与使用说明";
         OpacitySlider.Value = _settings.SurfaceOpacity;
         ApplyAppearance();
         _ready = true;
+        ReloadTasks();
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)
@@ -52,12 +62,13 @@ public partial class MainWindow : Window
     }
 
     public void ToggleVisibility() { if (IsVisible) HideToTray(); else ShowFromTray(); }
-    public void HideToTray() { _preview?.Close(); Hide(); }
+    public void HideToTray() { _preview?.Close(); _editor?.Hide(); Hide(); }
     public void ShowFromTray()
     {
         Show();
         WindowState = WindowState.Normal;
         Activate();
+        if (_editor is not null) _editor.Show();
     }
     public void SetCompact(bool compact)
     {
@@ -119,7 +130,7 @@ public partial class MainWindow : Window
     }
     private void OnKeyDown(object sender, System.Windows.Input.KeyEventArgs e) { if (e.Key == Key.Escape) { HideToTray(); e.Handled = true; } }
     private void OnClosing(object? sender, CancelEventArgs e) { if (!AllowClose) { e.Cancel = true; HideToTray(); } }
-    private void OnClosed(object? sender, EventArgs e) { _preview?.Close(); _hotkey?.Dispose(); }
+    private void OnClosed(object? sender, EventArgs e) { _preview?.Close(); _editor?.Close(); _hotkey?.Dispose(); }
 
     private void NavigateToday(object sender, RoutedEventArgs e) => Navigate(TodayPage, TodayNav);
     private void NavigateRoadmap(object sender, RoutedEventArgs e) => Navigate(RoadmapPage, RoadmapNav);
@@ -131,7 +142,6 @@ public partial class MainWindow : Window
     }
 
     private void PreviewClick(object sender, RoutedEventArgs e) => ShowReminderPreview();
-    private void PreviewTaskClick(object sender, RoutedEventArgs e) => OpenPreview(((Button)sender).Tag as PreviewTask ?? PreviewTask.Examples[0]);
     public void ShowReminderPreview() => OpenPreview(PreviewTask.Examples[0]);
     public ReminderWindow OpenPreview(PreviewTask task)
     {
@@ -141,4 +151,79 @@ public partial class MainWindow : Window
         _preview.Show();
         return _preview;
     }
+
+    public void ReloadTasks()
+    {
+        try
+        {
+            _tasks.Initialize();
+            _allTasks = _tasks.LoadAll();
+            _dataReady = true;
+            DataErrorPanel.Visibility = Visibility.Collapsed;
+        }
+        catch (Exception error) when (DataError(error) is not null) { ShowDataError(DataError(error)!); }
+        NewTaskButton.IsEnabled = _dataReady;
+        TaskList.IsEnabled = _dataReady;
+        ApplyTaskFilter();
+    }
+    private void ApplyTaskFilter()
+    {
+        if (!_ready) return;
+        var filter = FilterInput.SelectedIndex;
+        var visible = _allTasks.Where(t => filter switch { 0 => t.ArchivedAt is null && t.State != TaskState.Completed, 1 => t.ArchivedAt is null && t.State == TaskState.Completed, 2 => t.ArchivedAt is not null, _ => true }).Select(t => new TaskCard(t)).ToList();
+        TaskList.ItemsSource = visible;
+        TaskCountLabel.Text = $"事项 · {visible.Count}";
+        EmptyPanel.Visibility = visible.Count == 0 && _dataReady ? Visibility.Visible : Visibility.Collapsed;
+        EmptyTitle.Text = _allTasks.Count == 0 ? "这里，留给下一件重要的事。" : "这个分类里，暂时没有事项。";
+        EmptyDescription.Text = _allTasks.Count == 0 ? "从一条任务开始。它会留在本机，等你下次打开。" : "切换上方分类，可以查看其他事项。";
+    }
+    private void FilterChanged(object sender, SelectionChangedEventArgs e) => ApplyTaskFilter();
+    private void RetryLoad(object sender, RoutedEventArgs e) => ReloadTasks();
+    private void NewTaskClick(object sender, RoutedEventArgs e) => OpenEditor(null);
+    private void EditTaskClick(object sender, RoutedEventArgs e) => OpenEditor((TaskItem)((Button)sender).Tag);
+    public TaskEditorWindow? OpenEditor(TaskItem? item)
+    {
+        if (!_dataReady) return null;
+        if (_editor is not null) { _editor.Show(); _editor.Activate(); return _editor; }
+        _editor = new TaskEditorWindow(item, draft =>
+        {
+            try
+            {
+                if (item is null) _tasks.Create(draft); else _tasks.Edit(item, draft);
+                ReloadTasks();
+                StatusLabel.Text = "●  任务已保存在本机";
+                return null;
+            }
+            catch (Exception error) when (DataError(error) is not null) { return DataError(error); }
+        }) { Owner = this };
+        _editor.Closed += (_, _) => _editor = null;
+        _editor.Show();
+        return _editor;
+    }
+    private void PauseTaskClick(object sender, RoutedEventArgs e) => ChangeTask(sender, _tasks.TogglePause);
+    private void CompleteTaskClick(object sender, RoutedEventArgs e) => ChangeTask(sender, _tasks.Complete);
+    private void UndoTaskClick(object sender, RoutedEventArgs e) => ChangeTask(sender, _tasks.UndoComplete);
+    private void ArchiveTaskClick(object sender, RoutedEventArgs e) => ChangeTask(sender, _tasks.Archive);
+    private void RestoreTaskClick(object sender, RoutedEventArgs e) => ChangeTask(sender, _tasks.Restore);
+    private void ChangeTask(object sender, Func<TaskItem, TaskItem> action)
+    {
+        try { action((TaskItem)((Button)sender).Tag); ReloadTasks(); StatusLabel.Text = "●  变更已保存在本机"; }
+        catch (Exception error) when (DataError(error) is not null) { ShowDataError(DataError(error)!); }
+    }
+    private void ShowDataError(string error)
+    {
+        _dataReady = false;
+        DataErrorLabel.Text = error;
+        DataErrorPanel.Visibility = Visibility.Visible;
+        NewTaskButton.IsEnabled = false;
+        TaskList.IsEnabled = false;
+    }
+    public static string? DataError(Exception error) => error switch
+    {
+        TaskValidationException or TaskConflictException or StoreVersionException => error.Message,
+        SqliteException => "任务数据无法读取或保存，操作未确认成功。原文件已保留，请检查文件权限、占用或数据完整性后重新读取。",
+        IOException or UnauthorizedAccessException => "本地文件无法读写，原文件已保留。请检查文件夹权限和磁盘空间后重试。",
+        FormatException or InvalidCastException => "任务数据格式异常，原文件已保留。请检查备份或升级程序后再试。",
+        _ => null
+    };
 }

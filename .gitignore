@@ -9,3 +9,7 @@ release/
 *.suo
 *.log
 *.backup.json
+*.db
+*.db-shm
+*.db-wal
+*.db-journal

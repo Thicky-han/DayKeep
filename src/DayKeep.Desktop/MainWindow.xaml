@@ -36,7 +36,7 @@
        <Grid.RowDefinitions><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
        <StackPanel>
         <TextBlock Text="留一点心，少一件遗忘。" FontSize="11" Foreground="{StaticResource Muted}" Margin="10,0,0,23" />
-        <Button x:Name="TodayNav" Content="◉    今日概览" Click="NavigateToday" Style="{StaticResource NavigationButton}" Background="#E0EBE1" Foreground="#2D685B" FontWeight="SemiBold" />
+        <Button x:Name="TodayNav" Content="◉    我的事项" Click="NavigateToday" Style="{StaticResource NavigationButton}" Background="#E0EBE1" Foreground="#2D685B" FontWeight="SemiBold" />
         <Button x:Name="RoadmapNav" Content="≡    制作进度" Click="NavigateRoadmap" Style="{StaticResource NavigationButton}" />
         <Button x:Name="SettingsNav" Content="☷    外观与操作" Click="NavigateSettings" Style="{StaticResource NavigationButton}" />
         <Border Height="1" Background="#D6E0D7" Margin="10,20,10,16" />
@@ -58,11 +58,13 @@
         <TextBlock Text="不急着做完，也不会忘记继续。" Foreground="{StaticResource Muted}" FontSize="13" />
         <Border Background="#E7EFE4" CornerRadius="14" Padding="17,14" Margin="0,22,0,21">
          <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
-          <StackPanel><TextBlock Text="先记住，接着每天跟进。" FontSize="14" FontWeight="SemiBold" /><TextBlock Text="L0 界面预览 · 示例任务不会触发定时提醒" FontSize="11" Foreground="#657B6B" Margin="0,7,12,0" TextWrapping="Wrap" /></StackPanel>
-          <Button Grid.Column="1" Content="预览提醒" Click="PreviewClick" Style="{StaticResource PrimaryButton}" VerticalAlignment="Center" Padding="15,10" />
+          <StackPanel><TextBlock Text="先记住，接着每天跟进。" FontSize="14" FontWeight="SemiBold" /><TextBlock Text="任务已可保存 · 定时提醒将在下一阶段接入" FontSize="11" Foreground="#657B6B" Margin="0,7,12,0" TextWrapping="Wrap" /></StackPanel>
+          <Button x:Name="NewTaskButton" Grid.Column="1" Content="＋ 新建任务" Click="NewTaskClick" Style="{StaticResource PrimaryButton}" VerticalAlignment="Center" Padding="15,10" />
          </Grid>
         </Border>
-        <DockPanel Margin="0,0,0,12"><TextBlock Text="跟进事项" FontSize="15" FontWeight="SemiBold" /><TextBlock Text="3 条示例" FontSize="11" Foreground="{StaticResource Muted}" HorizontalAlignment="Right" VerticalAlignment="Center" /></DockPanel>
+        <DockPanel Margin="0,0,0,12"><ComboBox x:Name="FilterInput" Width="115" SelectedIndex="0" SelectionChanged="FilterChanged" DockPanel.Dock="Right" Padding="8,4" FontSize="12" AutomationProperties.Name="任务筛选"><ComboBoxItem Content="跟进中" /><ComboBoxItem Content="已完成" /><ComboBoxItem Content="已归档" /><ComboBoxItem Content="全部事项" /></ComboBox><TextBlock x:Name="TaskCountLabel" Text="跟进事项" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" /></DockPanel>
+        <Border x:Name="DataErrorPanel" Visibility="Collapsed" Background="#F7E8E0" CornerRadius="12" Padding="14" Margin="0,0,0,12"><StackPanel><TextBlock x:Name="DataErrorLabel" Foreground="#984939" TextWrapping="Wrap" FontSize="12" /><Button Content="重新读取" Click="RetryLoad" HorizontalAlignment="Left" Margin="0,10,0,0" Padding="10,6" /></StackPanel></Border>
+        <Border x:Name="EmptyPanel" Background="#BFFFFFFF" CornerRadius="14" Padding="23,29" Margin="0,0,0,12" BorderBrush="#D8E2D9" BorderThickness="1"><StackPanel><TextBlock x:Name="EmptyTitle" Text="这里，留给下一件重要的事。" FontSize="19" FontWeight="SemiBold" TextWrapping="Wrap" /><TextBlock x:Name="EmptyDescription" Text="从一条任务开始。它会留在本机，等你下次打开。" FontSize="12" Foreground="{StaticResource Muted}" Margin="0,12,0,0" TextWrapping="Wrap" LineHeight="22" /></StackPanel></Border>
         <ItemsControl x:Name="TaskList">
          <ItemsControl.ItemTemplate>
           <DataTemplate>
@@ -70,18 +72,26 @@
             <Grid>
              <Grid.ColumnDefinitions><ColumnDefinition Width="38" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
              <Border Width="32" Height="32" CornerRadius="10" Background="{Binding Tint}" VerticalAlignment="Top"><TextBlock Text="{Binding Icon}" FontSize="21" Foreground="{Binding Accent}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
-             <StackPanel Grid.Column="1" Margin="8,0,8,0">
+             <StackPanel Grid.Column="1" Grid.ColumnSpan="2" Margin="8,0,0,0">
               <TextBlock Text="{Binding Title}" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" />
-              <WrapPanel Margin="0,7,0,0"><TextBlock Text="{Binding Category}" FontSize="11" Foreground="{Binding Accent}" Margin="0,0,12,0" /><TextBlock Text="{Binding Time}" FontSize="11" Foreground="{StaticResource Muted}" /></WrapPanel>
+              <WrapPanel Margin="0,7,0,0"><TextBlock Text="{Binding Status}" FontSize="11" Foreground="{Binding Accent}" Margin="0,0,12,0" /><TextBlock Text="{Binding Time}" FontSize="11" Foreground="{StaticResource Muted}" /></WrapPanel>
+              <TextBlock Text="{Binding Summary}" FontSize="10" Foreground="{StaticResource Muted}" Margin="0,6,0,0" />
+              <WrapPanel Margin="0,10,0,0">
+               <Button Content="编辑" Click="EditTaskClick" Tag="{Binding Item}" Visibility="{Binding ActiveVisibility}" Padding="9,5" FontSize="11" Margin="0,0,6,4" />
+               <Button Content="{Binding PauseText}" Click="PauseTaskClick" Tag="{Binding Item}" Visibility="{Binding ActiveVisibility}" Padding="9,5" FontSize="11" Margin="0,0,6,4" />
+               <Button Content="完成" Click="CompleteTaskClick" Tag="{Binding Item}" Visibility="{Binding ActiveVisibility}" Padding="9,5" FontSize="11" Margin="0,0,6,4" />
+               <Button Content="撤销完成" Click="UndoTaskClick" Tag="{Binding Item}" Visibility="{Binding UndoVisibility}" Padding="9,5" FontSize="11" Margin="0,0,6,4" />
+               <Button Content="归档" Click="ArchiveTaskClick" Tag="{Binding Item}" Visibility="{Binding ArchiveVisibility}" Padding="9,5" FontSize="11" Margin="0,0,6,4" />
+               <Button Content="恢复归档" Click="RestoreTaskClick" Tag="{Binding Item}" Visibility="{Binding RestoreVisibility}" Padding="9,5" FontSize="11" Margin="0,0,6,4" />
+              </WrapPanel>
              </StackPanel>
-             <Button Grid.Column="2" Content="›" FontSize="22" Style="{StaticResource ChromeButton}" Click="PreviewTaskClick" Tag="{Binding}" VerticalAlignment="Center" ToolTip="查看此示例的提醒预览" AutomationProperties.Name="查看示例提醒" />
             </Grid>
            </Border>
           </DataTemplate>
          </ItemsControl.ItemTemplate>
         </ItemsControl>
-        <Button Content="＋   新建任务将在 L1 开放" IsEnabled="False" Margin="0,4,0,0" Padding="14,12" Background="Transparent" />
-        <TextBlock Text="界面可用 · 提醒引擎尚未接入" Foreground="{StaticResource Muted}" FontSize="10" HorizontalAlignment="Center" Margin="0,12,0,0" />
+        <Button Content="预览提醒样式（演示）" Click="PreviewClick" Margin="0,5,0,0" Padding="14,10" Background="Transparent" />
+        <TextBlock Text="任务会保留在本机 · 当前尚无定时提醒" Foreground="{StaticResource Muted}" FontSize="10" HorizontalAlignment="Center" Margin="0,12,0,0" />
        </StackPanel>
       </ScrollViewer>
       <ScrollViewer x:Name="RoadmapPage" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
@@ -89,7 +99,7 @@
         <TextBlock Text="一步一步，做成日常。" FontSize="26" FontWeight="SemiBold" Margin="0,7,0,10" TextWrapping="Wrap" />
         <TextBlock Text="沿用已有项目的分阶段制作与验收流程。" Foreground="{StaticResource Muted}" Margin="0,0,0,24" TextWrapping="Wrap" />
         <TextBlock x:Name="RoadmapText" FontSize="14" LineHeight="29" TextWrapping="Wrap" />
-        <Border Background="#E7EFE4" CornerRadius="12" Padding="16" Margin="0,22,0,0"><TextBlock Text="当前交付 L0。各阶段完成后记录实际验证、限制和下一步；正式发行集中在 L6。" TextWrapping="Wrap" Foreground="#4E6B5B" LineHeight="22" /></Border>
+        <Border Background="#E7EFE4" CornerRadius="12" Padding="16" Margin="0,22,0,0"><TextBlock Text="当前交付 L1：任务管理与本地保存。下一步接入每天固定时间的高亮提醒；正式发行集中在 L6。" TextWrapping="Wrap" Foreground="#4E6B5B" LineHeight="22" /></Border>
        </StackPanel>
       </ScrollViewer>
       <ScrollViewer x:Name="SettingsPage" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
@@ -106,13 +116,13 @@
         <TextBlock Text="随时打开，也随时收起" FontSize="16" FontWeight="SemiBold" Margin="0,27,0,13" />
         <TextBlock Text="Ctrl + Alt + D    打开 / 收起窗口&#10;Esc 或右上角 ×    收起到托盘&#10;单击托盘图标    重新打开&#10;再次启动程序    唤回已有窗口&#10;托盘右键 → 退出日守    彻底退出" Foreground="{StaticResource Muted}" LineHeight="28" TextWrapping="Wrap" />
         <Button Content="切换桌面窄窗" Click="ToggleCompact" HorizontalAlignment="Left" Margin="0,22,0,0" />
-        <TextBlock Text="L0 仅保存外观设置；任务、定时提醒、开机启动在后续阶段接入。" FontSize="11" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,20,0,0" LineHeight="20" />
+        <TextBlock Text="任务与外观均保存在本机。定时提醒、登录启动和备份恢复将在后续阶段接入。" FontSize="11" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,20,0,0" LineHeight="20" />
        </StackPanel>
       </ScrollViewer>
      </Grid>
     </Grid>
     <Border Grid.Row="2" BorderBrush="#D4DFD5" BorderThickness="0,1,0,0" Margin="22,0">
-     <DockPanel VerticalAlignment="Center"><TextBlock x:Name="StatusLabel" Text="●  L0 界面预览" Foreground="#667E6D" FontSize="10" /><TextBlock x:Name="ShortcutLabel" Text="Ctrl + Alt + D  随时唤起    ·    0.0.1-l0" Foreground="{StaticResource Muted}" HorizontalAlignment="Right" FontSize="10" /></DockPanel>
+     <DockPanel VerticalAlignment="Center"><TextBlock x:Name="StatusLabel" Text="●  本地任务 · L1" Foreground="#667E6D" FontSize="10" /><TextBlock x:Name="ShortcutLabel" Text="Ctrl + Alt + D  随时唤起    ·    0.1.0-l1" Foreground="{StaticResource Muted}" HorizontalAlignment="Right" FontSize="10" /></DockPanel>
     </Border>
    </Grid>
   </Border>

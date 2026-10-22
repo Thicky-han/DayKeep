@@ -2,6 +2,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows</TargetFramework>
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
     <AssemblyName>DayKeep</AssemblyName>
@@ -10,6 +11,7 @@
     <ApplicationIcon>..\..\assets\brand\daykeep.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DayKeep.Core\DayKeep.Core.csproj" />
     <Using Remove="System.Windows.Forms" />
     <Using Remove="System.Drawing" />
     <Resource Include="..\..\assets\brand\daykeep.ico" Link="Assets\daykeep.ico" />

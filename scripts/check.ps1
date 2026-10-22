@@ -3,13 +3,13 @@ $projectRoot = Split-Path -Parent $PSScriptRoot
 Set-Location -LiteralPath $projectRoot
 $paths = @(git ls-files --cached --others --exclude-standard)
 if ($LASTEXITCODE -ne 0) { throw 'Cannot list source files.' }
-$required = @('README.md', 'PROJECT_SPEC.md', 'IMPLEMENTATION_PLAN.md', 'AGENTS.md', 'LICENSE', 'PRIVACY.md', 'INSTALL.md', 'DEPENDENCIES.md', 'L0_REPORT.md')
+$required = @('README.md', 'PROJECT_SPEC.md', 'IMPLEMENTATION_PLAN.md', 'AGENTS.md', 'LICENSE', 'PRIVACY.md', 'INSTALL.md', 'DEPENDENCIES.md', 'L0_REPORT.md', 'L1_REPORT.md', 'docs/DATA_MODEL.md', 'src/DayKeep.Core/packages.lock.json', 'src/DayKeep.Desktop/packages.lock.json', 'tests/DayKeep.Core.Checks/packages.lock.json')
 foreach ($path in $required) { if (-not (Test-Path -LiteralPath (Join-Path $projectRoot $path))) { throw "Missing $path" } }
 $failures = [System.Collections.Generic.List[string]]::new()
 foreach ($path in $paths) {
     if ($path -match '(^|/)(\.tools|\.cache|bin|obj|dist|release)/') { $failures.Add("Generated or local file: $path"); continue }
     $fullPath = Join-Path $projectRoot $path
-    if ($path -match '\.(xaml|csproj|props|manifest|svg)$') {
+    if ($path -match '\.(xaml|csproj|props|manifest|svg|config)$') {
         try { $null = [xml](Get-Content -LiteralPath $fullPath -Raw) }
         catch { $failures.Add("Invalid XML: $path") }
     }

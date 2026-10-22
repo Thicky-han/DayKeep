@@ -17,5 +17,6 @@ jobs:
         run: |
           ./scripts/check.ps1
           ./scripts/build.ps1
+          ./scripts/test-core.ps1
           git diff --check
       # WPF interactive smoke checks run locally; hosted desktop access is not assumed.
