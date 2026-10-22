@@ -1,0 +1,32 @@
+<Window x:Class="DayKeep.DueReminderWindow"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ Title="日守 · 现在该跟进了" Icon="Assets/daykeep.ico" Width="622" Height="650" WindowStyle="None"
+ AllowsTransparency="True" Background="Transparent" ResizeMode="NoResize" Topmost="True" ShowActivated="False"
+ ShowInTaskbar="False" WindowStartupLocation="CenterScreen" FontFamily="Segoe UI, Microsoft YaHei UI"
+ Foreground="{StaticResource Ink}" UseLayoutRounding="True" Loaded="OnLoaded" KeyDown="OnKeyDown">
+ <Border Margin="15" CornerRadius="21" Background="#F5F7F8F0" BorderBrush="#9DB8A5" BorderThickness="1">
+  <Border.Effect><DropShadowEffect Color="#243B3A" BlurRadius="25" ShadowDepth="5" Opacity="0.18" /></Border.Effect>
+  <Grid Margin="24,19,24,22">
+   <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+   <DockPanel MouseLeftButtonDown="DragHeader"><StackPanel Orientation="Horizontal"><Image Source="Assets/daykeep-mark.png" Width="29" Height="29" Margin="0,0,10,0" RenderOptions.BitmapScalingMode="HighQuality" /><TextBlock Text="DAYKEEP / 日守" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" /></StackPanel><Button Content="×" FontSize="22" Style="{StaticResource ChromeButton}" HorizontalAlignment="Right" Click="Dismiss" ToolTip="收起本次提醒，保留任务" /></DockPanel>
+   <StackPanel Grid.Row="1" Margin="0,20,0,17"><Border Background="#EDDDC1" CornerRadius="7" Padding="10,5" HorizontalAlignment="Left"><TextBlock x:Name="CountLabel" Text="重要事项 · 定时提醒" FontSize="11" Foreground="#87602D" /></Border><TextBlock Text="现在，给这件事一点时间。" FontSize="24" FontWeight="SemiBold" Margin="0,13,0,8" TextWrapping="Wrap" /><TextBlock Text="打开平台查看，再按实际结果处理。" FontSize="12" Foreground="{StaticResource Muted}" /></StackPanel>
+   <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+    <ItemsControl x:Name="DueTaskList" Margin="0,0,8,0"><ItemsControl.ItemTemplate><DataTemplate>
+     <Border Background="#EDFFFFFF" BorderBrush="#D4E0D5" BorderThickness="1" CornerRadius="13" Padding="16" Margin="0,0,0,11"><StackPanel>
+      <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap" />
+      <TextBlock Text="{Binding Status}" FontSize="11" Foreground="{Binding Accent}" Margin="0,7,0,0" />
+      <TextBlock Text="{Binding ReminderInstruction}" FontSize="12" Foreground="{StaticResource Muted}" Margin="0,9,0,12" TextWrapping="Wrap" LineHeight="21" />
+      <WrapPanel>
+       <Button Content="打开平台" Tag="{Binding Item}" Click="OpenLinkClick" Visibility="{Binding LinkVisibility}" Padding="11,8" FontSize="12" Margin="0,0,7,7" />
+       <Button Content="今日已检查，尚未开放" Tag="{Binding Item}" Click="CheckClick" Visibility="{Binding WaitingVisibility}" Padding="11,8" FontSize="12" Margin="0,0,7,7" />
+       <Button Content="已开放，转待办理" Tag="{Binding Item}" Click="ReadyClick" Visibility="{Binding WaitingVisibility}" Style="{StaticResource PrimaryButton}" Padding="11,8" FontSize="12" Margin="0,0,0,7" />
+       <Button Content="确认已完成" Tag="{Binding Item}" Click="CompleteClick" Visibility="{Binding ReadyVisibility}" Style="{StaticResource PrimaryButton}" Padding="11,8" FontSize="12" Margin="0,0,0,7" />
+      </WrapPanel>
+     </StackPanel></Border>
+    </DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+   </ScrollViewer>
+   <StackPanel Grid.Row="3" Margin="0,12,0,0"><TextBlock x:Name="ErrorLabel" Foreground="#A14839" FontSize="12" TextWrapping="Wrap" Margin="0,0,0,10" Visibility="Collapsed" /><TextBlock Text="打开网页或关闭弹窗，均不会自动完成任务。" FontSize="10" Foreground="{StaticResource Muted}" Margin="0,0,0,12" TextWrapping="Wrap" /><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="12" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions><Button Content="收起本次提醒" Click="Dismiss" /><Button Grid.Column="2" Content="打开任务列表" Click="ShowTasks" /></Grid></StackPanel>
+  </Grid>
+ </Border>
+</Window>

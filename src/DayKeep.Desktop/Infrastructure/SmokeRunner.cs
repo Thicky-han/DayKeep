@@ -169,19 +169,20 @@ internal static class SmokeRunner
                     Invoke((Button)form.FindName("SaveButton"));
                     Assert(form.IsVisible && ((FrameworkElement)form.FindName("ErrorLabel")).Visibility == Visibility.Visible && failed.Tasks.LoadAll().Count == 0, "Failed write appeared successful"); failed.Close();
                 });
+                ReminderUiChecks.Run(directory,Check);
                 results.Add(new { name = "Global hotkey registration observation", registered = window.GlobalHotkeyRegistered });
             }
             catch (Exception error) { failures++; results.Add(new { name = "Smoke runner", passed = false, error = error.ToString() }); }
             finally
             {
                 if (window is not null) { window.AllowClose = true; window.Close(); }
-                File.WriteAllText(Path.Combine(directory, "report.json"), JsonSerializer.Serialize(new { stage = "L1", failures, checks = results, scope = "Real WPF task editor, SQLite and controlled shell interactions; no real-day scheduling or human tray/keyboard acceptance" }, new JsonSerializerOptions { WriteIndented = true }));
+                File.WriteAllText(Path.Combine(directory, "report.json"), JsonSerializer.Serialize(new { stage = "L2", failures, checks = results, scope = "Real WPF task/reminder actions and SQLite with controlled clock; actual clock measured separately; no human tray/keyboard acceptance" }, new JsonSerializerOptions { WriteIndented = true }));
                 application.Shutdown(failures == 0 ? 0 : 1);
             }
         }));
     }
 
-    private static void Invoke(Button button)
+    internal static void Invoke(Button button)
     {
         var peer = new ButtonAutomationPeer(button);
         ((IInvokeProvider)peer.GetPattern(PatternInterface.Invoke)).Invoke();
@@ -189,7 +190,7 @@ internal static class SmokeRunner
         button.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
     }
 
-    private static IEnumerable<T> Descendants<T>(DependencyObject root) where T : DependencyObject
+    internal static IEnumerable<T> Descendants<T>(DependencyObject root) where T : DependencyObject
     {
         for (var i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++)
         {
@@ -199,7 +200,7 @@ internal static class SmokeRunner
         }
     }
 
-    private static void Render(Window window, string path)
+    internal static void Render(Window window, string path)
     {
         window.UpdateLayout();
         var bitmap = new RenderTargetBitmap((int)Math.Ceiling(window.ActualWidth), (int)Math.Ceiling(window.ActualHeight), 96, 96, PixelFormats.Pbgra32);

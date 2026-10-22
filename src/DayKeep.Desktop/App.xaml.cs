@@ -15,6 +15,11 @@ public partial class App : System.Windows.Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+        if (e.Args.Length == 2 && e.Args[0] == "--live-reminder-test")
+        {
+            LiveReminderRunner.Run(this,e.Args[1]);
+            return;
+        }
         if (e.Args.Length == 2 && e.Args[0] == "--smoke-test")
         {
             SmokeRunner.Run(this, e.Args[1]);
@@ -37,6 +42,7 @@ public partial class App : System.Windows.Application
             (_, _) => Dispatcher.BeginInvoke(window.ShowFromTray), null, Timeout.Infinite, false);
         _tray = new TrayService(window.ShowFromTray, window.HideToTray, window.ShowReminderPreview, ExitApp);
         window.Show();
+        window.EnableReminders();
     }
 
     public void ExitApp()

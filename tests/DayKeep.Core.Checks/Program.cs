@@ -29,6 +29,10 @@ if (args.Length > 1 && args[1] == "--write-restart")
     var item = service.Create(new("跨进程验证事项", TaskKind.WaitingForCondition, "https://example.org/patent", "仅为合成测试", "14:30, 09:00", 31, "2026-12-01"));
     item = service.TogglePause(item);
     service.Complete(item);
+    var daily=new TaskService(new TaskRepository(Path.Combine(directory,"daily-restart.db")),()=>new DateTimeOffset(2026,10,22,8,59,0,TimeSpan.Zero));
+    daily.Initialize();
+    daily.RecordWaitingCheck(daily.Create(new("重启后已检查",TaskKind.WaitingForCondition)),new(2026,10,22),"still waiting");
+    daily.MarkReady(daily.Create(new("重启后待办理",TaskKind.WaitingForCondition)),new(2026,10,22));
     Console.WriteLine("Restart fixture written by process " + Environment.ProcessId);
     return;
 }
@@ -39,8 +43,12 @@ if (args.Length > 1 && args[1] == "--read-restart")
     Assert(item.Title == "跨进程验证事项" && item.State == TaskState.Completed && item.Reminder.Times == "09:00, 14:30" && item.Reminder.Weekdays == 31 && item.DueDate == new DateOnly(2026,12,1) && item.Url == "https://example.org/patent" && item.Notes == "仅为合成测试");
     item = service.UndoComplete(item);
     Assert(item.State == TaskState.Waiting && item.Paused && item.CompletedAt is null);
+    var daily=Open("daily-restart.db");
+    var snapshot=daily.ReminderSnapshot(new(2026,10,22));
+    var due=ReminderPlanner.Due(snapshot,new DateTimeOffset(2026,10,22,9,0,0,TimeSpan.Zero),new DateTimeOffset(2026,10,22,8,59,0,TimeSpan.Zero),TimeZoneInfo.Utc);
+    Assert(snapshot.Checks.Count==2 && due.Single().Task.Title=="重启后待办理" && due.Single().Task.State==TaskState.Ready);
     File.WriteAllText(Path.Combine(directory, "restart-report.json"), JsonSerializer.Serialize(new { passed = true, processId = Environment.ProcessId, scope = "Fresh process restored all task fields and undid completion with original pause state" }));
-    Console.WriteLine("Cross-process restore and undo passed in process " + Environment.ProcessId);
+    Console.WriteLine("Cross-process restore, undo and L2 daily-check/ready state passed in process " + Environment.ProcessId);
     return;
 }
 
@@ -88,10 +96,11 @@ Test("Future schema is rejected and byte content remains unchanged", () => { var
 Test("Unrelated SQLite schema is not adopted or overwritten", () => { var path = Path.Combine(directory,"unrelated.db"); Sql(path,"CREATE TABLE unrelated(value TEXT);"); var before = File.ReadAllBytes(path); Throws<StoreVersionException>(() => Open("unrelated.db")); Assert(before.SequenceEqual(File.ReadAllBytes(path))); });
 Test("Corrupt database is rejected without destructive reset", () => { var path = Path.Combine(directory,"corrupt.db"); File.WriteAllText(path,"not-a-database-preserve-me"); var before = File.ReadAllBytes(path); Throws<SqliteException>(() => Open("corrupt.db")); Assert(before.SequenceEqual(File.ReadAllBytes(path))); });
 Test("Missing directory is created only for new owned database", () => { var service = Open("nested/new/tasks.db"); Assert(service.LoadAll().Count == 0); });
+ReminderChecks.Run(Test,directory);
 using (var connection = new SqliteConnection($"Data Source={Path.Combine(directory,"tasks.db")};Pooling=False"))
 {
     connection.Open(); using var command = connection.CreateCommand(); command.CommandText = "SELECT sqlite_version();";
     Console.WriteLine("Bundled SQLite version: " + command.ExecuteScalar());
 }
-File.WriteAllText(Path.Combine(directory,"core-report.json"), JsonSerializer.Serialize(new { stage = "L1", failures, count = results.Count, checks = results }, new JsonSerializerOptions { WriteIndented = true }));
+File.WriteAllText(Path.Combine(directory,"core-report.json"), JsonSerializer.Serialize(new { stage = "L2", failures, count = results.Count, checks = results }, new JsonSerializerOptions { WriteIndented = true }));
 if (failures > 0) Environment.Exit(1);

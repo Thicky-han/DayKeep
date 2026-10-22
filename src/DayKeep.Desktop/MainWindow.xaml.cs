@@ -22,6 +22,9 @@ public partial class MainWindow : Window
     private IReadOnlyList<TaskItem> _allTasks = [];
     private bool _dataReady;
     private TaskEditorWindow? _editor;
+    private HashSet<Guid> _checkedToday = [];
+    public ReminderController? Reminders { get; private set; }
+    public DateOnly Today => ReminderPlanner.LocalDate(Reminders?.Now ?? DateTimeOffset.UtcNow,Reminders?.Zone ?? TimeZoneInfo.Local);
     public TaskService Tasks => _tasks;
     public TaskEditorWindow? Editor => _editor;
     public bool AllowClose { get; set; }
@@ -36,7 +39,7 @@ public partial class MainWindow : Window
         _tasks = tasks ?? new TaskService(new TaskRepository(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DayKeep", "tasks.db")));
         InitializeComponent();
         DateLabel.Text = DateTime.Today.ToString("M 月 d 日 · dddd", CultureInfo.GetCultureInfo("zh-CN"));
-        RoadmapText.Text = "L0   工程基础与半透明桌面界面  ·  已完成\n\nL1   任务管理、状态模型与本地数据库  ·  当前阶段\n\nL2   固定时间、高亮弹窗与每日跟进\n\nL3   未完成重复、稍后提醒与截止日期\n\nL4   重启 / 休眠补提醒、去重与启动设置\n\nL5   历史记录、备份恢复与体验验收\n\nL6   图标定稿、安装包、开源发行与使用说明";
+        RoadmapText.Text = "L0   工程基础与半透明桌面界面  ·  已完成\n\nL1   任务管理、状态模型与本地数据库  ·  已完成\n\nL2   固定时间、高亮弹窗与每日跟进  ·  当前阶段\n\nL3   未完成重复、稍后提醒与截止日期\n\nL4   重启 / 休眠补提醒、去重与启动设置\n\nL5   历史记录、备份恢复与体验验收\n\nL6   图标定稿、安装包、开源发行与使用说明";
         OpacitySlider.Value = _settings.SurfaceOpacity;
         ApplyAppearance();
         _ready = true;
@@ -130,7 +133,18 @@ public partial class MainWindow : Window
     }
     private void OnKeyDown(object sender, System.Windows.Input.KeyEventArgs e) { if (e.Key == Key.Escape) { HideToTray(); e.Handled = true; } }
     private void OnClosing(object? sender, CancelEventArgs e) { if (!AllowClose) { e.Cancel = true; HideToTray(); } }
-    private void OnClosed(object? sender, EventArgs e) { _preview?.Close(); _editor?.Close(); _hotkey?.Dispose(); }
+    private void OnClosed(object? sender, EventArgs e) { Reminders?.Dispose(); _preview?.Close(); _editor?.Close(); _hotkey?.Dispose(); }
+
+    public ReminderController EnableReminders(Func<DateTimeOffset>? clock = null, TimeZoneInfo? zone = null, Func<bool>? canShow = null, Action<Uri>? openLink = null)
+    {
+        if (Reminders is not null) return Reminders;
+        Reminders = new ReminderController(_tasks,ShowFromTray,clock,zone,canShow,openLink);
+        Reminders.StatusChanged += text => ReminderStatusLabel.Text = text;
+        Reminders.TasksChanged += ReloadTasks;
+        Reminders.DayChanged += _ => ReloadTasks();
+        Reminders.Start();
+        return Reminders;
+    }
 
     private void NavigateToday(object sender, RoutedEventArgs e) => Navigate(TodayPage, TodayNav);
     private void NavigateRoadmap(object sender, RoutedEventArgs e) => Navigate(RoadmapPage, RoadmapNav);
@@ -157,7 +171,10 @@ public partial class MainWindow : Window
         try
         {
             _tasks.Initialize();
-            _allTasks = _tasks.LoadAll();
+            var snapshot = _tasks.ReminderSnapshot(Today);
+            _allTasks = snapshot.Tasks;
+            _checkedToday = snapshot.CheckedWaitingTasks;
+            DateLabel.Text = Today.ToDateTime(TimeOnly.MinValue).ToString("M 月 d 日 · dddd",CultureInfo.GetCultureInfo("zh-CN"));
             _dataReady = true;
             DataErrorPanel.Visibility = Visibility.Collapsed;
         }
@@ -165,12 +182,13 @@ public partial class MainWindow : Window
         NewTaskButton.IsEnabled = _dataReady;
         TaskList.IsEnabled = _dataReady;
         ApplyTaskFilter();
+        Reminders?.Tick();
     }
     private void ApplyTaskFilter()
     {
         if (!_ready) return;
         var filter = FilterInput.SelectedIndex;
-        var visible = _allTasks.Where(t => filter switch { 0 => t.ArchivedAt is null && t.State != TaskState.Completed, 1 => t.ArchivedAt is null && t.State == TaskState.Completed, 2 => t.ArchivedAt is not null, _ => true }).Select(t => new TaskCard(t)).ToList();
+        var visible = _allTasks.Where(t => filter switch { 0 => t.ArchivedAt is null && t.State != TaskState.Completed, 1 => t.ArchivedAt is null && t.State == TaskState.Completed, 2 => t.ArchivedAt is not null, _ => true }).Select(t => new TaskCard(t,_checkedToday.Contains(t.Id))).ToList();
         TaskList.ItemsSource = visible;
         TaskCountLabel.Text = $"事项 · {visible.Count}";
         EmptyPanel.Visibility = visible.Count == 0 && _dataReady ? Visibility.Visible : Visibility.Collapsed;
@@ -205,6 +223,14 @@ public partial class MainWindow : Window
     private void UndoTaskClick(object sender, RoutedEventArgs e) => ChangeTask(sender, _tasks.UndoComplete);
     private void ArchiveTaskClick(object sender, RoutedEventArgs e) => ChangeTask(sender, _tasks.Archive);
     private void RestoreTaskClick(object sender, RoutedEventArgs e) => ChangeTask(sender, _tasks.Restore);
+    private void CheckTaskClick(object sender, RoutedEventArgs e) => ChangeTask(sender,t => _tasks.RecordWaitingCheck(t,Today,"用户已检查，尚未开放"));
+    private void ReadyTaskClick(object sender, RoutedEventArgs e) => ChangeTask(sender,t => _tasks.MarkReady(t,Today));
+    private void OpenLinkClick(object sender, RoutedEventArgs e)
+    {
+        try { ExternalLinks.Open(WebLink.Parse(((TaskItem)((Button)sender).Tag).Url)); }
+        catch (Exception error) when (DataError(error) is not null || error is Win32Exception or InvalidOperationException)
+        { StatusLabel.Text = "平台未能打开，请检查链接和默认浏览器。"; }
+    }
     private void ChangeTask(object sender, Func<TaskItem, TaskItem> action)
     {
         try { action((TaskItem)((Button)sender).Tag); ReloadTasks(); StatusLabel.Text = "●  变更已保存在本机"; }
@@ -223,7 +249,7 @@ public partial class MainWindow : Window
         TaskValidationException or TaskConflictException or StoreVersionException => error.Message,
         SqliteException => "任务数据无法读取或保存，操作未确认成功。原文件已保留，请检查文件权限、占用或数据完整性后重新读取。",
         IOException or UnauthorizedAccessException => "本地文件无法读写，原文件已保留。请检查文件夹权限和磁盘空间后重试。",
-        FormatException or InvalidCastException => "任务数据格式异常，原文件已保留。请检查备份或升级程序后再试。",
+        FormatException or InvalidCastException or IndexOutOfRangeException or ArgumentOutOfRangeException => "任务数据格式异常，原文件已保留。请检查备份或升级程序后再试。",
         _ => null
     };
 }

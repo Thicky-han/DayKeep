@@ -25,7 +25,7 @@
      <TextBlock Text="任务类型" Style="{StaticResource FieldLabel}" />
      <ComboBox x:Name="KindInput" SelectedIndex="1" Padding="9,8" FontSize="13" AutomationProperties.Name="任务类型"><ComboBoxItem Content="普通待办 · 直接办理直到完成" /><ComboBoxItem Content="等待条件 · 先查看何时可以办理" /></ComboBox>
      <TextBlock Text="平台链接（可选）" Style="{StaticResource FieldLabel}" /><TextBox x:Name="UrlInput" MaxLength="2048" AutomationProperties.Name="平台链接" />
-     <Border Background="#E8EFE4" CornerRadius="10" Padding="13,11" Margin="0,18,0,0"><TextBlock Text="提醒计划目前只保存，定时弹窗将在 L2 接入。" TextWrapping="Wrap" FontSize="11" Foreground="#56704F" /></Border>
+     <Border Background="#E8EFE4" CornerRadius="10" Padding="13,11" Margin="0,18,0,0"><TextBlock Text="提醒使用电脑本地时间；请保持日守运行。今天已过去的时间不会立即补弹。" TextWrapping="Wrap" FontSize="11" Foreground="#56704F" /></Border>
      <TextBlock Text="提醒时间 *" Style="{StaticResource FieldLabel}" /><TextBox x:Name="TimesInput" Text="09:00" MaxLength="100" AutomationProperties.Name="提醒时间" />
      <TextBlock Text="24 小时格式；多个时间用逗号分开，例如 09:00, 14:30。" FontSize="10" Foreground="{StaticResource Muted}" Margin="0,5,0,0" TextWrapping="Wrap" />
      <TextBlock Text="提醒星期 *" Style="{StaticResource FieldLabel}" />

@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Text.Json;
 using Microsoft.Data.Sqlite;
 
 namespace DayKeep.Core;
@@ -14,10 +13,11 @@ public sealed class TaskRepository(string databasePath, bool readOnly = false)
         using var connection = Open();
         var version = Convert.ToInt64(Scalar(connection, "PRAGMA user_version;"), CultureInfo.InvariantCulture);
         var appId = Convert.ToInt64(Scalar(connection, "PRAGMA application_id;"), CultureInfo.InvariantCulture);
-        if (version > 1) throw new StoreVersionException("任务库来自更新版本，请升级日守后再打开；原文件已保留。");
-        if (version == 1 && appId == ApplicationId)
+        if (version > 2) throw new StoreVersionException("任务库来自更新版本，请升级日守后再打开；原文件已保留。");
+        if ((version == 1 || version == 2) && appId == ApplicationId)
         {
             if (!Equals(Scalar(connection, "PRAGMA quick_check;"), "ok")) throw new StoreVersionException("任务库检查失败，原文件已保留，请从可靠备份恢复。");
+            if (version == 1) UpgradeFrom1(connection);
             return;
         }
         if (version != 0 || appId != 0 || Convert.ToInt64(Scalar(connection, "SELECT COUNT(*) FROM sqlite_master WHERE name NOT LIKE 'sqlite_%';"), CultureInfo.InvariantCulture) != 0)
@@ -47,6 +47,17 @@ public sealed class TaskRepository(string databasePath, bool readOnly = false)
             PRAGMA application_id={{ApplicationId}};
             PRAGMA user_version=1;
             """;
+        command.ExecuteNonQuery();
+        transaction.Commit();
+        UpgradeFrom1(connection);
+    }
+
+    private static void UpgradeFrom1(SqliteConnection connection)
+    {
+        using var transaction = connection.BeginTransaction();
+        using var command = connection.CreateCommand();
+        command.Transaction = transaction;
+        command.CommandText = "ALTER TABLE task_checks ADD COLUMN outcome INTEGER NOT NULL DEFAULT 0 CHECK(outcome IN(0,1)); PRAGMA user_version=2;";
         command.ExecuteNonQuery();
         transaction.Commit();
     }
@@ -91,9 +102,10 @@ public sealed class TaskRepository(string databasePath, bool readOnly = false)
         {
             using var checkCommand = connection.CreateCommand();
             checkCommand.Transaction = transaction;
-            checkCommand.CommandText = "INSERT INTO task_checks VALUES ($id,$task,$date,$at,$notes);";
+            checkCommand.CommandText = "INSERT INTO task_checks (id,task_id,local_date,recorded_at,notes,outcome) VALUES ($id,$task,$date,$at,$notes,$outcome);";
             Add(checkCommand, "$id", check.Id.ToString()); Add(checkCommand, "$task", check.TaskId.ToString());
             Add(checkCommand, "$date", check.LocalDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)); Add(checkCommand, "$at", Stamp(check.RecordedAt)); Add(checkCommand, "$notes", check.Notes);
+            Add(checkCommand, "$outcome", (int)check.Outcome);
             checkCommand.ExecuteNonQuery();
         }
         transaction.Commit();
@@ -107,9 +119,37 @@ public sealed class TaskRepository(string databasePath, bool readOnly = false)
         Add(command, "$task", taskId.ToString());
         using var reader = command.ExecuteReader();
         var checks = new List<TaskCheck>();
-        while (reader.Read()) checks.Add(new(Guid.Parse(reader.GetString(0)), Guid.Parse(reader.GetString(1)), DateOnly.ParseExact(reader.GetString(2), "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTimeOffset.Parse(reader.GetString(3), CultureInfo.InvariantCulture), reader.GetString(4)));
+        while (reader.Read()) checks.Add(ReadCheck(reader));
         return checks;
     }
+
+    public ReminderSnapshot LoadReminderSnapshot(DateOnly date)
+    {
+        using var connection = Open();
+        using var transaction = connection.BeginTransaction(deferred: true);
+        var items = new List<TaskItem>();
+        using (var command = connection.CreateCommand())
+        {
+            command.Transaction = transaction;
+            command.CommandText = "SELECT * FROM tasks ORDER BY created_at DESC,id;";
+            using var reader = command.ExecuteReader();
+            while (reader.Read()) items.Add(Read(reader));
+        }
+        var checks = new List<TaskCheck>();
+        using (var command = connection.CreateCommand())
+        {
+            command.Transaction = transaction;
+            command.CommandText = "SELECT * FROM task_checks WHERE local_date=$date ORDER BY recorded_at;";
+            Add(command, "$date", date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+            using var reader = command.ExecuteReader();
+            while (reader.Read()) checks.Add(ReadCheck(reader));
+        }
+        transaction.Commit();
+        return new(items, checks);
+    }
+
+    private static TaskCheck ReadCheck(SqliteDataReader reader) => new(Guid.Parse(reader.GetString(0)), Guid.Parse(reader.GetString(1)),
+        DateOnly.ParseExact(reader.GetString(2), "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTimeOffset.Parse(reader.GetString(3), CultureInfo.InvariantCulture), reader.GetString(4), (CheckOutcome)reader.GetInt32(5));
 
     private SqliteConnection Open()
     {

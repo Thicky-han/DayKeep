@@ -6,13 +6,16 @@ maintainer's established one-stage-at-a-time workflow. Complete the current
 stage, record evidence and limitations, and hand back the result. Do not silently
 implement or declare later stages complete.
 
-L0 shell and L1 task management are complete. L1 uses a real, initially empty
-SQLite database and supports create/edit, pause/resume, complete/persisted undo,
-archive/restore and filtering. Task checks are stored separately from completion;
-their user-facing daily workflow belongs to L2. Reminder times/weekdays are saved
-but no timer, repeat reminders or startup registration exists. Preview reminders
-are explicitly marked and never update real tasks. The next stage is L2 after
-L1 handoff; begin it when the maintainer asks to continue.
+L0/L1 and L2 fixed-time reminders are complete. L2 uses a pure core planner,
+production 1-second WPF timer, local time/weekdays, merged non-activating windows,
+validated browser handoff, today's waiting check and confirmation of readiness.
+Checking is distinct from completion. Schema 2 upgrades L1 check outcomes in a
+transaction; failed initialization must stop reminder reads and writes. Preserve
+original files on invalid/unknown/newer schema, failed migration or missing fields.
+L2 considers current-minute future slots, not full startup/sleep catch-up. In-process
+slot deduplication is not L4 restart deduplication. Repeat/snooze belongs to L3;
+startup, comprehensive catch-up/time-change behavior belongs to L4. Next is L3
+after L2 handoff and maintainer instruction. Previews never update real tasks.
 
 Maintain separate shell, domain, persistence and reminder scheduling boundaries.
 Only the surface brush should be translucent; text and controls remain opaque.
@@ -21,7 +24,9 @@ errors. No telemetry, accounts, backend, passwords, scraping or automatic paymen
 
 Use .NET SDK pinned by global.json. Run scripts/build.ps1, scripts/test-shell.ps1
 for shell changes, scripts/test-core.ps1 for domain/storage, scripts/check.ps1
-and git diff --check. Keep packages.lock.json under version control, use locked
+and git diff --check. For scheduling changes use scripts/test-reminder-live.ps1
+for a separate real-clock observation on an interactive desktop; deterministic
+clock checks are not real delivery evidence. Keep packages.lock.json under version control, use locked
 restore and review dependency/license changes. Visually inspect WPF
 renders after layout changes. Controlled smoke results are not human keyboard,
 multi-monitor, full-screen or long-running reminder acceptance.
@@ -33,6 +38,6 @@ public-content audit, GitHub main and final release confirmation. Do not publish
 a public repository or Release before L6. A user instruction changing this workflow
 takes precedence. No sub-agent delegation is required.
 
-Current 0.1.1-l1 artwork is the loop clock with an amber reminder dot, applied at
-the maintainer's explicit request. Reuse assets/brand PNG/ICO across all surfaces;
+The maintainer approved the loop clock with amber reminder dot on 2026-10-22
+before requesting L2. Reuse assets/brand PNG/ICO across all surfaces;
 do not restore the old sunrise or draw another tray-specific variant.

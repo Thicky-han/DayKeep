@@ -1,7 +1,7 @@
 param([switch]$KeepOpen)
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
-$applicationPath = Join-Path $projectRoot 'dist\l1-logo-win-x64\DayKeep.exe'
+$applicationPath = Join-Path $projectRoot 'dist\l2-win-x64\DayKeep.exe'
 if (-not (Test-Path -LiteralPath $applicationPath)) { throw 'Run publish-preview.ps1 first.' }
 if (Get-Process -Name 'DayKeep' -ErrorAction SilentlyContinue) { throw 'An existing DayKeep process is running; test stopped to preserve it.' }
 $first = $null
@@ -15,7 +15,7 @@ try {
     $first.Refresh()
     if ($second.ExitCode -ne 0 -or $first.HasExited) { throw 'Single-instance handoff failed.' }
     $passed = $true
-    $report = [ordered]@{ stage = 'L1'; passed = $true; firstProcess = $first.Id; secondProcess = $second.Id; secondExitCode = $second.ExitCode; originalStillRunning = -not $first.HasExited; scope = 'Two actual self-contained executable launches; no physical keyboard or human tray acceptance.' }
+    $report = [ordered]@{ stage = 'L2'; passed = $true; firstProcess = $first.Id; secondProcess = $second.Id; secondExitCode = $second.ExitCode; originalStillRunning = -not $first.HasExited; scope = 'Two actual self-contained executable launches; no physical keyboard or human tray acceptance.' }
     $reportDirectory = Join-Path $projectRoot '.cache'
     New-Item -ItemType Directory -Path $reportDirectory -Force | Out-Null
     $report | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $reportDirectory 'single-instance-report.json') -Encoding utf8

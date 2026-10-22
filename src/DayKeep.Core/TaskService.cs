@@ -2,9 +2,10 @@ namespace DayKeep.Core;
 
 public sealed class TaskService(TaskRepository repository, Func<DateTimeOffset>? clock = null)
 {
+    private bool _initialized;
     private DateTimeOffset Now => (clock ?? (() => DateTimeOffset.UtcNow))();
     public TaskRepository Repository => repository;
-    public void Initialize() => repository.Initialize();
+    public void Initialize() { _initialized=false; repository.Initialize(); _initialized=true; }
     public IReadOnlyList<TaskItem> LoadAll() => repository.LoadAll();
     public TaskItem Create(TaskDraft draft) => Commit(TaskRules.Create(draft, Now), null, "created");
     public TaskItem Edit(TaskItem item, TaskDraft draft) => Commit(TaskRules.Edit(item, draft, Now), item.Revision, "edited");
@@ -14,9 +15,18 @@ public sealed class TaskService(TaskRepository repository, Func<DateTimeOffset>?
     public TaskItem Archive(TaskItem item) => Commit(TaskRules.Archive(item, Now), item.Revision, "archived");
     public TaskItem Restore(TaskItem item) => Commit(TaskRules.Restore(item, Now), item.Revision, "restored");
 
-    // L1 establishes the storage contract. The user-facing daily check action belongs to L2.
+    public ReminderSnapshot ReminderSnapshot(DateOnly date) { RequireInitialized(); return repository.LoadReminderSnapshot(date); }
+    public TaskItem MarkReady(TaskItem item, DateOnly localDate)
+    {
+        RequireInitialized();
+        var now = Now;
+        var updated = TaskRules.MarkReady(item, now);
+        repository.Save(updated, item.Revision, "condition-ready", new(Guid.NewGuid(), item.Id, localDate, now, "用户确认条件已满足", CheckOutcome.ConditionReady));
+        return updated;
+    }
     public TaskItem RecordWaitingCheck(TaskItem item, DateOnly localDate, string notes)
     {
+        RequireInitialized();
         TaskRules.RequireActive(item);
         if (item.State != TaskState.Waiting || item.Paused) throw new TaskValidationException("只有未暂停的等待条件任务可以记录检查。");
         if (notes.Length > 4000) throw new TaskValidationException("检查备注最多 4000 个字符。");
@@ -25,5 +35,6 @@ public sealed class TaskService(TaskRepository repository, Func<DateTimeOffset>?
         repository.Save(updated, item.Revision, "checked-still-waiting", new(Guid.NewGuid(), item.Id, localDate, now, notes.Trim()));
         return updated;
     }
-    private TaskItem Commit(TaskItem item, int? expected, string kind) { repository.Save(item, expected, kind); return item; }
+    private void RequireInitialized() { if(!_initialized) throw new StoreVersionException("任务库尚未成功打开，提醒已暂停。请检查数据并重新读取。"); }
+    private TaskItem Commit(TaskItem item, int? expected, string kind) { RequireInitialized(); repository.Save(item, expected, kind); return item; }
 }

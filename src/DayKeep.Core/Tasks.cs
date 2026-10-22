@@ -4,6 +4,7 @@ namespace DayKeep.Core;
 
 public enum TaskKind { Todo, WaitingForCondition }
 public enum TaskState { Waiting, Ready, Completed }
+public enum CheckOutcome { StillWaiting, ConditionReady }
 public sealed class TaskValidationException(string message) : Exception(message);
 public sealed class StoreVersionException(string message) : Exception(message);
 public sealed class TaskConflictException() : Exception("任务已在其他窗口发生变化，请关闭表单并重新打开后操作。");
@@ -15,7 +16,7 @@ public sealed record TaskItem(Guid Id, string Title, TaskKind Kind, TaskState St
     string Url, string Notes, ReminderRule Reminder, DateOnly? DueDate, DateTimeOffset CreatedAt,
     DateTimeOffset UpdatedAt, int Revision = 1, DateTimeOffset? CompletedAt = null,
     TaskState? BeforeCompletion = null, bool PausedBeforeCompletion = false, DateTimeOffset? ArchivedAt = null);
-public sealed record TaskCheck(Guid Id, Guid TaskId, DateOnly LocalDate, DateTimeOffset RecordedAt, string Notes);
+public sealed record TaskCheck(Guid Id, Guid TaskId, DateOnly LocalDate, DateTimeOffset RecordedAt, string Notes, CheckOutcome Outcome = CheckOutcome.StillWaiting);
 
 public static class TaskRules
 {
@@ -25,9 +26,7 @@ public static class TaskRules
         if (title.Length is < 1 or > 120) throw new TaskValidationException("任务名称需要 1—120 个字符。");
         if (!Enum.IsDefined(draft.Kind)) throw new TaskValidationException("请选择有效的任务类型。");
         var url = draft.Url.Trim();
-        if (url.Length > 2048 || (url.Length > 0 && (!Uri.TryCreate(url, UriKind.Absolute, out var uri)
-            || (uri.Scheme != "https" && uri.Scheme != "http") || string.IsNullOrEmpty(uri.Host) || uri.UserInfo.Length > 0)))
-            throw new TaskValidationException("平台链接仅支持完整的 http/https 地址，且不能包含用户名或密码。");
+        if (url.Length > 0) WebLink.Parse(url);
         if (draft.Notes.Length > 4000) throw new TaskValidationException("备注最多 4000 个字符。");
         if (draft.Weekdays is < 1 or > 127) throw new TaskValidationException("请至少选择一个提醒星期。");
         var tokens = draft.Times.Replace('，', ',').Split(',', StringSplitOptions.TrimEntries);
@@ -61,6 +60,12 @@ public static class TaskRules
             Reminder = item.Reminder with { Times = draft.Times, Weekdays = draft.Weekdays }, DueDate = ParseDate(draft.DueDate) };
     }
     public static TaskItem Pause(TaskItem item, DateTimeOffset now) { RequireActive(item); return Advance(item, now) with { Paused = !item.Paused }; }
+    public static TaskItem MarkReady(TaskItem item, DateTimeOffset now)
+    {
+        RequireActive(item);
+        if (item.State != TaskState.Waiting || item.Paused) throw new TaskValidationException("只有未暂停的等待条件任务可以确认开放。");
+        return Advance(item, now) with { State = TaskState.Ready };
+    }
     public static TaskItem Complete(TaskItem item, DateTimeOffset now)
     {
         RequireActive(item);
@@ -88,4 +93,15 @@ public static class TaskRules
     public static TaskItem Advance(TaskItem item, DateTimeOffset now) => item with { UpdatedAt = now, Revision = checked(item.Revision + 1) };
     private static TaskState InitialState(TaskKind kind) => kind == TaskKind.WaitingForCondition ? TaskState.Waiting : TaskState.Ready;
     private static DateOnly? ParseDate(string text) => text.Length == 0 ? null : DateOnly.ParseExact(text, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+}
+
+public static class WebLink
+{
+    public static Uri Parse(string text)
+    {
+        if (text.Length > 2048 || !Uri.TryCreate(text, UriKind.Absolute, out var uri)
+            || (uri.Scheme != "https" && uri.Scheme != "http") || string.IsNullOrEmpty(uri.Host) || uri.UserInfo.Length > 0)
+            throw new TaskValidationException("平台链接仅支持完整的 http/https 地址，且不能包含用户名或密码。");
+        return uri;
+    }
 }
