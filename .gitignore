@@ -1,0 +1,11 @@
+.tools/
+.cache/
+dist/
+release/
+**/bin/
+**/obj/
+.vs/
+*.user
+*.suo
+*.log
+*.backup.json

@@ -1,0 +1,25 @@
+<Window x:Class="DayKeep.ReminderWindow"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ Title="日守 · 提醒预览" Width="484" Height="444" WindowStyle="None"
+ AllowsTransparency="True" Background="Transparent" ResizeMode="NoResize"
+ Topmost="True" ShowActivated="False" ShowInTaskbar="False" WindowStartupLocation="CenterScreen"
+ FontFamily="Segoe UI, Microsoft YaHei UI" Foreground="{StaticResource Ink}" UseLayoutRounding="True" KeyDown="OnKeyDown">
+ <Border Margin="15" CornerRadius="20" BorderBrush="#B9CDBA" BorderThickness="1" Background="#F2F8F5EF">
+  <Border.Effect><DropShadowEffect BlurRadius="25" ShadowDepth="5" Opacity="0.16" Color="#314D3A" /></Border.Effect>
+  <Grid Margin="24">
+   <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+   <DockPanel MouseLeftButtonDown="DragHeader"><TextBlock Text="◉  DAYKEEP / 日守" FontSize="11" Foreground="#347568" FontWeight="SemiBold" VerticalAlignment="Center" /><Button Content="×" Click="Dismiss" Style="{StaticResource ChromeButton}" HorizontalAlignment="Right" FontSize="20" ToolTip="关闭本次预览" /></DockPanel>
+   <StackPanel Grid.Row="1" Margin="0,22,0,0">
+    <Border Background="#F1DFC0" CornerRadius="6" Padding="9,5" HorizontalAlignment="Left"><TextBlock Text="提醒样式预览 · 示例数据" FontSize="10" Foreground="#8E6834" /></Border>
+    <TextBlock x:Name="TaskTitle" FontSize="24" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,15,0,10" />
+    <TextBlock x:Name="TaskDescription" FontSize="13" Foreground="#62756C" LineHeight="23" TextWrapping="Wrap" />
+    <TextBlock Text="此预览不会创建任务，也不会启动定时提醒。" FontSize="11" Foreground="#7D8B80" Margin="0,15,0,0" TextWrapping="Wrap" />
+   </StackPanel>
+   <Grid Grid.Row="2"><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="12" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+    <Button Content="了解了，收起预览" Click="Dismiss" Style="{StaticResource PrimaryButton}" Padding="9,12" />
+    <Button Grid.Column="2" Content="返回日守" Click="ReturnToMain" Padding="9,12" />
+   </Grid>
+  </Grid>
+ </Border>
+</Window>
