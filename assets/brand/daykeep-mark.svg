@@ -1,6 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <circle cx="16" cy="16" r="15" fill="#347568"/>
-  <circle cx="16" cy="16" r="6" fill="#F9F4D9"/>
-  <path d="M7 18h19v7H7z" fill="#347568"/>
-  <path d="M7 20h18M16 5v3" stroke="#F9F4D9" stroke-width="2.3" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">DayKeep 日守</title>
+  <desc id="desc">深青绿圆角方形内的回环时钟，右上角金色提醒点。</desc>
+  <defs><linearGradient id="surface" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#286F64"/><stop offset="1" stop-color="#174C47"/></linearGradient></defs>
+  <rect x="1" y="1" width="30" height="30" rx="9" fill="url(#surface)"/>
+  <path d="M24 16A8 8 0 1 1 16 8" stroke="#F8F3DF" stroke-width="3.1" stroke-linecap="round"/>
+  <path d="M16 12.5V16L19.2 17.8" stroke="#F8F3DF" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="24" cy="8" r="3.1" fill="#E9B56D"/>
 </svg>

@@ -32,3 +32,7 @@ brand provenance. L6 covers final artwork review, multilingual READMEs, packagin
 public-content audit, GitHub main and final release confirmation. Do not publish
 a public repository or Release before L6. A user instruction changing this workflow
 takes precedence. No sub-agent delegation is required.
+
+Current 0.1.1-l1 artwork is the loop clock with an amber reminder dot, applied at
+the maintainer's explicit request. Reuse assets/brand PNG/ICO across all surfaces;
+do not restore the old sunrise or draw another tray-specific variant.

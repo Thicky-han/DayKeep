@@ -1,7 +1,7 @@
 param([switch]$KeepOpen)
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
-$applicationPath = Join-Path $projectRoot 'dist\l1-win-x64\DayKeep.exe'
+$applicationPath = Join-Path $projectRoot 'dist\l1-logo-win-x64\DayKeep.exe'
 if (-not (Test-Path -LiteralPath $applicationPath)) { throw 'Run publish-preview.ps1 first.' }
 if (Get-Process -Name 'DayKeep' -ErrorAction SilentlyContinue) { throw 'An existing DayKeep process is running; test stopped to preserve it.' }
 $first = $null

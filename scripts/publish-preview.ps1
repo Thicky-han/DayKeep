@@ -1,8 +1,9 @@
 . (Join-Path $PSScriptRoot 'common.ps1')
-$outputDirectory = Join-Path $projectRoot 'dist\l1-win-x64'
+$outputDirectory = Join-Path $projectRoot 'dist\l1-logo-win-x64'
 Invoke-Dotnet publish $projectFile --configuration Release --runtime win-x64 --self-contained true --output $outputDirectory '-p:DebugType=None' '-p:DebugSymbols=false' --nologo
 Copy-Item -LiteralPath (Join-Path $projectRoot 'LICENSE') -Destination $outputDirectory
 Copy-Item -LiteralPath (Join-Path $projectRoot 'INSTALL.md') -Destination $outputDirectory
+Copy-Item -LiteralPath (Join-Path $projectRoot 'assets\brand\daykeep.ico') -Destination (Join-Path $outputDirectory 'DayKeep.ico')
 $sqliteNotices = Join-Path $outputDirectory 'licenses\sqlite'
 New-Item -ItemType Directory -Path $sqliteNotices -Force | Out-Null
 Get-ChildItem -LiteralPath (Join-Path $projectRoot 'third-party') -File | ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $sqliteNotices -Force }

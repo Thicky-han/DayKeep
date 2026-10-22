@@ -16,9 +16,7 @@
     <Grid Grid.Row="0" Margin="24,0,18,0" MouseLeftButtonDown="DragHeader">
      <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
      <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-      <Border Width="30" Height="30" CornerRadius="10" Background="#347568" Margin="0,0,10,0">
-       <Canvas Width="24" Height="24"><Ellipse Width="11" Height="11" Fill="#F8EEC7" Canvas.Left="6.5" Canvas.Top="6" /><Rectangle Width="20" Height="9" Fill="#347568" Canvas.Left="2" Canvas.Top="13" /><Path Data="M4,15 L20,15 M12,2 L12,4" Stroke="#F8EEC7" StrokeThickness="1.7" /></Canvas>
-      </Border>
+      <Image Source="Assets/daykeep-mark.png" Width="32" Height="32" Margin="0,0,10,0" RenderOptions.BitmapScalingMode="HighQuality" AutomationProperties.Name="DayKeep 回环时钟标记" />
       <TextBlock Text="DayKeep" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center" />
       <TextBlock Text="日守" FontSize="13" Foreground="{StaticResource Muted}" Margin="9,0,0,0" VerticalAlignment="Center" />
      </StackPanel>
@@ -122,7 +120,7 @@
      </Grid>
     </Grid>
     <Border Grid.Row="2" BorderBrush="#D4DFD5" BorderThickness="0,1,0,0" Margin="22,0">
-     <DockPanel VerticalAlignment="Center"><TextBlock x:Name="StatusLabel" Text="●  本地任务 · L1" Foreground="#667E6D" FontSize="10" /><TextBlock x:Name="ShortcutLabel" Text="Ctrl + Alt + D  随时唤起    ·    0.1.0-l1" Foreground="{StaticResource Muted}" HorizontalAlignment="Right" FontSize="10" /></DockPanel>
+     <DockPanel VerticalAlignment="Center"><TextBlock x:Name="StatusLabel" Text="●  本地任务 · L1" Foreground="#667E6D" FontSize="10" /><TextBlock x:Name="ShortcutLabel" Text="Ctrl + Alt + D  随时唤起    ·    0.1.1-l1" Foreground="{StaticResource Muted}" HorizontalAlignment="Right" FontSize="10" /></DockPanel>
     </Border>
    </Grid>
   </Border>

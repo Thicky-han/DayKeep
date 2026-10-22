@@ -9,7 +9,7 @@
   <Border.Effect><DropShadowEffect BlurRadius="25" ShadowDepth="5" Opacity="0.16" Color="#314D3A" /></Border.Effect>
   <Grid Margin="24">
    <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
-   <DockPanel MouseLeftButtonDown="DragHeader"><TextBlock Text="◉  DAYKEEP / 日守" FontSize="11" Foreground="#347568" FontWeight="SemiBold" VerticalAlignment="Center" /><Button Content="×" Click="Dismiss" Style="{StaticResource ChromeButton}" HorizontalAlignment="Right" FontSize="20" ToolTip="关闭本次预览" /></DockPanel>
+   <DockPanel MouseLeftButtonDown="DragHeader"><StackPanel Orientation="Horizontal"><Image Source="Assets/daykeep-mark.png" Width="24" Height="24" Margin="0,0,8,0" RenderOptions.BitmapScalingMode="HighQuality" /><TextBlock Text="DAYKEEP / 日守" FontSize="11" Foreground="#347568" FontWeight="SemiBold" VerticalAlignment="Center" /></StackPanel><Button Content="×" Click="Dismiss" Style="{StaticResource ChromeButton}" HorizontalAlignment="Right" FontSize="20" ToolTip="关闭本次预览" /></DockPanel>
    <StackPanel Grid.Row="1" Margin="0,22,0,0">
     <Border Background="#F1DFC0" CornerRadius="6" Padding="9,5" HorizontalAlignment="Left"><TextBlock Text="提醒样式预览 · 示例数据" FontSize="10" Foreground="#8E6834" /></Border>
     <TextBlock x:Name="TaskTitle" FontSize="24" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,15,0,10" />
