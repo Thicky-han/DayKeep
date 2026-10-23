@@ -1,10 +1,13 @@
 param([string]$OutputDirectory)
 . (Join-Path $PSScriptRoot 'common.ps1')
-if (-not $OutputDirectory) { $OutputDirectory = Join-Path $projectRoot 'dist\l6-win-x64' }
+if (-not $OutputDirectory) { $OutputDirectory = Join-Path $projectRoot 'dist\0.7.0-beta.1-win-x64' }
 Invoke-Dotnet publish $projectFile --configuration Release --runtime win-x64 --self-contained true --output $outputDirectory '-p:DebugType=None' '-p:DebugSymbols=false' --nologo
 Copy-Item -LiteralPath (Join-Path $projectRoot 'LICENSE') -Destination $outputDirectory
 Copy-Item -LiteralPath (Join-Path $projectRoot 'INSTALL.md') -Destination $outputDirectory
 Copy-Item -LiteralPath (Join-Path $projectRoot 'docs\TRIAL_CHECKLIST.md') -Destination (Join-Path $outputDirectory 'TRIAL_CHECKLIST.md')
+$helpDirectory = Join-Path $outputDirectory 'docs'
+New-Item -ItemType Directory -Path $helpDirectory -Force | Out-Null
+Copy-Item -LiteralPath (Join-Path $projectRoot 'docs\LANGUAGES.md') -Destination $helpDirectory
 Copy-Item -LiteralPath (Join-Path $projectRoot 'assets\brand\daykeep.ico') -Destination (Join-Path $outputDirectory 'DayKeep.ico')
 $sqliteNotices = Join-Path $outputDirectory 'licenses\sqlite'
 New-Item -ItemType Directory -Path $sqliteNotices -Force | Out-Null

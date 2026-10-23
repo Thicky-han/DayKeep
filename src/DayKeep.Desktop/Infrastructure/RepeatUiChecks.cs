@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using DayKeep.Core;
 using DayKeep.Models;
+using DayKeep.Localization;
 
 namespace DayKeep.Infrastructure;
 
@@ -25,7 +26,7 @@ internal static class RepeatUiChecks
             check("L3 due cards prioritize overdue then today with clear date labels",()=> { var cards=((ItemsControl)controller.Window!.FindName("DueTaskList")).Items.Cast<TaskCard>().ToArray(); Assert(cards[0].Item.Id==overdue.Id && cards[0].Summary.Contains("已逾期 1 天") && cards[1].Summary.Contains("今天截止")); });
             if(controller.Window is { } due) SmokeRunner.Render(due,Path.Combine(directory,"daykeep-l3-deadlines.png"));
             check("L3 10-minute button postpones only its own merged task",()=> { SmokeRunner.Invoke(Action(today.Id,"10 分钟后")); Assert(controller.Window?.TaskCount==1 && service.ReminderSnapshot(new(2026,10,26)).Progress.Single(p=>p.TaskId==today.Id).SnoozedUntil==now.AddMinutes(10)); });
-            check("L3 main card exposes the saved postponement in its reminder time zone",()=> { var cards=((ItemsControl)main.FindName("TaskList")).Items.Cast<TaskCard>(); Assert(cards.Single(c=>c.Item.Id==today.Id).Followup=="稍后提醒至 10月26日 09:10"); });
+            check("L3 main card exposes the saved postponement in its reminder time zone",()=> { var cards=((ItemsControl)main.FindName("TaskList")).Items.Cast<TaskCard>(); var expected=new DateTimeOffset(2026,10,26,9,10,0,TimeSpan.Zero).ToString("g",Localizer.Culture); Assert(cards.Single(c=>c.Item.Id==today.Id).Followup==Localizer.T("稍后提醒至 {0}",expected)); });
             SmokeRunner.Render(main,Path.Combine(directory,"daykeep-l3-snoozed.png"));
             main.SetCompact(true); SmokeRunner.Render(main,Path.Combine(directory,"daykeep-l3-compact.png")); main.SetCompact(false);
             check("L3 today's check closes final waiting card and cancels extras",()=> { SmokeRunner.Invoke(Action(overdue.Id,"今日已检查，尚未开放")); Assert(controller.Window is null); });

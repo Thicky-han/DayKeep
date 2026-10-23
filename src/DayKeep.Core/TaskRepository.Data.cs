@@ -95,14 +95,18 @@ public sealed partial class TaskRepository
             ) WHERE ($task IS NULL OR task_id=$task) ORDER BY julianday(recorded_at) DESC,id;
             """;
         Add(command,"$task",query.TaskId?.ToString());
-        using var reader=command.ExecuteReader();var entries=new List<HistoryEntry>();
+        using var reader=command.ExecuteReader();var entries=new List<HistoryEntry>();var text=query.Text.Trim();
         while(reader.Read())
         {
             var at=DateTimeOffset.Parse(reader.GetString(4),CultureInfo.InvariantCulture);
             var date=reader.IsDBNull(5) ? ReminderPlanner.LocalDate(at,zone) : DateOnly.ParseExact(reader.GetString(5),"yyyy-MM-dd",CultureInfo.InvariantCulture);
             if(query.From is { } start && date<start || query.To is { } end && date>end) continue;
             var entry=new HistoryEntry(Guid.Parse(reader.GetString(0)),Guid.Parse(reader.GetString(1)),reader.GetString(2),reader.GetString(3),at,date,reader.GetString(6));
-            if(query.Text.Trim() is {Length:>0} text && !(entry.Title+" "+entry.Action+" "+entry.Notes).Contains(text,StringComparison.OrdinalIgnoreCase)) continue;
+            // Filter every matching field before applying the result cap, including caller-provided display labels.
+            if(text.Length>0 && !entry.Title.Contains(text,StringComparison.OrdinalIgnoreCase)
+                && !entry.Action.Contains(text,StringComparison.OrdinalIgnoreCase)
+                && query.ActionLabels?.GetValueOrDefault(entry.Action)?.Contains(text,StringComparison.OrdinalIgnoreCase)!=true
+                && !entry.Notes.Contains(text,StringComparison.OrdinalIgnoreCase)) continue;
             entries.Add(entry);if(entries.Count>200) break;
         }
         return new(entries.Take(200).ToArray(),entries.Count>200);

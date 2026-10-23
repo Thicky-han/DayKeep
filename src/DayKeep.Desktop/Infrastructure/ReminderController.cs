@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Windows.Threading;
 using DayKeep.Core;
+using DayKeep.Localization;
 
 namespace DayKeep.Infrastructure;
 
@@ -19,6 +20,10 @@ public sealed class ReminderController : IDisposable
     private bool _disposed;
     private bool _ticking;
     private string? _lastStatus;
+    private string? _statusKey;
+    private object[] _statusArgs = [];
+    private DateOnly? _displayDate;
+    private IReadOnlyDictionary<Guid,(DateTimeOffset At,bool Missed)> _displayTiming = new Dictionary<Guid,(DateTimeOffset,bool)>();
     private DateOnly? _observedDay;
     public TimeZoneInfo Zone { get; private set; }
     public DateTimeOffset Now => _clock();
@@ -37,6 +42,7 @@ public sealed class ReminderController : IDisposable
         _openLink = openLink ?? ExternalLinks.Open; _watchingSince = Now;
         _timer = new DispatcherTimer(DispatcherPriority.Background) { Interval = TimeSpan.FromSeconds(1) };
         _timer.Tick += OnTick;
+        Localizer.Changed += RefreshLanguage;
     }
     public void Start() { _timer.Start(); Tick(); }
     public void RefreshEnvironment()
@@ -81,12 +87,16 @@ public sealed class ReminderController : IDisposable
                     Window = new DueReminderWindow(Act,_showTasks,TryDismiss);
                     Window.Closed += (_, _) => { Window = null; _pending.Clear(); };
                 }
-                if (created || changed) Window!.SetTasks(_pending.Values.ToList(),date,visible.GroupBy(d=>d.Key.TaskId).ToDictionary(g=>g.Key,g=>
+                if (created || changed)
                 {
-                    var latest=g.OrderByDescending(d=>d.ScheduledAt).First();
-                    return now-latest.ScheduledAt>=TimeSpan.FromMinutes(1)
-                        ? $"补提醒 · 原定 {TimeZoneInfo.ConvertTime(latest.ScheduledAt,Zone):M月d日 HH:mm}" : "按计划提醒 · 未处理将继续跟进";
-                }));
+                    _displayDate=date;
+                    _displayTiming=visible.GroupBy(d=>d.Key.TaskId).ToDictionary(g=>g.Key,g=>
+                    {
+                        var at=g.Max(d=>d.ScheduledAt);
+                        return (at,now-at>=TimeSpan.FromMinutes(1));
+                    });
+                    RefreshVisibleText();
+                }
                 var showing = !Window!.IsVisible;
                 if (showing)
                 {
@@ -100,7 +110,8 @@ public sealed class ReminderController : IDisposable
             }
             if (due.Count > 0) { snapshot = _tasks.ReminderSnapshot(date); TasksChanged?.Invoke(); }
             var next = snapshot.Tasks.Select(t => ReminderPlanner.Next(t,checkedIds,now,Zone,snapshot.Progress.SingleOrDefault(p=>p.TaskId==t.Id))).Where(t => t is not null).Min();
-            SetStatus(next is { } at ? $"定时提醒已启用 · 下次 {TimeZoneInfo.ConvertTime(at,Zone):M月d日 HH:mm}" : "定时提醒已启用 · 暂无待提醒事项");
+            if(next is { } at) SetStatus("定时提醒已启用 · 下次 {0}",TimeZoneInfo.ConvertTime(at,Zone));
+            else SetStatus("定时提醒已启用 · 暂无待提醒事项");
         }
         catch (Exception error) when (MainWindow.DataError(error) is not null)
         {
@@ -135,13 +146,34 @@ public sealed class ReminderController : IDisposable
         }
         catch (Exception error) when (MainWindow.DataError(error) is not null || error is Win32Exception or InvalidOperationException)
         {
-            Window?.ShowError(MainWindow.DataError(error) ?? "无法打开平台，请检查默认浏览器后重试。任务状态未改变。");
+            Window?.ShowError(()=>MainWindow.DataError(error) ?? Localizer.T("无法打开平台，请检查默认浏览器后重试。任务状态未改变。"));
             Tick();
         }
     }
-    private void SetStatus(string status) { if (_lastStatus == status) return; _lastStatus = status; StatusChanged?.Invoke(status); }
+    // Language changes only redraw the retained delivery model. They never poll or queue reminders.
+    private void RefreshLanguage(object? sender,EventArgs e)
+    {
+        if(_disposed) return;
+        RefreshVisibleText();
+        PublishStatus();
+    }
+    private void RefreshVisibleText()
+    {
+        if(Window is null || _displayDate is not { } date) return;
+        Window.SetTasks(_pending.Values.ToList(),date,_displayTiming.ToDictionary(p=>p.Key,p=>p.Value.Missed
+            ? Localizer.T("补提醒 · 原定 {0}",TimeZoneInfo.ConvertTime(p.Value.At,Zone).ToString("g",Localizer.Culture))
+            : Localizer.T("按计划提醒 · 未处理将继续跟进")));
+    }
+    private void SetStatus(string key,params object[] args) { _statusKey=key; _statusArgs=args; PublishStatus(); }
+    private void PublishStatus()
+    {
+        if(_statusKey is null) return;
+        var args=_statusArgs.Select(value=>value is DateTimeOffset at ? at.ToString("g",Localizer.Culture) : value).ToArray();
+        var status=Localizer.T(_statusKey,args);
+        if (_lastStatus == status) return; _lastStatus = status; StatusChanged?.Invoke(status);
+    }
     public void Dispose()
     {
-        _disposed = true; _timer.Stop(); _timer.Tick -= OnTick; Window?.CloseSilently();
+        _disposed = true; _timer.Stop(); _timer.Tick -= OnTick; Localizer.Changed -= RefreshLanguage; Window?.CloseSilently();
     }
 }

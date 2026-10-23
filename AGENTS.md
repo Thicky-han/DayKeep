@@ -60,17 +60,45 @@ public-content audit, GitHub main and final release confirmation. Do not publish
 a public repository or Release before L6. A user instruction changing this workflow
 takes precedence. No sub-agent delegation is required.
 
-L6 candidate 0.6.0-l6 has nine full localized README tutorials. UI remains zh-CN.
+The historical L6 package 0.6.0-l6 has nine localized README tutorials and a zh-CN-only UI.
 Packaging requires a clean commit, corresponding-source archive and SHA256SUMS.
 Keep manifest verification, per-version install, no-overwrite rules, unknown-file
 protection and narrow uninstall scope. Tests use isolated paths. Audit reachable
-history and current files. The maintainer asked for confirmation after packaging;
-do not create a remote, push, tag or publish until that confirmation arrives.
+history and current files. Publication confirmation applies to the specific reviewed
+candidate, not to later updates.
 
 The maintainer explicitly confirmed publication on 2026-10-23. Public repository:
 Thicky-han/DayKeep. Pre-release v0.6.0-l6 is fixed at build commit
 93f6307b52e908c9fe4b31c97c4472286b8fa97c. Preserve the approved asset bytes and
-tag; subsequent main commits record publication and documentation only.
+tag. Publication and documentation commits after that build did not change its
+approved assets. Do not overwrite the old release when preparing an update.
+
+The maintainer requested the 0.7.0-beta.1 language update on 2026-10-23 and asked
+for confirmation after packaging. This new candidate is not approved for public
+publication. Prepare and verify the local binary/source archives and SHA256SUMS,
+then ask; do not push, tag or publish this update before that confirmation.
+See LANGUAGE_UPDATE_REPORT.md for current evidence; pending results stay pending.
+Do not reuse historical L6 counts as proof that the new build passed.
+
+0.7 supports zh-CN, zh-TW, en, ja, ko, fr, de, es and pt. Keep the top-level
+Language / 语言 selector visible and reachable in expanded and compact windows;
+list native language names. Default to zh-CN for missing/unsupported saved choices.
+Persist before applying a change; show save errors and retain the previous language
+on failure. Refresh existing windows and tray text without losing drafts, filters,
+reviewed import state or reminder delivery identity. Do not translate task titles,
+notes, links or raw stored records. Translate only app-owned presentation labels
+and messages. Keep scheduling in the computer's local time zone with invariant
+HH:mm and yyyy-MM-dd input, schema 5, and unchanged task data. History search matches
+current-language action keywords as well as canonical Chinese actions and original
+user text before the 200-result limit. Language changes preserve existing results,
+filters and search text; another query uses the newly selected language. Logical backups
+exclude language/settings; import must not change the current language.
+Update all nine README tutorials and the packaged docs/LANGUAGES.md. Verify resource
+keys/placeholders, all language selections, live existing windows, persistence/save
+failure, compact access and rendered layout. Package checks must require all nine
+resource JSONs and language test source in corresponding source. Three-day trial,
+physical hardware gaps and the deferred final L4 live-minute observation remain
+unpassed until separately evidenced.
 
 The maintainer approved the loop clock with amber reminder dot on 2026-10-22
 before requesting L2. Reuse assets/brand PNG/ICO across all surfaces;

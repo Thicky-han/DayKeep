@@ -1,9 +1,9 @@
 param([switch]$KeepOpen)
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
-$applicationPath = Join-Path $projectRoot 'dist\l6-win-x64\DayKeep.exe'
+$applicationPath = Join-Path $projectRoot 'dist\0.7.0-beta.1-win-x64\DayKeep.exe'
 if (-not (Test-Path -LiteralPath $applicationPath)) { throw 'Run publish-preview.ps1 first.' }
-$reportDirectory = Join-Path $projectRoot ('.cache\instance-l6-' + (Get-Date -Format 'yyyyMMdd-HHmmss-fff'))
+$reportDirectory = Join-Path $projectRoot ('.cache\instance-0.7-' + (Get-Date -Format 'yyyyMMdd-HHmmss-fff'))
 New-Item -ItemType Directory -Path $reportDirectory -Force | Out-Null
 $first = $null
 $second = $null
@@ -39,7 +39,7 @@ try {
     if (-not $third.WaitForExit(10000) -or $third.ExitCode -ne 0) { throw 'Manual second launch did not exit cleanly.' }
     $state = Read-Observation $true
     if ($state.process -ne $first.Id -or $state.showSignals -ne 1 -or $first.HasExited) { throw 'Manual launch did not restore the first window.' }
-    $report = [ordered]@{stage='L6';passed=$true;backgroundDidNotActivate=$true;manualRestoredOriginal=$true;observation=$state;scope='Three real executable launches with isolated database and named objects; existing user instance preserved. No real Windows logoff or sleep.'}
+    $report = [ordered]@{stage='0.7.0-beta.1';passed=$true;backgroundDidNotActivate=$true;manualRestoredOriginal=$true;observation=$state;scope='Three real executable launches with isolated database and named objects; existing user instance preserved. No real Windows logoff or sleep.'}
     if (-not $KeepOpen) {
         $signal = [System.Threading.EventWaitHandle]::OpenExisting($state.exitEvent)
         try { $null=$signal.Set() } finally { $signal.Dispose() }

@@ -1,6 +1,7 @@
 namespace DayKeep.Core;
 
-public sealed record HistoryQuery(string Text="",Guid? TaskId=null,DateOnly? From=null,DateOnly? To=null);
+public sealed record HistoryQuery(string Text="",Guid? TaskId=null,DateOnly? From=null,DateOnly? To=null,
+    IReadOnlyDictionary<string,string>? ActionLabels=null);
 public sealed record HistoryEntry(Guid Id,Guid TaskId,string Title,string Kind,DateTimeOffset RecordedAt,DateOnly LocalDate,string Notes)
 {
     public string Action=>Kind switch

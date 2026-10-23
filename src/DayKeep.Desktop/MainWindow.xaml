@@ -1,6 +1,6 @@
 <Window x:Class="DayKeep.MainWindow"
  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
- xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:l="clr-namespace:DayKeep.Localization"
  Title="DayKeep · 日守" Icon="Assets/daykeep.ico" Width="1060" Height="764" MinWidth="430" MinHeight="620"
  WindowStyle="None" AllowsTransparency="True" Background="Transparent"
  ResizeMode="NoResize" WindowStartupLocation="CenterScreen"
@@ -12,19 +12,26 @@
   <Border x:Name="Surface" CornerRadius="22">
    <Border.Background><SolidColorBrush x:Name="SurfaceBrush" Color="#F7F9F3" Opacity="0.88" /></Border.Background>
    <Grid>
-    <Grid.RowDefinitions><RowDefinition Height="62" /><RowDefinition Height="*" /><RowDefinition Height="45" /></Grid.RowDefinitions>
-    <Grid Grid.Row="0" Margin="24,0,18,0" MouseLeftButtonDown="DragHeader">
+    <Grid.RowDefinitions><RowDefinition Height="100" /><RowDefinition Height="*" /><RowDefinition Height="45" /></Grid.RowDefinitions>
+    <Grid Grid.Row="0" Margin="24,0,18,0">
+     <Grid.RowDefinitions><RowDefinition Height="60" /><RowDefinition Height="40" /></Grid.RowDefinitions>
+     <Grid MouseLeftButtonDown="DragHeader">
      <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
      <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-      <Image Source="Assets/daykeep-mark.png" Width="32" Height="32" Margin="0,0,10,0" RenderOptions.BitmapScalingMode="HighQuality" AutomationProperties.Name="DayKeep 回环时钟标记" />
+      <Image Source="Assets/daykeep-mark.png" Width="32" Height="32" Margin="0,0,10,0" RenderOptions.BitmapScalingMode="HighQuality" AutomationProperties.Name="{l:Loc Key='DayKeep 回环时钟标记'}" />
       <TextBlock Text="DayKeep" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center" />
       <TextBlock Text="日守" FontSize="13" Foreground="{StaticResource Muted}" Margin="9,0,0,0" VerticalAlignment="Center" />
      </StackPanel>
      <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-      <Button x:Name="PinButton" Content="置顶" Click="TogglePin" Style="{StaticResource ChromeButton}" ToolTip="保持窗口在其他普通窗口上方" AutomationProperties.Name="切换窗口置顶" />
-      <Button x:Name="CompactButton" Content="窄窗" Click="ToggleCompact" Style="{StaticResource ChromeButton}" ToolTip="切换为桌面窄窗" />
-      <Button Content="—" Click="HideClick" Style="{StaticResource ChromeButton}" ToolTip="收起到托盘（Esc）" AutomationProperties.Name="收起到托盘" />
-      <Button Content="×" FontSize="21" Click="HideClick" Style="{StaticResource ChromeButton}" ToolTip="收起到托盘；彻底退出请使用托盘菜单" AutomationProperties.Name="关闭窗口并保留托盘" />
+      <Button x:Name="PinButton" Content="{l:Loc Key='置顶'}" Click="TogglePin" Style="{StaticResource ChromeButton}" ToolTip="{l:Loc Key='保持窗口在其他普通窗口上方'}" AutomationProperties.Name="{l:Loc Key='切换窗口置顶'}" />
+      <Button x:Name="CompactButton" Content="{l:Loc Key='窄窗'}" Click="ToggleCompact" Style="{StaticResource ChromeButton}" ToolTip="{l:Loc Key='切换为桌面窄窗'}" />
+      <Button Content="—" Click="HideClick" Style="{StaticResource ChromeButton}" ToolTip="{l:Loc Key='收起到托盘（Esc）'}" AutomationProperties.Name="{l:Loc Key='收起到托盘'}" />
+      <Button Content="×" FontSize="21" Click="HideClick" Style="{StaticResource ChromeButton}" ToolTip="{l:Loc Key='收起到托盘；彻底退出请使用托盘菜单'}" AutomationProperties.Name="{l:Loc Key='关闭窗口并保留托盘'}" />
+     </StackPanel>
+     </Grid>
+     <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,6">
+      <TextBlock Text="🌐 Language / 语言" FontSize="12" VerticalAlignment="Center" Margin="0,0,12,0" />
+      <ComboBox x:Name="LanguageInput" Width="180" SelectedValuePath="Code" DisplayMemberPath="NativeName" SelectionChanged="LanguageSelectionChanged" FontSize="12" Padding="10,5,28,5" ToolTip="{l:Loc Key='更改后立即生效；已有任务内容保持原样。'}" AutomationProperties.Name="Language / 语言" />
      </StackPanel>
     </Grid>
     <Grid Grid.Row="1">
@@ -33,37 +40,37 @@
       <Grid>
        <Grid.RowDefinitions><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
        <StackPanel>
-        <TextBlock Text="留一点心，少一件遗忘。" FontSize="11" Foreground="{StaticResource Muted}" Margin="10,0,0,23" />
-        <Button x:Name="TodayNav" Content="◉    我的事项" Click="NavigateToday" Style="{StaticResource NavigationButton}" Background="#E0EBE1" Foreground="#2D685B" FontWeight="SemiBold" />
-        <Button x:Name="DataNav" Content="◷    历史与备份" Click="DataClick" Style="{StaticResource NavigationButton}" />
-        <Button x:Name="RoadmapNav" Content="≡    制作进度" Click="NavigateRoadmap" Style="{StaticResource NavigationButton}" />
-        <Button x:Name="SettingsNav" Content="☷    外观与操作" Click="NavigateSettings" Style="{StaticResource NavigationButton}" />
+        <TextBlock Text="{l:Loc Key='留一点心，少一件遗忘。'}" FontSize="11" Foreground="{StaticResource Muted}" Margin="10,0,0,23" />
+        <Button x:Name="TodayNav" Content="{l:Loc Key='◉    我的事项'}" Click="NavigateToday" Style="{StaticResource NavigationButton}" Background="#E0EBE1" Foreground="#2D685B" FontWeight="SemiBold" />
+        <Button x:Name="DataNav" Content="{l:Loc Key='◷    历史与备份'}" Click="DataClick" Style="{StaticResource NavigationButton}" />
+        <Button x:Name="RoadmapNav" Content="{l:Loc Key='≡    制作进度'}" Click="NavigateRoadmap" Style="{StaticResource NavigationButton}" />
+        <Button x:Name="SettingsNav" Content="{l:Loc Key='☷    外观与操作'}" Click="NavigateSettings" Style="{StaticResource NavigationButton}" />
         <Border Height="1" Background="#D6E0D7" Margin="10,20,10,16" />
-        <TextBlock Text="任务状态" FontSize="11" Foreground="{StaticResource Muted}" Margin="14,0,0,12" />
-        <TextBlock Text="●   等待条件满足" FontSize="12" Foreground="#6E8055" Margin="14,7" />
-        <TextBlock Text="●   已开放，待办理" FontSize="12" Foreground="#AB7955" Margin="14,7" />
-        <TextBlock Text="●   已完成" FontSize="12" Foreground="#6A8582" Margin="14,7" />
+        <TextBlock Text="{l:Loc Key='任务状态'}" FontSize="11" Foreground="{StaticResource Muted}" Margin="14,0,0,12" />
+        <TextBlock Text="{l:Loc Key='●   等待条件满足'}" FontSize="12" Foreground="#6E8055" Margin="14,7" />
+        <TextBlock Text="{l:Loc Key='●   已开放，待办理'}" FontSize="12" Foreground="#AB7955" Margin="14,7" />
+        <TextBlock Text="{l:Loc Key='●   已完成'}" FontSize="12" Foreground="#6A8582" Margin="14,7" />
        </StackPanel>
        <Border Grid.Row="1" Background="#DCE8DD" CornerRadius="13" Padding="14">
-        <StackPanel><TextBlock Text="每天一步，直到完成。" FontSize="12" FontWeight="SemiBold" /><TextBlock Text="今天已检查 ≠ 任务已完成" FontSize="10" Foreground="{StaticResource Muted}" Margin="0,7,0,0" /></StackPanel>
+        <StackPanel><TextBlock Text="{l:Loc Key='每天一步，直到完成。'}" FontSize="12" FontWeight="SemiBold" /><TextBlock Text="{l:Loc Key='今天已检查 ≠ 任务已完成'}" FontSize="10" Foreground="{StaticResource Muted}" Margin="0,7,0,0" /></StackPanel>
        </Border>
       </Grid>
      </Border>
      <Grid Grid.Column="1" Margin="28,14,28,14">
       <ScrollViewer x:Name="TodayPage" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
        <StackPanel>
-        <DockPanel><TextBlock Text="TODAY / 今日" FontSize="11" FontWeight="SemiBold" Foreground="#6B8377" /><TextBlock x:Name="DateLabel" HorizontalAlignment="Right" FontSize="11" Foreground="{StaticResource Muted}" /></DockPanel>
-        <TextBlock Text="把重要的事，留在今天。" FontSize="27" FontWeight="SemiBold" Margin="0,12,0,7" TextWrapping="Wrap" />
-        <TextBlock Text="不急着做完，也不会忘记继续。" Foreground="{StaticResource Muted}" FontSize="13" />
+        <DockPanel><TextBlock Text="{l:Loc Key='TODAY / 今日'}" FontSize="11" FontWeight="SemiBold" Foreground="#6B8377" /><TextBlock x:Name="DateLabel" HorizontalAlignment="Right" FontSize="11" Foreground="{StaticResource Muted}" /></DockPanel>
+        <TextBlock Text="{l:Loc Key='把重要的事，留在今天。'}" FontSize="27" FontWeight="SemiBold" Margin="0,12,0,7" TextWrapping="Wrap" />
+        <TextBlock Text="{l:Loc Key='不急着做完，也不会忘记继续。'}" Foreground="{StaticResource Muted}" FontSize="13" />
         <Border Background="#E7EFE4" CornerRadius="14" Padding="17,14" Margin="0,22,0,21">
          <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
-          <StackPanel><TextBlock Text="先记住，接着每天跟进。" FontSize="14" FontWeight="SemiBold" /><TextBlock x:Name="ReminderStatusLabel" Text="固定时间提醒 · 请保持日守在托盘运行" FontSize="11" Foreground="#657B6B" Margin="0,7,12,0" TextWrapping="Wrap" /></StackPanel>
-          <Button x:Name="NewTaskButton" Grid.Column="1" Content="＋ 新建任务" Click="NewTaskClick" Style="{StaticResource PrimaryButton}" VerticalAlignment="Center" Padding="15,10" />
+          <StackPanel><TextBlock Text="{l:Loc Key='先记住，接着每天跟进。'}" FontSize="14" FontWeight="SemiBold" /><TextBlock x:Name="ReminderStatusLabel" Text="{l:Loc Key='固定时间提醒 · 请保持日守在托盘运行'}" FontSize="11" Foreground="#657B6B" Margin="0,7,12,0" TextWrapping="Wrap" /></StackPanel>
+          <Button x:Name="NewTaskButton" Grid.Column="1" Content="{l:Loc Key='＋ 新建任务'}" Click="NewTaskClick" Style="{StaticResource PrimaryButton}" VerticalAlignment="Center" Padding="15,10" />
          </Grid>
         </Border>
-        <DockPanel Margin="0,0,0,12"><ComboBox x:Name="FilterInput" Width="115" SelectedIndex="0" SelectionChanged="FilterChanged" DockPanel.Dock="Right" Padding="8,4" FontSize="12" AutomationProperties.Name="任务筛选"><ComboBoxItem Content="跟进中" /><ComboBoxItem Content="已完成" /><ComboBoxItem Content="已归档" /><ComboBoxItem Content="全部事项" /></ComboBox><TextBlock x:Name="TaskCountLabel" Text="跟进事项" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" /></DockPanel>
-        <Border x:Name="DataErrorPanel" Visibility="Collapsed" Background="#F7E8E0" CornerRadius="12" Padding="14" Margin="0,0,0,12"><StackPanel><TextBlock x:Name="DataErrorLabel" Foreground="#984939" TextWrapping="Wrap" FontSize="12" /><Button Content="重新读取" Click="RetryLoad" HorizontalAlignment="Left" Margin="0,10,0,0" Padding="10,6" /></StackPanel></Border>
-        <Border x:Name="EmptyPanel" Background="#BFFFFFFF" CornerRadius="14" Padding="23,29" Margin="0,0,0,12" BorderBrush="#D8E2D9" BorderThickness="1"><StackPanel><TextBlock x:Name="EmptyTitle" Text="这里，留给下一件重要的事。" FontSize="19" FontWeight="SemiBold" TextWrapping="Wrap" /><TextBlock x:Name="EmptyDescription" Text="从一条任务开始。它会留在本机，等你下次打开。" FontSize="12" Foreground="{StaticResource Muted}" Margin="0,12,0,0" TextWrapping="Wrap" LineHeight="22" /></StackPanel></Border>
+        <DockPanel Margin="0,0,0,12"><ComboBox x:Name="FilterInput" Width="115" SelectedIndex="0" SelectionChanged="FilterChanged" DockPanel.Dock="Right" Padding="8,4" FontSize="12" AutomationProperties.Name="{l:Loc Key='任务筛选'}"><ComboBoxItem Content="{l:Loc Key='跟进中'}" /><ComboBoxItem Content="{l:Loc Key='已完成'}" /><ComboBoxItem Content="{l:Loc Key='已归档'}" /><ComboBoxItem Content="{l:Loc Key='全部事项'}" /></ComboBox><TextBlock x:Name="TaskCountLabel" Text="{l:Loc Key='跟进事项'}" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" /></DockPanel>
+        <Border x:Name="DataErrorPanel" Visibility="Collapsed" Background="#F7E8E0" CornerRadius="12" Padding="14" Margin="0,0,0,12"><StackPanel><TextBlock x:Name="DataErrorLabel" Foreground="#984939" TextWrapping="Wrap" FontSize="12" /><Button Content="{l:Loc Key='重新读取'}" Click="RetryLoad" HorizontalAlignment="Left" Margin="0,10,0,0" Padding="10,6" /></StackPanel></Border>
+        <Border x:Name="EmptyPanel" Background="#BFFFFFFF" CornerRadius="14" Padding="23,29" Margin="0,0,0,12" BorderBrush="#D8E2D9" BorderThickness="1"><StackPanel><TextBlock x:Name="EmptyTitle" Text="{l:Loc Key='这里，留给下一件重要的事。'}" FontSize="19" FontWeight="SemiBold" TextWrapping="Wrap" /><TextBlock x:Name="EmptyDescription" Text="{l:Loc Key='从一条任务开始。它会留在本机，等你下次打开。'}" FontSize="12" Foreground="{StaticResource Muted}" Margin="0,12,0,0" TextWrapping="Wrap" LineHeight="22" /></StackPanel></Border>
         <ItemsControl x:Name="TaskList">
          <ItemsControl.ItemTemplate>
           <DataTemplate>
@@ -77,15 +84,15 @@
               <TextBlock Text="{Binding Summary}" FontSize="11" Foreground="{Binding DeadlineAccent}" Margin="0,6,0,0" TextWrapping="Wrap" />
               <TextBlock Text="{Binding Followup}" FontSize="10" Foreground="{StaticResource Muted}" Margin="0,6,0,0" TextWrapping="Wrap" />
               <WrapPanel Margin="0,10,0,0">
-               <Button Content="打开平台" Click="OpenLinkClick" Tag="{Binding Item}" Visibility="{Binding LinkVisibility}" Padding="9,5" FontSize="11" Margin="0,0,6,4" />
-               <Button Content="今日已检查" Click="CheckTaskClick" Tag="{Binding Item}" Visibility="{Binding CheckVisibility}" Padding="9,5" FontSize="11" Margin="0,0,6,4" />
-               <Button Content="已开放" Click="ReadyTaskClick" Tag="{Binding Item}" Visibility="{Binding WaitingVisibility}" Padding="9,5" FontSize="11" Margin="0,0,6,4" />
-               <Button Content="编辑" Click="EditTaskClick" Tag="{Binding Item}" Visibility="{Binding ActiveVisibility}" Padding="9,5" FontSize="11" Margin="0,0,6,4" />
+               <Button Content="{l:Loc Key='打开平台'}" Click="OpenLinkClick" Tag="{Binding Item}" Visibility="{Binding LinkVisibility}" Padding="9,5" FontSize="11" Margin="0,0,6,4" />
+               <Button Content="{l:Loc Key='今日已检查'}" Click="CheckTaskClick" Tag="{Binding Item}" Visibility="{Binding CheckVisibility}" Padding="9,5" FontSize="11" Margin="0,0,6,4" />
+               <Button Content="{l:Loc Key='已开放'}" Click="ReadyTaskClick" Tag="{Binding Item}" Visibility="{Binding WaitingVisibility}" Padding="9,5" FontSize="11" Margin="0,0,6,4" />
+               <Button Content="{l:Loc Key='编辑'}" Click="EditTaskClick" Tag="{Binding Item}" Visibility="{Binding ActiveVisibility}" Padding="9,5" FontSize="11" Margin="0,0,6,4" />
                <Button Content="{Binding PauseText}" Click="PauseTaskClick" Tag="{Binding Item}" Visibility="{Binding ActiveVisibility}" Padding="9,5" FontSize="11" Margin="0,0,6,4" />
-               <Button Content="完成" Click="CompleteTaskClick" Tag="{Binding Item}" Visibility="{Binding ActiveVisibility}" Padding="9,5" FontSize="11" Margin="0,0,6,4" />
-               <Button Content="撤销完成" Click="UndoTaskClick" Tag="{Binding Item}" Visibility="{Binding UndoVisibility}" Padding="9,5" FontSize="11" Margin="0,0,6,4" />
-               <Button Content="归档" Click="ArchiveTaskClick" Tag="{Binding Item}" Visibility="{Binding ArchiveVisibility}" Padding="9,5" FontSize="11" Margin="0,0,6,4" />
-               <Button Content="恢复归档" Click="RestoreTaskClick" Tag="{Binding Item}" Visibility="{Binding RestoreVisibility}" Padding="9,5" FontSize="11" Margin="0,0,6,4" />
+               <Button Content="{l:Loc Key='完成'}" Click="CompleteTaskClick" Tag="{Binding Item}" Visibility="{Binding ActiveVisibility}" Padding="9,5" FontSize="11" Margin="0,0,6,4" />
+               <Button Content="{l:Loc Key='撤销完成'}" Click="UndoTaskClick" Tag="{Binding Item}" Visibility="{Binding UndoVisibility}" Padding="9,5" FontSize="11" Margin="0,0,6,4" />
+               <Button Content="{l:Loc Key='归档'}" Click="ArchiveTaskClick" Tag="{Binding Item}" Visibility="{Binding ArchiveVisibility}" Padding="9,5" FontSize="11" Margin="0,0,6,4" />
+               <Button Content="{l:Loc Key='恢复归档'}" Click="RestoreTaskClick" Tag="{Binding Item}" Visibility="{Binding RestoreVisibility}" Padding="9,5" FontSize="11" Margin="0,0,6,4" />
               </WrapPanel>
              </StackPanel>
             </Grid>
@@ -93,44 +100,44 @@
           </DataTemplate>
          </ItemsControl.ItemTemplate>
         </ItemsControl>
-        <Button x:Name="DataToolsButton" Content="检查历史与备份" Click="DataClick" Margin="0,5,0,0" Padding="14,10" />
-        <Button Content="预览提醒样式（演示）" Click="PreviewClick" Margin="0,5,0,0" Padding="14,10" Background="Transparent" />
-        <TextBlock Text="今天已检查 ≠ 任务已完成 · 提醒使用电脑本地时间" Foreground="{StaticResource Muted}" FontSize="10" HorizontalAlignment="Center" Margin="0,12,0,0" TextWrapping="Wrap" />
+        <Button x:Name="DataToolsButton" Content="{l:Loc Key='检查历史与备份'}" Click="DataClick" Margin="0,5,0,0" Padding="14,10" />
+        <Button Content="{l:Loc Key='预览提醒样式（演示）'}" Click="PreviewClick" Margin="0,5,0,0" Padding="14,10" Background="Transparent" />
+        <TextBlock Text="{l:Loc Key='今天已检查 ≠ 任务已完成 · 提醒使用电脑本地时间'}" Foreground="{StaticResource Muted}" FontSize="10" HorizontalAlignment="Center" Margin="0,12,0,0" TextWrapping="Wrap" />
        </StackPanel>
       </ScrollViewer>
       <ScrollViewer x:Name="RoadmapPage" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
        <StackPanel>
-        <TextBlock Text="一步一步，做成日常。" FontSize="26" FontWeight="SemiBold" Margin="0,7,0,10" TextWrapping="Wrap" />
-        <TextBlock Text="沿用已有项目的分阶段制作与验收流程。" Foreground="{StaticResource Muted}" Margin="0,0,0,24" TextWrapping="Wrap" />
+        <TextBlock Text="{l:Loc Key='一步一步，做成日常。'}" FontSize="26" FontWeight="SemiBold" Margin="0,7,0,10" TextWrapping="Wrap" />
+        <TextBlock Text="{l:Loc Key='沿用已有项目的分阶段制作与验收流程。'}" Foreground="{StaticResource Muted}" Margin="0,0,0,24" TextWrapping="Wrap" />
         <TextBlock x:Name="RoadmapText" FontSize="14" LineHeight="29" TextWrapping="Wrap" />
-        <Border Background="#E7EFE4" CornerRadius="12" Padding="16" Margin="0,22,0,0"><TextBlock Text="当前 L6：多语教程、本地成品与对应源码准备。公开发布等待确认，至少三天实际试用仍待验收。" TextWrapping="Wrap" Foreground="#4E6B5B" LineHeight="22" /></Border>
+        <Border Background="#E7EFE4" CornerRadius="12" Padding="16" Margin="0,22,0,0"><TextBlock Text="{l:Loc Key='0.7 候选版：九种界面语言，立即切换并记住偏好。发布更新前等待确认。'}" TextWrapping="Wrap" Foreground="#4E6B5B" LineHeight="22" /></Border>
        </StackPanel>
       </ScrollViewer>
       <ScrollViewer x:Name="SettingsPage" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
        <StackPanel>
-        <TextBlock Text="让它舒服地待在桌面。" FontSize="26" FontWeight="SemiBold" Margin="0,7,0,10" TextWrapping="Wrap" />
-        <TextBlock Text="只让背景变轻，文字始终清晰。" Foreground="{StaticResource Muted}" Margin="0,0,0,27" />
+        <TextBlock Text="{l:Loc Key='让它舒服地待在桌面。'}" FontSize="26" FontWeight="SemiBold" Margin="0,7,0,10" TextWrapping="Wrap" />
+        <TextBlock Text="{l:Loc Key='只让背景变轻，文字始终清晰。'}" Foreground="{StaticResource Muted}" Margin="0,0,0,27" />
         <Border Background="#CFFFFFFF" CornerRadius="14" Padding="20" BorderBrush="#D8E2D9" BorderThickness="1">
          <StackPanel>
-          <DockPanel><TextBlock Text="背景不透明度" FontWeight="SemiBold" /><TextBlock x:Name="OpacityLabel" HorizontalAlignment="Right" Foreground="{StaticResource Muted}" /></DockPanel>
-          <Slider x:Name="OpacitySlider" Minimum="0.65" Maximum="0.98" Value="0.88" TickFrequency="0.01" IsSnapToTickEnabled="True" Margin="0,22,0,10" ValueChanged="OpacityChanged" AutomationProperties.Name="背景不透明度" />
-          <TextBlock Text="65% 更通透 · 98% 更易读；不会降低文字和按钮的不透明度。" FontSize="11" Foreground="{StaticResource Muted}" TextWrapping="Wrap" LineHeight="20" />
+          <DockPanel><TextBlock Text="{l:Loc Key='背景不透明度'}" FontWeight="SemiBold" /><TextBlock x:Name="OpacityLabel" HorizontalAlignment="Right" Foreground="{StaticResource Muted}" /></DockPanel>
+          <Slider x:Name="OpacitySlider" Minimum="0.65" Maximum="0.98" Value="0.88" TickFrequency="0.01" IsSnapToTickEnabled="True" Margin="0,22,0,10" ValueChanged="OpacityChanged" AutomationProperties.Name="{l:Loc Key='背景不透明度'}" />
+          <TextBlock Text="{l:Loc Key='65% 更通透 · 98% 更易读；不会降低文字和按钮的不透明度。'}" FontSize="11" Foreground="{StaticResource Muted}" TextWrapping="Wrap" LineHeight="20" />
          </StackPanel>
         </Border>
-        <TextBlock Text="随时打开，也随时收起" FontSize="16" FontWeight="SemiBold" Margin="0,27,0,13" />
+        <TextBlock Text="{l:Loc Key='随时打开，也随时收起'}" FontSize="16" FontWeight="SemiBold" Margin="0,27,0,13" />
         <Border Background="#CFFFFFFF" CornerRadius="14" Padding="17" BorderBrush="#D8E2D9" BorderThickness="1" Margin="0,0,0,17"><StackPanel>
-         <CheckBox x:Name="StartupInput" Content="登录 Windows 后在托盘运行" FontWeight="SemiBold" Checked="StartupChanged" Unchecked="StartupChanged" />
+         <CheckBox x:Name="StartupInput" Content="{l:Loc Key='登录 Windows 后在托盘运行'}" FontWeight="SemiBold" Checked="StartupChanged" Unchecked="StartupChanged" />
          <TextBlock x:Name="StartupStatus" FontSize="11" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,10,0,0" LineHeight="20" />
         </StackPanel></Border>
-        <TextBlock Text="Ctrl + Alt + D    打开 / 收起窗口&#10;Esc 或右上角 ×    收起到托盘&#10;单击托盘图标    重新打开&#10;再次启动程序    唤回已有窗口&#10;托盘右键 → 退出日守    彻底退出" Foreground="{StaticResource Muted}" LineHeight="28" TextWrapping="Wrap" />
-        <Button Content="切换桌面窄窗" Click="ToggleCompact" HorizontalAlignment="Left" Margin="0,22,0,0" />
-        <TextBlock Text="按本地时间提醒。关闭主窗继续运行；从托盘退出后停止，若开启登录启动，下次登录会再次运行。重启、恢复或解锁后汇总错过的事项，不逐条重放多天弹窗。" FontSize="11" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,20,0,0" LineHeight="20" />
+        <TextBlock Text="{l:Loc Key='Ctrl + Alt + D    打开 / 收起窗口&#10;Esc 或右上角 ×    收起到托盘&#10;单击托盘图标    重新打开&#10;再次启动程序    唤回已有窗口&#10;托盘右键 → 退出日守    彻底退出'}" Foreground="{StaticResource Muted}" LineHeight="28" TextWrapping="Wrap" />
+        <Button Content="{l:Loc Key='切换桌面窄窗'}" Click="ToggleCompact" HorizontalAlignment="Left" Margin="0,22,0,0" />
+        <TextBlock Text="{l:Loc Key='按本地时间提醒。关闭主窗继续运行；从托盘退出后停止，若开启登录启动，下次登录会再次运行。重启、恢复或解锁后汇总错过的事项，不逐条重放多天弹窗。'}" FontSize="11" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,20,0,0" LineHeight="20" />
        </StackPanel>
       </ScrollViewer>
      </Grid>
     </Grid>
     <Border Grid.Row="2" BorderBrush="#D4DFD5" BorderThickness="0,1,0,0" Margin="22,0">
-     <DockPanel VerticalAlignment="Center"><TextBlock x:Name="StatusLabel" Text="●  本地任务 · L6" Foreground="#667E6D" FontSize="10" /><TextBlock x:Name="ShortcutLabel" Text="Ctrl + Alt + D  随时唤起    ·    0.6.0-l6" Foreground="{StaticResource Muted}" HorizontalAlignment="Right" FontSize="10" /></DockPanel>
+     <DockPanel VerticalAlignment="Center"><TextBlock x:Name="StatusLabel" Foreground="#667E6D" FontSize="10" /><TextBlock x:Name="ShortcutLabel" Foreground="{StaticResource Muted}" HorizontalAlignment="Right" FontSize="10" /></DockPanel>
     </Border>
    </Grid>
   </Border>

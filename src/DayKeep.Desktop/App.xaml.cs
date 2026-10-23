@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.Json;
 using DayKeep.Core;
 using DayKeep.Infrastructure;
+using DayKeep.Localization;
 
 namespace DayKeep;
 
@@ -38,6 +39,8 @@ public partial class App : System.Windows.Application
         var background=e.Args.Contains("--background");
         var testDirectory=e.Args.Length>=2 && e.Args[0]=="--instance-test" ? Path.GetFullPath(e.Args[1]) : null;
         if(testDirectory is not null) Directory.CreateDirectory(testDirectory);
+        var settings=testDirectory is null ? new SettingsStore() : new SettingsStore(Path.Combine(testDirectory,"ui.json"));
+        Localizer.SetLanguage(settings.Load().Language);
         var suffix=testDirectory is null ? "" : ".Test."+Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(testDirectory)))[..12];
         var prefix="Local\\DayKeep.Desktop"+suffix;
         _instanceMutex = new Mutex(false,prefix+".Instance");
@@ -49,7 +52,7 @@ public partial class App : System.Windows.Application
                 for(var attempt=0;attempt<10;attempt++)
                 {
                     try { using var signal=EventWaitHandle.OpenExisting(prefix+".Show"); signal.Set(); break; }
-                    catch(WaitHandleCannotBeOpenedException) { if(attempt==9) MessageBox.Show("日守正在启动，请稍后再次打开。","DayKeep"); else Thread.Sleep(100); }
+                    catch(WaitHandleCannotBeOpenedException) { if(attempt==9) MessageBox.Show(Localizer.T("日守正在启动，请稍后再次打开。"),"DayKeep"); else Thread.Sleep(100); }
                 }
             }
             Shutdown();
@@ -57,7 +60,7 @@ public partial class App : System.Windows.Application
         }
 
         _showEvent = new EventWaitHandle(false, EventResetMode.AutoReset,prefix+".Show");
-        var window = testDirectory is null ? new MainWindow(new SettingsStore()) : new MainWindow(new SettingsStore(Path.Combine(testDirectory,"ui.json")),new TaskService(new TaskRepository(Path.Combine(testDirectory,"tasks.db"))));
+        var window = testDirectory is null ? new MainWindow(settings) : new MainWindow(settings,new TaskService(new TaskRepository(Path.Combine(testDirectory,"tasks.db"))));
         window.ShowActivated=!background;
         MainWindow = window;
         var showSignals=0;

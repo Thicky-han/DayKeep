@@ -4,15 +4,23 @@
 
 [Baixar ZIP para Windows](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-win-x64.zip) · [Código-fonte](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-source.zip) · [Somas de verificação](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/SHA256SUMS) · [Lançamento](https://github.com/Thicky-han/DayKeep/releases/tag/v0.6.0-l6)
 
-Um passo por dia, até concluir. Lembretes locais para Windows de tarefas que exigem verificações, como um portal de pagamento de patente ainda fechado. Verificar hoje não conclui a tarefa inteira. Pré-lançamento **0.6.0-l6**, publicado com a aprovação do responsável; documentação em nove idiomas, **interface atualmente em chinês simplificado**. O teste real de três dias continua pendente. Binários sem assinatura.
+Um passo por dia, até concluir. Lembretes locais para Windows de tarefas que exigem verificações, como um portal de pagamento de patente ainda fechado. Verificar hoje não conclui a tarefa inteira. A candidata local **0.7.0-beta.1** adiciona nove idiomas de interface e um seletor visível. A publicação requer a confirmação do responsável; os resultados reais de compilação e empacotamento estão no [relatório da atualização de idiomas](LANGUAGE_UPDATE_REPORT.md). Os links acima continuam para a versão publicada **0.6.0-l6 (interface somente em chinês simplificado)**. O teste real de três dias continua pendente. Binários sem assinatura.
 
 ![Janela com tarefas fictícias](assets/screenshots/main.png)
 
+## Alterar o idioma da interface
+
+Abra **Language / 语言** no topo da janela principal. O seletor permanece visível nos modos amplo e compacto, sem precisar entrar nas configurações. Cada idioma aparece com seu próprio nome: **简体中文, 繁體中文, English, 日本語, 한국어, Français, Deutsch, Español, Português**.
+
+A escolha atualiza imediatamente os textos da janela principal, formulários, lembretes, histórico e backups. É salva neste computador e restaurada na próxima abertura. Sem escolha salva, inclusive ao atualizar, o padrão é chinês simplificado. Se não for possível salvar, um erro aparece e o idioma anterior é mantido.
+
+Seus nomes de tarefas, notas, links e registros originais não são traduzidos. A troca não muda o fuso local do computador, dias ou horários programados. Continue usando `HH:mm` de 24 horas e `yyyy-MM-dd` para prazos. Os nomes chineses abaixo são referências; o app exibe o equivalente no idioma escolhido. [Idiomas e salvamento](docs/LANGUAGES.md)
+
 ## Instalar e atualizar
 
-Extraia todo DayKeep-0.6.0-l6-win-x64.zip. Windows x64, runtime .NET incluído, sem SDK. Não execute dentro do ZIP nem copie apenas o exe. Confira origem e SHA256SUMS; abra DayKeep.exe para uso portátil. O Windows pode mostrar editor desconhecido.
+Extraia toda a candidata DayKeep-0.7.0-beta.1-win-x64.zip. O pacote antigo publicado funciona da mesma forma, mas sem seletor de idioma. Windows x64, runtime .NET incluído, sem SDK. Não execute dentro do ZIP nem copie apenas o exe. Confira origem e SHA256SUMS; abra DayKeep.exe para uso portátil. O Windows pode mostrar editor desconhecido.
 
-Install.cmd instala sem administrador em LocalApplicationData/Programs/DayKeep/0.6.0-l6 e cria atalhos DayKeep na área de trabalho e no menu Iniciar. A exceção de política PowerShell vale somente para esse processo. O início no login fica desligado. Antes de atualizar, exporte backup, salve formulários e encerre a versão antiga por「退出日守」na bandeja; × apenas oculta. Cada versão usa pasta separada; pastas/atalhos desconhecidos são preservados. Reinstalar a mesma versão exige arquivos idênticos e íntegros. O primeiro início migra por transação para schema 5; L1–L4 não leem a base atualizada.
+Install.cmd instala sem administrador em LocalApplicationData/Programs/DayKeep/0.7.0-beta.1 e cria atalhos DayKeep na área de trabalho e no menu Iniciar. A exceção de política PowerShell vale somente para esse processo. O início no login fica desligado. Antes de atualizar, exporte backup, salve formulários e encerre a versão antiga por「退出日守」na bandeja; × apenas oculta. Cada versão usa pasta separada; pastas/atalhos desconhecidos são preservados. Reinstalar a mesma versão exige arquivos idênticos e íntegros. O primeiro início migra por transação para schema 5; L1–L4 não leem a base atualizada.
 
 ## Primeira tarefa
 
@@ -24,7 +32,7 @@ Install.cmd instala sem administrador em LocalApplicationData/Programs/DayKeep/0
 
 ## Acompanhar diariamente
 
-| Botão chinês | Resultado |
+| Botão (referência em chinês) | Resultado |
 | --- | --- |
 | 打开平台 | Abre apenas navegador; não registra verificação ou conclusão |
 | 今日已检查，尚未开放 | Verificado, ainda fechado: para verificações de hoje; retoma no próximo dia escolhido |
@@ -47,9 +55,9 @@ Abra「历史与备份」ou, em modo compacto,「检查历史与备份」na part
 ## Backup, restauração e desfazer importação
 
 1. 「备份与恢复 → 导出完整备份」salva novo `.daykeep.json`. Não sobrescreve; formulários não salvos ficam fora.
-2. Inclui tarefas, histórico, desfazer conclusão, arquivo, adiamentos, limites diários e entregas; exclui aparência/início. Texto sem criptografia: guarde em local privado e importe apenas fontes confiáveis.
+2. Inclui tarefas, histórico, desfazer conclusão, arquivo, adiamentos, limites diários e entregas; exclui idioma/aparência/início. Importar não muda o idioma escolhido. Texto sem criptografia: guarde em local privado e importe apenas fontes confiáveis.
 3. 「选择备份并预览」exibe data/contagens sem alteração.「合并」adiciona só GUID ausentes localmente; mesmo ID mantém todo grupo local. Mesmo nome com ID diferente permanece separado.
-4. 「替换」restaura backup inteiro e remove tarefas locais ausentes. Salve/feche formulários, revise impacto e marque confirmação. Trocar modo desmarca.
+4. 「替换」restaura backup inteiro e remove tarefas locais ausentes. Salve/feche formulários, revise impacto e marque confirmação. Trocar modo ou idioma desmarca. Ao trocar idioma, arquivo, modo e prévia congelada são preservados; confira o impacto no novo idioma e confirme novamente.
 5. Se dados/entregas mudarem,「重新预览」. Antes de gravar, o estado atual vai automaticamente para Recovery junto a tasks.db; o caminho aparece após sucesso.
 6. Para desfazer, visualize esse arquivo e substitua. Falha no backup de recuperação impede alteração; falha SQL reverte transação. Corrupção, versão, estrutura ou hash incompatível são rejeitados.
 

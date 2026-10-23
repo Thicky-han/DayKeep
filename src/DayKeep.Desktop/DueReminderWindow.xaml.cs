@@ -2,8 +2,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.ComponentModel;
+using System.Windows.Markup;
 using DayKeep.Core;
 using DayKeep.Models;
+using DayKeep.Localization;
 
 namespace DayKeep;
 
@@ -14,20 +16,35 @@ public partial class DueReminderWindow : Window
     private readonly Action _showTasks;
     private readonly Func<bool> _dismiss;
     private bool _silent;
+    private Func<string>? _error;
+    private IReadOnlyList<TaskItem> _displayTasks = [];
+    private DateOnly? _displayDate;
+    private IReadOnlyDictionary<Guid,string>? _displayTiming;
     public int TaskCount => DueTaskList.Items.Count;
     public DueReminderWindow(Action<TaskItem, ReminderAction> action, Action showTasks, Func<bool>? dismiss = null)
     {
         _action = action; _showTasks = showTasks; _dismiss=dismiss ?? (()=>true);
         InitializeComponent();
+        Language=XmlLanguage.GetLanguage(Localizer.Culture.IetfLanguageTag);
+        Localizer.Changed += RefreshLanguage;
+        Closed += (_,_) => Localizer.Changed -= RefreshLanguage;
     }
     public void SetTasks(IReadOnlyList<TaskItem> tasks, DateOnly? today = null, IReadOnlyDictionary<Guid,string>? timing = null)
     {
         var date = today ?? DateOnly.FromDateTime(DateTime.Now);
+        _displayTasks=tasks; _displayDate=date; _displayTiming=timing;
         DueTaskList.ItemsSource = tasks.OrderBy(t=>ReminderPlanner.DeadlinePriority(t,date)).ThenBy(t=>t.DueDate).ThenBy(t=>t.CreatedAt).Select(t => new TaskCard(t,Today:date,ReminderDetail:timing?.GetValueOrDefault(t.Id) ?? "")).ToList();
-        CountLabel.Text = $"{tasks.Count} 件事项 · 需要继续跟进";
+        CountLabel.Text = Localizer.T("{0} 件事项 · 需要继续跟进",tasks.Count);
     }
-    public void ShowError(string message, bool preserveExisting = false) { if (preserveExisting && ErrorLabel.Visibility == Visibility.Visible) return; ErrorLabel.Text = message; ErrorLabel.Visibility = Visibility.Visible; }
-    public void ClearError() => ErrorLabel.Visibility = Visibility.Collapsed;
+    public void ShowError(string message, bool preserveExisting = false) => ShowError(()=>Localizer.T(message),preserveExisting);
+    public void ShowError(Func<string> message, bool preserveExisting = false) { if (preserveExisting && ErrorLabel.Visibility == Visibility.Visible) return; _error=message; ErrorLabel.Text = message(); ErrorLabel.Visibility = Visibility.Visible; }
+    public void ClearError() { _error=null; ErrorLabel.Visibility = Visibility.Collapsed; }
+    private void RefreshLanguage(object? sender,EventArgs e)
+    {
+        Language=XmlLanguage.GetLanguage(Localizer.Culture.IetfLanguageTag);
+        SetTasks(_displayTasks,_displayDate,_displayTiming);
+        if (_error is not null && ErrorLabel.Visibility == Visibility.Visible) ErrorLabel.Text = _error();
+    }
     public void CloseSilently() { _silent=true; Close(); }
     protected override void OnClosing(CancelEventArgs e) { if(!_silent && !_dismiss()) e.Cancel=true; base.OnClosing(e); }
     private void OnLoaded(object sender, RoutedEventArgs e) { Infrastructure.WindowPlacement.WatchDpi(this); Infrastructure.WindowPlacement.EnsureVisible(this); }

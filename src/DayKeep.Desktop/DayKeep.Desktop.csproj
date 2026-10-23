@@ -11,6 +11,7 @@
     <ApplicationIcon>..\..\assets\brand\daykeep.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Localization\*.json" WithCulture="false" LogicalName="DayKeep.Localization.%(Filename)%(Extension)" />
     <ProjectReference Include="..\DayKeep.Core\DayKeep.Core.csproj" />
     <Using Remove="System.Windows.Forms" />
     <Using Remove="System.Drawing" />

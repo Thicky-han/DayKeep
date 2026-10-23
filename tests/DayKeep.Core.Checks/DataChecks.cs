@@ -83,6 +83,34 @@ internal static class DataChecks
             var first=new DateOnly(2026,10,26);Assert(f.Source.History(new("尚未开放",t.Id,first,first),TimeZoneInfo.Utc).Entries.Single().Notes=="入口尚未开放");Assert(f.Source.History(new(TaskId:Guid.NewGuid()),TimeZoneInfo.Utc).Entries.Count==0);Throws<TaskValidationException>(()=>f.Source.History(new(From:first.AddDays(1),To:first),TimeZoneInfo.Utc));
         });
         Case("history reports truncation and can narrow to archived task",f=> {var t=f.Source.Create(new("history",TaskKind.Todo));for(var i=0;i<201;i++)t=f.Source.Edit(t,new("history",TaskKind.Todo));var result=f.Source.History(new("编辑事项"),TimeZoneInfo.Utc);Assert(result.HasMore && result.Entries.Count==200);t=f.Source.Archive(t);Assert(f.Source.History(new("归档",t.Id),TimeZoneInfo.Utc).Entries.Count==1);});
+        Case("localized operation search filters before truncation and keeps canonical queries",f=>
+        {
+            var t=f.Source.Create(new("Original task title",TaskKind.Todo));
+            for(var i=0;i<205;i++) {f.Now=f.Now.AddMinutes(1);t=f.Source.Edit(t,new("Original task title",TaskKind.Todo));}
+            var labels=new Dictionary<string,string> {{"创建事项","Task created"},{"编辑事项","Task edited"}};var before=BackupFile.Hash(f.Source.Capture());
+            var created=f.Source.History(new("CREAT",ActionLabels:labels),TimeZoneInfo.Utc);
+            Assert(created.Entries.Single().Kind=="created" && !created.HasMore);
+            var edited=f.Source.History(new("EDIT",ActionLabels:labels),TimeZoneInfo.Utc);
+            Assert(edited.Entries.Count==200 && edited.HasMore && edited.Entries.All(e=>e.Kind=="edited"));
+            Assert(f.Source.History(new("创建事项",ActionLabels:labels),TimeZoneInfo.Utc).Entries.Single().Id==created.Entries.Single().Id);
+            var french=new Dictionary<string,string> {{"创建事项","Tâche créée"},{"编辑事项","Tâche modifiée"}};
+            Assert(f.Source.History(new("cré",ActionLabels:french),TimeZoneInfo.Utc).Entries.Single().Id==created.Entries.Single().Id);
+            Assert(f.Source.History(new("Original task title",ActionLabels:french),TimeZoneInfo.Utc) is {HasMore:true,Entries.Count:200} && BackupFile.Hash(f.Source.Capture())==before);
+        });
+        Case("localized history search combines task dates and unchanged title or note text",f=>
+        {
+            var day=f.Date;var t=f.Source.Create(new("创建事项",TaskKind.WaitingForCondition));
+            f.Now=f.Now.AddMinutes(1);t=f.Source.RecordWaitingCheck(t,day,"Created item 原文 à garder");
+            var other=f.Source.Create(new("other task",TaskKind.WaitingForCondition));f.Source.RecordWaitingCheck(other,day,"Created item in another task");
+            f.Now=f.Now.AddDays(1);f.Source.RecordWaitingCheck(t,f.Date,"第二日原文");
+            var labels=new Dictionary<string,string> {{"创建事项","Tâche créée"},{"今日已检查，尚未开放","Vérification faite, toujours indisponible"}};
+            var before=BackupFile.Hash(f.Source.Capture());var query=new HistoryQuery("VÉRIF",t.Id,day,day,labels);
+            var checkedEntry=f.Source.History(query,TimeZoneInfo.Utc);
+            Assert(!checkedEntry.HasMore && checkedEntry.Entries.Single() is {Kind:"check-waiting",Title:"创建事项",Notes:"Created item 原文 à garder"});
+            Assert(f.Source.History(query with {Text="Created item"},TimeZoneInfo.Utc).Entries.Single().Id==checkedEntry.Entries.Single().Id);
+            Assert(f.Source.History(query with {Text="创建事项"},TimeZoneInfo.Utc).Entries.Count==2);
+            Assert(f.Source.History(query with {From=day.AddDays(2),To=day.AddDays(2)},TimeZoneInfo.Utc).Entries.Count==0 && BackupFile.Hash(f.Source.Capture())==before);
+        });
         Case("schema-4 upgrade retains full prior data and protects stale restores",f=> {f.Populate();var before=f.Source.Capture();f.Sql(f.Source,"DROP TABLE app_metadata; PRAGMA user_version=4;");f.Source.Initialize();var after=f.Source.Capture();Assert(after.Tasks.SequenceEqual(before.Tasks) && after.Checks.SequenceEqual(before.Checks) && after.Deliveries.SequenceEqual(before.Deliveries));});
         Case("failed schema-4 upgrade preserves byte content",f=> {f.Source.Create(new("preserve",TaskKind.Todo));f.Sql(f.Source,"PRAGMA user_version=4;");var bytes=File.ReadAllBytes(f.Source.Repository.DatabasePath);Throws<SqliteException>(f.Source.Initialize);Assert(bytes.SequenceEqual(File.ReadAllBytes(f.Source.Repository.DatabasePath)));});
         Case("patent scenario checks daily then handles completes undoes and restores backup",f=>

@@ -41,4 +41,4 @@ $hashes += (Get-FileHash -LiteralPath (Join-Path $output 'package-report.json') 
 $hashes | Set-Content -LiteralPath (Join-Path $output 'SHA256SUMS') -Encoding ASCII
 Write-Output "Release candidate packaged and verified: $output"
 Write-Output "Source commit: $commit"
-Write-Output 'No repository, tag or GitHub Release was published. Await maintainer confirmation.'
+Write-Output 'This update candidate has not been pushed, tagged or published as a GitHub Release. The existing public repository and 0.6.0-l6 release are unchanged. Await maintainer confirmation.'

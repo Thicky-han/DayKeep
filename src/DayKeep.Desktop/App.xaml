@@ -8,6 +8,7 @@
   <SolidColorBrush x:Key="Accent" Color="#347568" />
   <Style TargetType="TextBlock">
    <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+   <Setter Property="TextWrapping" Value="Wrap" />
   </Style>
   <Style TargetType="Button">
    <Setter Property="FontSize" Value="13" />
@@ -19,6 +20,7 @@
    <Setter Property="Cursor" Value="Hand" />
    <Setter Property="HorizontalContentAlignment" Value="Center" />
    <Setter Property="VerticalContentAlignment" Value="Center" />
+   <Setter Property="ContentTemplate"><Setter.Value><DataTemplate><TextBlock Text="{Binding}" TextWrapping="Wrap" TextAlignment="Center" /></DataTemplate></Setter.Value></Setter>
    <Setter Property="Template">
     <Setter.Value>
      <ControlTemplate TargetType="Button">

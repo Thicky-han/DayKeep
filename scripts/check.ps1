@@ -8,6 +8,13 @@ foreach ($path in $required) { if (-not (Test-Path -LiteralPath (Join-Path $proj
 foreach ($path in @('L6_REPORT.md','RELEASE_NOTES.md','README.zh-TW.md','README.en.md','README.ja.md','README.ko.md','README.fr.md','README.de.md','README.es.md','README.pt.md','packaging/Install.ps1','packaging/Uninstall.ps1','scripts/package-release.ps1')) {
     if (-not (Test-Path -LiteralPath (Join-Path $projectRoot $path))) { throw "Missing $path" }
 }
+foreach ($path in @('docs/LANGUAGES.md','src/DayKeep.Desktop/Localization/Localizer.cs','src/DayKeep.Desktop/Infrastructure/LanguageUiChecks.cs')) {
+    if (-not (Test-Path -LiteralPath (Join-Path $projectRoot $path))) { throw "Missing $path" }
+}
+foreach ($language in @('zh-CN','zh-TW','en','ja','ko','fr','de','es','pt')) {
+    $path = "src/DayKeep.Desktop/Localization/$language.json"
+    if (-not (Test-Path -LiteralPath (Join-Path $projectRoot $path))) { throw "Missing $path" }
+}
 $failures = [System.Collections.Generic.List[string]]::new()
 foreach ($path in $paths) {
     if ($path -match '(^|/)(\.tools|\.cache|bin|obj|dist|release)/') { $failures.Add("Generated or local file: $path"); continue }

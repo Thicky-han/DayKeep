@@ -22,6 +22,9 @@ foreach ($path in $readmes) {
     $body = Get-Content -LiteralPath $path -Raw
     # Count characters rather than UTF-8 bytes; CJK tutorials need fewer characters.
     if ($body.Length -lt 1800 -or ([regex]::Matches($body,'(?m)^## ')).Count -lt 6 -or $body -notmatch 'Install.cmd' -or $body -notmatch 'Uninstall.cmd' -or $body -notmatch '09:00' -or $body -notmatch '合并' -or $body -notmatch '替换' -or $body -notmatch '历史与备份' -or $body -notmatch 'SHA256SUMS' -or $body -notmatch 'AGPL-3.0-only') { throw "Incomplete localized tutorial: $path" }
+    foreach ($languageName in @('Language / 语言','简体中文','繁體中文','English','日本語','한국어','Français','Deutsch','Español','Português','docs/LANGUAGES.md','0.7.0-beta.1')) {
+        if (-not $body.Contains($languageName)) { throw "Missing language-switching tutorial detail in $path" }
+    }
     foreach ($other in $readmes) { if (-not $body.Contains('('+ $other +')')) { throw "Language navigation missing from $path" } }
 }
 Write-Output "Release source audit passed: $($revisions.Count) reachable commits; no matched secrets/private paths/generated data; noreply metadata; nine full tutorials."

@@ -4,15 +4,23 @@
 
 [Télécharger Windows ZIP](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-win-x64.zip) · [Code source](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-source.zip) · [Empreintes](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/SHA256SUMS) · [Version publiée](https://github.com/Thicky-han/DayKeep/releases/tag/v0.6.0-l6)
 
-Un petit pas chaque jour, jusqu'à la fin. DayKeep rappelle les démarches qui demandent des vérifications répétées, par exemple l'ouverture du paiement d'un brevet. Vérifier aujourd'hui ne termine pas la tâche. Préversion **0.6.0-l6**, publiée avec l'accord du responsable ; neuf langues de documentation, mais **l'interface est actuellement en chinois simplifié**. L'essai réel de trois jours reste à valider. Binaire non signé.
+Un petit pas chaque jour, jusqu'à la fin. DayKeep rappelle les démarches qui demandent des vérifications répétées, par exemple l'ouverture du paiement d'un brevet. Vérifier aujourd'hui ne termine pas la tâche. La candidate locale **0.7.0-beta.1** ajoute neuf langues d'interface et un sélecteur bien visible. Sa publication exige la confirmation du responsable ; les résultats réels de compilation et de paquet figurent dans le [rapport de mise à jour linguistique](LANGUAGE_UPDATE_REPORT.md). Les liens ci-dessus restent ceux de **0.6.0-l6 (interface uniquement en chinois simplifié)**. L'essai réel de trois jours reste à valider. Binaire non signé.
 
 ![Fenêtre avec tâches fictives](assets/screenshots/main.png)
 
+## Changer la langue de l'interface
+
+Ouvrez **Language / 语言** en haut de la fenêtre principale. Le sélecteur reste visible en mode large comme en mode compact, sans passer par les réglages. Chaque option porte son nom dans sa langue : **简体中文, 繁體中文, English, 日本語, 한국어, Français, Deutsch, Español, Português**.
+
+Le choix actualise immédiatement les textes de l'application : fenêtre principale, formulaires, rappels, historique et sauvegardes. Il est enregistré localement et retrouvé au prochain lancement. Sans choix enregistré, y compris lors d'une mise à jour, la langue par défaut est le chinois simplifié. Un échec d'enregistrement affiche une erreur et conserve la langue précédente.
+
+Vos noms de tâches, notes, liens et enregistrements d'origine ne sont pas traduits. La langue ne change ni le fuseau local du PC, ni les jours, ni les horaires. Utilisez toujours `HH:mm` sur 24 heures et `yyyy-MM-dd` pour les échéances. Les noms chinois ci-dessous servent de repères ; l'application affiche leur équivalent dans la langue choisie. [Langues et enregistrement](docs/LANGUAGES.md)
+
 ## Installation et mise à jour
 
-Extrayez entièrement DayKeep-0.6.0-l6-win-x64.zip. Windows x64, environnement .NET inclus, aucun SDK requis. Ne lancez pas depuis le ZIP et ne copiez pas seulement l'exécutable. Vérifiez la provenance et SHA256SUMS, puis ouvrez DayKeep.exe pour une utilisation portable. Windows peut afficher un éditeur inconnu.
+Extrayez entièrement le candidat DayKeep-0.7.0-beta.1-win-x64.zip. L'ancien paquet publié s'utilise de même, mais sans sélecteur de langue. Windows x64, environnement .NET inclus, aucun SDK requis. Ne lancez pas depuis le ZIP et ne copiez pas seulement l'exécutable. Vérifiez la provenance et SHA256SUMS, puis ouvrez DayKeep.exe pour une utilisation portable. Windows peut afficher un éditeur inconnu.
 
-Install.cmd installe sans droits administrateur dans LocalApplicationData/Programs/DayKeep/0.6.0-l6 et crée les raccourcis DayKeep du bureau/menu Démarrer. L'exception de stratégie PowerShell concerne ce processus uniquement. Le démarrage à la connexion reste désactivé. Avant une mise à jour : exportez une sauvegarde, enregistrez les formulaires et quittez l'ancienne version via「退出日守」dans la zone de notification ; × masque seulement. Les versions ont des dossiers distincts. Un dossier/raccourci inconnu est conservé ; une réinstallation identique exige les fichiers intacts. Au premier lancement, migration transactionnelle vers schema 5, illisible par L1–L4.
+Install.cmd installe sans droits administrateur dans LocalApplicationData/Programs/DayKeep/0.7.0-beta.1 et crée les raccourcis DayKeep du bureau/menu Démarrer. L'exception de stratégie PowerShell concerne ce processus uniquement. Le démarrage à la connexion reste désactivé. Avant une mise à jour : exportez une sauvegarde, enregistrez les formulaires et quittez l'ancienne version via「退出日守」dans la zone de notification ; × masque seulement. Les versions ont des dossiers distincts. Un dossier/raccourci inconnu est conservé ; une réinstallation identique exige les fichiers intacts. Au premier lancement, migration transactionnelle vers schema 5, illisible par L1–L4.
 
 ## Première tâche
 
@@ -24,7 +32,7 @@ Install.cmd installe sans droits administrateur dans LocalApplicationData/Progra
 
 ## Suivi quotidien
 
-| Bouton chinois | Utilisation |
+| Bouton (repère chinois) | Utilisation |
 | --- | --- |
 | 打开平台 | Ouvrir le navigateur, sans enregistrer de vérification ni de fin |
 | 今日已检查，尚未开放 | Vérifié, pas encore ouvert : arrête les vérifications du jour ; reprend au prochain jour choisi |
@@ -47,9 +55,9 @@ Ouvrez「历史与备份」ou「检查历史与备份」en bas du mode compact. 
 ## Sauvegarder et restaurer
 
 1. 「备份与恢复 → 导出完整备份」vers un nouveau `.daykeep.json`. Aucun écrasement ; formulaires non enregistrés exclus.
-2. Contient tâches, historique, annulation de fin, archives, reports, budgets journaliers et distributions ; pas l'apparence ni le démarrage. Fichier en clair : protégez-le, importez seulement une source fiable.
+2. Contient tâches, historique, annulation de fin, archives, reports, budgets journaliers et distributions ; pas la langue, l'apparence ni le démarrage. L'import ne change pas la langue choisie. Fichier en clair : protégez-le, importez seulement une source fiable.
 3. 「选择备份并预览」montre dates/comptages sans modifier.「合并」ajoute seulement les GUID absents ; pour le même ID, tout le groupe local reste. Même nom avec autre ID = autre tâche.
-4. 「替换」restaure l'ensemble et retire les tâches locales absentes. Enregistrez/fermez les formulaires, vérifiez l'impact puis cochez la confirmation. Changer de mode décoche.
+4. 「替换」restaure l'ensemble et retire les tâches locales absentes. Enregistrez/fermez les formulaires, vérifiez l'impact puis cochez la confirmation. Changer de mode ou de langue décoche. Le changement de langue conserve le fichier, le mode et l'aperçu figé ; vérifiez à nouveau l'impact dans la nouvelle langue avant de confirmer.
 5. Si données ou distributions changent,「重新预览」. Avant modification, copie automatique des données actuelles dans Recovery à côté de tasks.db ; chemin affiché après succès.
 6. Pour annuler l'import, prévisualisez cette copie et remplacez. Échec de copie : aucun changement ; erreur SQL : transaction annulée. Fichier corrompu, version/structure/empreinte incorrecte : refus.
 

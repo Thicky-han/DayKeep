@@ -1,8 +1,15 @@
+using DayKeep.Localization;
+
 namespace DayKeep.Models;
 
-public sealed record PreviewTask(string Title, string Category, string Status, string Time,
-    string Description, string Icon, string Tint, string Accent)
+public sealed record PreviewTask(string TitleKey, string CategoryKey, string StatusKey, string TimeKey,
+    string DescriptionKey, string Icon, string Tint, string Accent)
 {
+    public string Title => Localizer.T(TitleKey);
+    public string Category => Localizer.T(CategoryKey);
+    public string Status => Localizer.T(StatusKey);
+    public string Time => Localizer.T(TimeKey);
+    public string Description => Localizer.T(DescriptionKey);
     public static IReadOnlyList<PreviewTask> Examples { get; } =
     [
         new("查看专利缴费入口", "等待开放", "等待条件满足", "每天 09:00", "今天查过还未开放？记录一次检查，明天继续跟进。", "◷", "#EEF3E9", "#697C45"),

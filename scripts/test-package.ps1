@@ -25,6 +25,12 @@ function Invoke-PackageScript([string]$Script,[string[]]$Arguments,[bool]$MustSu
 $install=Join-Path $unpacked 'Install.ps1'
 $target=Join-Path $ReportDirectory '安装 空间\DayKeep'
 Test-PackageCheck 'Extracted payload matches every manifest hash' { Test-DayKeepFiles $unpacked $manifest }
+Test-PackageCheck 'Payload includes the nine tutorials and language-switching guide' {
+    foreach ($path in @('README.md','README.zh-TW.md','README.en.md','README.ja.md','README.ko.md','README.fr.md','README.de.md','README.es.md','README.pt.md','docs/LANGUAGES.md')) {
+        if (-not (Test-Path -LiteralPath (Get-DayKeepChild $unpacked $path) -PathType Leaf)) { throw "Missing packaged language guide: $path" }
+        if ($path -notin @($manifest.files.path)) { throw "Language guide is absent from package manifest: $path" }
+    }
+}
 Test-PackageCheck 'Portable uninstaller refuses an uninstalled folder' { Invoke-PackageScript (Join-Path $unpacked 'Uninstall.ps1') @('-NoShortcuts') $false; Test-DayKeepFiles $unpacked $manifest }
 Test-PackageCheck 'Windows PowerShell 5.1 installs into an isolated Unicode path' { Invoke-PackageScript $install @('-TargetDirectory',$target,'-NoShortcuts'); Test-DayKeepFiles $target $manifest }
 Test-PackageCheck 'Identical reinstall is safe and leaves file hashes unchanged' { Invoke-PackageScript $install @('-TargetDirectory',$target,'-NoShortcuts'); Test-DayKeepFiles $target $manifest }
@@ -80,14 +86,16 @@ Test-PackageCheck 'Uninstall removes only this version and preserves sibling dat
     Invoke-PackageScript (Join-Path $target 'Uninstall.ps1') @('-NoShortcuts')
     if ((Test-Path -LiteralPath $target) -or [IO.File]::ReadAllText($sentinel) -ne 'sibling') { throw 'Uninstall scope mismatch.' }
 }
-Test-PackageCheck 'Corresponding source archive contains the committed source and nine tutorials' {
+Test-PackageCheck 'Corresponding source includes localization, language checks and nine tutorials' {
     $zip=[IO.Compression.ZipFile]::OpenRead($SourcePath)
     try {
-        foreach ($path in @('src/DayKeep.Core/Backups.cs','src/DayKeep.Desktop/TaskDataWindow.xaml','packaging/Install.ps1','LICENSE','README.md','README.zh-TW.md','README.en.md','README.ja.md','README.ko.md','README.fr.md','README.de.md','README.es.md','README.pt.md')) {
+        $requiredSource = @('src/DayKeep.Core/Backups.cs','src/DayKeep.Desktop/TaskDataWindow.xaml','src/DayKeep.Desktop/Localization/Localizer.cs','src/DayKeep.Desktop/Infrastructure/LanguageUiChecks.cs','docs/LANGUAGES.md','packaging/Install.ps1','LICENSE','README.md','README.zh-TW.md','README.en.md','README.ja.md','README.ko.md','README.fr.md','README.de.md','README.es.md','README.pt.md')
+        $requiredSource += @('zh-CN','zh-TW','en','ja','ko','fr','de','es','pt' | ForEach-Object { "src/DayKeep.Desktop/Localization/$_.json" })
+        foreach ($path in $requiredSource) {
             if (-not $zip.GetEntry("DayKeep-$($manifest.version)-source/$path")) { throw "Missing source entry: $path" }
         }
         if ($zip.Entries | Where-Object { $_.FullName -match '/(\.cache|\.tools|bin|obj|dist|release|Recovery)/|\.daykeep\.json$|\.db$' }) { throw 'Private/generated data in source archive.' }
     } finally { $zip.Dispose() }
 }
 $smokeReport=Get-Content -LiteralPath (Join-Path $ReportDirectory 'installed-smoke\report.json') -Raw | ConvertFrom-Json
-[ordered]@{stage='L6';passed=$true;version=$manifest.version;sourceCommit=$manifest.sourceCommit;checks=$checks;wpfChecks=@($smokeReport.checks | Where-Object { $_.passed -eq $true }).Count;scope='Extracted ZIP, isolated per-user installer path without real shortcuts, Windows PowerShell 5.1; installed app smoke. Private task database and login startup untouched.'} | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $ReportDirectory 'package-report.json') -Encoding UTF8
+[ordered]@{stage=$manifest.version;passed=$true;version=$manifest.version;sourceCommit=$manifest.sourceCommit;checks=$checks;wpfChecks=@($smokeReport.checks | Where-Object { $_.passed -eq $true }).Count;scope='Extracted ZIP with nine tutorials and language guide, isolated per-user installer path without real shortcuts, Windows PowerShell 5.1; installed app smoke including language switching. Private task database and login startup untouched.'} | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $ReportDirectory 'package-report.json') -Encoding UTF8

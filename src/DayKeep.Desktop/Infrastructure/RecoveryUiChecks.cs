@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using DayKeep.Core;
 using DayKeep.Models;
+using DayKeep.Localization;
 using Microsoft.Data.Sqlite;
 using Microsoft.Win32;
 
@@ -22,7 +23,7 @@ internal static class RecoveryUiChecks
         static void Assert(bool value) { if(!value) throw new InvalidOperationException("L4 UI expectation failed"); }
         try
         {
-            check("L4 startup after a missed time shows one merged recovery window",()=> { controller.Dispose();now=now.AddHours(2);controller=Open();Assert(controller.Window is {TaskCount:2}); var cards=((ItemsControl)controller.Window!.FindName("DueTaskList")).Items.Cast<TaskCard>();Assert(cards.All(c=>c.ReminderDetail.Contains("原定 10月26日 09:00"))); });
+            check("L4 startup after a missed time shows one merged recovery window",()=> { controller.Dispose();now=now.AddHours(2);controller=Open();Assert(controller.Window is {TaskCount:2}); var cards=((ItemsControl)controller.Window!.FindName("DueTaskList")).Items.Cast<TaskCard>();var expected=new DateTimeOffset(2026,10,26,9,0,0,TimeSpan.Zero).ToString("g",Localizer.Culture);Assert(cards.All(c=>c.ReminderDetail==Localizer.T("补提醒 · 原定 {0}",expected))); });
             if(controller.Window is { } recovered) SmokeRunner.Render(recovered,Path.Combine(directory,"daykeep-l4-recovered.png"));
             check("L4 dismissed delivery remains dismissed after controller restart",()=> { controller.Window!.Close();controller.Dispose();controller=Open();Assert(controller.Window is null); });
             check("L4 visible delivery restores with the same identifiers and budget",()=> {now=new(2026,10,26,14,10,0,TimeSpan.Zero);controller.Tick();var before=service.ReminderSnapshot(new(2026,10,26));controller.Dispose();controller=Open();var after=service.ReminderSnapshot(new(2026,10,26));Assert(controller.Window?.TaskCount==2 && before.Deliveries.SequenceEqual(after.Deliveries) && before.Progress.SequenceEqual(after.Progress));});

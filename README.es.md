@@ -4,15 +4,23 @@
 
 [Descargar ZIP de Windows](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-win-x64.zip) · [Código fuente](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-source.zip) · [Sumas de comprobación](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/SHA256SUMS) · [Publicación](https://github.com/Thicky-han/DayKeep/releases/tag/v0.6.0-l6)
 
-Un paso cada día, hasta terminar. Recordatorios locales para Windows de tareas que requieren comprobaciones, como un portal de pago de patentes aún cerrado. Comprobar hoy no completa toda la tarea. Versión preliminar **0.6.0-l6**, publicada con la aprobación del responsable; documentación en nueve idiomas, **interfaz actualmente en chino simplificado**. La prueba real de tres días sigue pendiente. Binarios sin firma.
+Un paso cada día, hasta terminar. Recordatorios locales para Windows de tareas que requieren comprobaciones, como un portal de pago de patentes aún cerrado. Comprobar hoy no completa toda la tarea. La candidata local **0.7.0-beta.1** añade nueve idiomas de interfaz y un selector visible. Su publicación requiere la confirmación del responsable; los resultados reales de compilación y empaquetado figuran en el [informe de actualización de idiomas](LANGUAGE_UPDATE_REPORT.md). Los enlaces de arriba siguen siendo de **0.6.0-l6 (interfaz solo en chino simplificado)**. La prueba real de tres días sigue pendiente. Binarios sin firma.
 
 ![Ventana con tareas ficticias](assets/screenshots/main.png)
 
+## Cambiar el idioma de la interfaz
+
+Abre **Language / 语言** en la parte superior de la ventana principal. El selector permanece visible tanto en modo amplio como compacto, sin entrar en ajustes. Cada idioma aparece con su propio nombre: **简体中文, 繁體中文, English, 日本語, 한국어, Français, Deutsch, Español, Português**.
+
+La elección actualiza al instante los textos de la ventana principal, formularios, recordatorios, historial y copias. Se guarda en este equipo y se recupera al iniciar de nuevo. Sin una elección guardada, también al actualizar, se usa chino simplificado. Si falla el guardado, aparece un error y se conserva el idioma anterior.
+
+Tus nombres de tareas, notas, enlaces y registros originales no se traducen. El cambio no modifica la zona horaria local del equipo, los días ni las horas programadas. Usa `HH:mm` de 24 horas y `yyyy-MM-dd` para fechas límite. Los botones chinos de abajo sirven como referencia; la app muestra su equivalente en el idioma elegido. [Idiomas y guardado](docs/LANGUAGES.md)
+
 ## Instalar y actualizar
 
-Extrae todo DayKeep-0.6.0-l6-win-x64.zip. Windows x64, entorno .NET incluido, sin SDK. No ejecutes dentro del ZIP ni copies solo el exe. Comprueba origen y SHA256SUMS; abre DayKeep.exe para uso portátil. Windows puede mostrar un editor desconocido.
+Extrae toda la candidata DayKeep-0.7.0-beta.1-win-x64.zip. El ZIP publicado anterior se usa igual, pero no tiene selector de idioma. Windows x64, entorno .NET incluido, sin SDK. No ejecutes dentro del ZIP ni copies solo el exe. Comprueba origen y SHA256SUMS; abre DayKeep.exe para uso portátil. Windows puede mostrar un editor desconocido.
 
-Install.cmd instala sin administrador en LocalApplicationData/Programs/DayKeep/0.6.0-l6 y crea accesos DayKeep en escritorio/Inicio. La excepción de política PowerShell solo afecta a ese proceso. No activa el inicio de sesión. Antes de actualizar, exporta copia, guarda formularios y sal de la versión anterior con「退出日守」en la bandeja; × solo oculta. Cada versión conserva su carpeta; las carpetas/accesos desconocidos no se sobrescriben. Reinstalar la misma versión exige archivos idénticos e intactos. El primer inicio migra mediante transacción a schema 5, que L1–L4 no pueden leer.
+Install.cmd instala sin administrador en LocalApplicationData/Programs/DayKeep/0.7.0-beta.1 y crea accesos DayKeep en escritorio/Inicio. La excepción de política PowerShell solo afecta a ese proceso. No activa el inicio de sesión. Antes de actualizar, exporta copia, guarda formularios y sal de la versión anterior con「退出日守」en la bandeja; × solo oculta. Cada versión conserva su carpeta; las carpetas/accesos desconocidos no se sobrescriben. Reinstalar la misma versión exige archivos idénticos e intactos. El primer inicio migra mediante transacción a schema 5, que L1–L4 no pueden leer.
 
 ## Crear la primera tarea
 
@@ -24,7 +32,7 @@ Install.cmd instala sin administrador en LocalApplicationData/Programs/DayKeep/0
 
 ## Seguimiento diario
 
-| Botón chino | Efecto |
+| Botón (referencia china) | Efecto |
 | --- | --- |
 | 打开平台 | Solo abre navegador, no registra comprobación ni finalización |
 | 今日已检查，尚未开放 | Comprobado, sigue cerrado: detiene comprobaciones de hoy; vuelve el próximo día elegido |
@@ -47,9 +55,9 @@ Abre「历史与备份」o abajo en modo compacto「检查历史与备份」. El
 ## Copias, restauración y deshacer importación
 
 1. 「备份与恢复 → 导出完整备份」a un nuevo `.daykeep.json`. Sin sobrescribir; excluye formularios sin guardar.
-2. Incluye tareas, historial, deshacer finalización, archivo, posposición, cupos diarios y entregas; no apariencia/inicio. Es texto sin cifrar: protégelo e importa solo fuentes fiables.
+2. Incluye tareas, historial, deshacer finalización, archivo, posposición, cupos diarios y entregas; no idioma/apariencia/inicio. Importar no cambia el idioma elegido. Es texto sin cifrar: protégelo e importa solo fuentes fiables.
 3. 「选择备份并预览」enseña fechas/cantidades sin cambios.「合并」añade solo GUID ausentes; conserva íntegro el grupo local del mismo ID. Mismo nombre con ID distinto sigue separado.
-4. 「替换」restaura toda la copia y elimina tareas locales ausentes. Guarda/cierra formularios, revisa impacto y marca confirmación. Cambiar modo desmarca.
+4. 「替换」restaura toda la copia y elimina tareas locales ausentes. Guarda/cierra formularios, revisa impacto y marca confirmación. Cambiar modo o idioma desmarca. Al cambiar idioma se conservan archivo, modo y vista previa congelada; revisa el impacto en el nuevo idioma y confirma otra vez.
 5. Si cambian datos/avisos,「重新预览」. Antes de escribir se guarda el estado actual en Recovery junto a tasks.db y se muestra la ruta al terminar.
 6. Para deshacer, previsualiza ese archivo y reemplaza. Si falla la copia de recuperación no se cambia la base; errores SQL revierten la transacción. Se rechaza daño, incompatibilidad, estructura o suma incorrecta.
 

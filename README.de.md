@@ -4,15 +4,23 @@
 
 [Windows-ZIP herunterladen](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-win-x64.zip) · [Quelltext](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-source.zip) · [Prüfsummen](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/SHA256SUMS) · [Veröffentlichung](https://github.com/Thicky-han/DayKeep/releases/tag/v0.6.0-l6)
 
-Jeden Tag ein Schritt, bis es erledigt ist. Lokale Windows-Erinnerungen für wiederholte Prüfungen, etwa ein noch geschlossenes Portal zur Patentgebührenzahlung. Heute geprüft bedeutet nicht vollständig erledigt. Vorabversion **0.6.0-l6**, mit Zustimmung veröffentlicht; neun Dokumentationssprachen, **die App-Oberfläche ist derzeit vereinfachtes Chinesisch**. Der dreitägige echte Nutzungstest steht aus. Keine Codesignatur.
+Jeden Tag ein Schritt, bis es erledigt ist. Lokale Windows-Erinnerungen für wiederholte Prüfungen, etwa ein noch geschlossenes Portal zur Patentgebührenzahlung. Heute geprüft bedeutet nicht vollständig erledigt. Der lokale Kandidat **0.7.0-beta.1** ergänzt neun Oberflächensprachen und eine gut sichtbare Sprachauswahl. Die Veröffentlichung braucht die Bestätigung des Maintainers; tatsächliche Build- und Paketergebnisse stehen im [Bericht zur Sprachaktualisierung](LANGUAGE_UPDATE_REPORT.md). Die Links oben führen weiterhin zur veröffentlichten **0.6.0-l6 (Oberfläche nur auf vereinfachtem Chinesisch)**. Der dreitägige echte Nutzungstest steht aus. Keine Codesignatur.
 
 ![Hauptfenster mit erfundenen Aufgaben](assets/screenshots/main.png)
 
+## Oberflächensprache wechseln
+
+Oben im Hauptfenster **Language / 语言** öffnen. Die Auswahl bleibt im breiten und schmalen Modus sichtbar; keine Einstellungsseite nötig. Die Sprachen erscheinen mit ihrem eigenen Namen: **简体中文, 繁體中文, English, 日本語, 한국어, Français, Deutsch, Español, Português**.
+
+Die Auswahl ändert Anwendungstexte in Hauptfenster, Formularen, Erinnerungen, Verlauf und Backups sofort. Sie wird lokal gespeichert und beim nächsten Start wiederhergestellt. Ohne gespeicherte Auswahl, auch beim Upgrade, bleibt vereinfachtes Chinesisch der Standard. Bei Speicherfehlern erscheint eine Fehlermeldung und die bisherige Sprache bleibt erhalten.
+
+Eigene Aufgabennamen, Notizen, Links und ursprüngliche Datensätze werden nicht übersetzt. Zeitzone des PCs, Wochentage und geplante Zeiten bleiben gleich. Zeiten weiter als `HH:mm` im 24-Stunden-Format, Fristen als `yyyy-MM-dd` eingeben. Die chinesischen Schaltflächennamen unten dienen als Referenz; die App zeigt die gewählte Übersetzung. [Sprachen und Speicherung](docs/LANGUAGES.md)
+
 ## Installation und Aktualisierung
 
-DayKeep-0.6.0-l6-win-x64.zip vollständig entpacken. Windows x64, .NET-Laufzeit enthalten, kein SDK nötig. Nicht im ZIP starten oder nur die exe kopieren. Herkunft und SHA256SUMS prüfen; DayKeep.exe funktioniert portabel. Windows kann einen unbekannten Herausgeber melden.
+Den Kandidaten DayKeep-0.7.0-beta.1-win-x64.zip vollständig entpacken. Das veröffentlichte ältere Paket funktioniert ebenso, hat aber keine Sprachauswahl. Windows x64, .NET-Laufzeit enthalten, kein SDK nötig. Nicht im ZIP starten oder nur die exe kopieren. Herkunft und SHA256SUMS prüfen; DayKeep.exe funktioniert portabel. Windows kann einen unbekannten Herausgeber melden.
 
-Install.cmd installiert ohne Administratorrechte unter LocalApplicationData/Programs/DayKeep/0.6.0-l6 und erstellt DayKeep-Verknüpfungen auf Desktop/Startmenü. Die PowerShell-Richtlinienausnahme gilt nur für diesen Prozess. Autostart bleibt aus. Vor Updates Backup exportieren, Formulare speichern und die alte Version im Infobereich mit「退出日守」beenden; × blendet nur aus. Versionsordner und unbekannte Ordner/Verknüpfungen bleiben erhalten. Gleiche Version erneut installieren geht nur mit identischen, vollständigen Dateien. Erststart migriert die Datenbank transaktional auf schema 5; L1–L4 können sie danach nicht lesen.
+Install.cmd installiert ohne Administratorrechte unter LocalApplicationData/Programs/DayKeep/0.7.0-beta.1 und erstellt DayKeep-Verknüpfungen auf Desktop/Startmenü. Die PowerShell-Richtlinienausnahme gilt nur für diesen Prozess. Autostart bleibt aus. Vor Updates Backup exportieren, Formulare speichern und die alte Version im Infobereich mit「退出日守」beenden; × blendet nur aus. Versionsordner und unbekannte Ordner/Verknüpfungen bleiben erhalten. Gleiche Version erneut installieren geht nur mit identischen, vollständigen Dateien. Erststart migriert die Datenbank transaktional auf schema 5; L1–L4 können sie danach nicht lesen.
 
 ## Erste Aufgabe
 
@@ -24,7 +32,7 @@ Install.cmd installiert ohne Administratorrechte unter LocalApplicationData/Prog
 
 ## Täglicher Ablauf
 
-| Chinesische Schaltfläche | Bedeutung |
+| Schaltfläche (chinesische Referenz) | Bedeutung |
 | --- | --- |
 | 打开平台 | Nur Browser öffnen, keine Prüfung oder Erledigung buchen |
 | 今日已检查，尚未开放 | Heute geprüft, noch geschlossen: Prüfhinweise heute stoppen, am nächsten gewählten Tag fortsetzen |
@@ -47,9 +55,9 @@ Bei Neustart/Aufwachen/Entsperren wird je Aufgabe nur der letzte gültige verpas
 ## Backup, Wiederherstellung, Import zurücknehmen
 
 1. 「备份与恢复 → 导出完整备份」in neue `.daykeep.json`. Kein Überschreiben; ungespeicherte Formulare ausgeschlossen.
-2. Enthält Aufgaben, Verlauf, Erledigungsrücknahme, Archiv, Verschiebungen, Tagesbudgets und Zustellungen, nicht Darstellung/Autostart. Klartext privat verwahren; nur vertrauenswürdige Dateien importieren.
+2. Enthält Aufgaben, Verlauf, Erledigungsrücknahme, Archiv, Verschiebungen, Tagesbudgets und Zustellungen, nicht Sprache/Darstellung/Autostart. Import ändert die gewählte Sprache nicht. Klartext privat verwahren; nur vertrauenswürdige Dateien importieren.
 3. 「选择备份并预览」zeigt Datum/Zahlen ohne Änderung.「合并」ergänzt nur lokal fehlende GUIDs; gleiche IDs behalten die gesamte lokale Gruppe. Gleicher Name mit anderer ID bleibt getrennt.
-4. 「替换」setzt auf das komplette Backup zurück und entfernt darin fehlende lokale Aufgaben. Formulare speichern/schließen, Folgen prüfen, Bestätigung anhaken. Moduswechsel entfernt den Haken.
+4. 「替换」setzt auf das komplette Backup zurück und entfernt darin fehlende lokale Aufgaben. Formulare speichern/schließen, Folgen prüfen, Bestätigung anhaken. Modus- oder Sprachwechsel entfernt den Haken. Beim Sprachwechsel bleiben Datei, Modus und eingefrorene Vorschau erhalten; Folgen in der neuen Sprache erneut prüfen und bestätigen.
 5. Nach Daten-/Zustellungsänderungen「重新预览」. Vor dem Schreiben entsteht im Ordner Recovery neben tasks.db eine Sicherung der aktuellen Daten; bei Erfolg wird der Pfad gezeigt.
 6. Zur Rücknahme diese Datei prüfen und ersetzen. Sicherungsfehler verhindert Änderungen; SQL-Fehler rollen zurück. Beschädigte, inkompatible oder ungültige Dateien/Prüfsummen werden abgelehnt.
 

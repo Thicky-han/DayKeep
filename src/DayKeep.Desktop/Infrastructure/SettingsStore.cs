@@ -1,9 +1,10 @@
 using System.IO;
 using System.Text.Json;
+using DayKeep.Localization;
 
 namespace DayKeep.Infrastructure;
 
-public sealed record ShellSettings(double SurfaceOpacity = 0.88, bool Compact = false, bool Pinned = false);
+public sealed record ShellSettings(double SurfaceOpacity = 0.88, bool Compact = false, bool Pinned = false,string Language="zh-CN");
 
 public sealed class SettingsStore
 {
@@ -19,7 +20,7 @@ public sealed class SettingsStore
         {
             if (!File.Exists(FilePath)) return new();
             var settings = JsonSerializer.Deserialize<ShellSettings>(File.ReadAllText(FilePath)) ?? new();
-            return settings with { SurfaceOpacity = double.IsFinite(settings.SurfaceOpacity) ? Math.Clamp(settings.SurfaceOpacity, 0.65, 0.98) : 0.88 };
+            return settings with { SurfaceOpacity = double.IsFinite(settings.SurfaceOpacity) ? Math.Clamp(settings.SurfaceOpacity, 0.65, 0.98) : 0.88,Language=Localizer.NormalizeCode(settings.Language) };
         }
         catch (Exception error) when (error is IOException or UnauthorizedAccessException or JsonException)
         {
