@@ -3,7 +3,7 @@ using Microsoft.Data.Sqlite;
 
 namespace DayKeep.Core;
 
-public sealed class TaskRepository(string databasePath, bool readOnly = false)
+public sealed partial class TaskRepository(string databasePath, bool readOnly = false)
 {
     public string DatabasePath { get; } = Path.GetFullPath(databasePath);
     private const long ApplicationId = 1145786417;
@@ -13,11 +13,11 @@ public sealed class TaskRepository(string databasePath, bool readOnly = false)
         using var connection = Open();
         var version = Convert.ToInt64(Scalar(connection, "PRAGMA user_version;"), CultureInfo.InvariantCulture);
         var appId = Convert.ToInt64(Scalar(connection, "PRAGMA application_id;"), CultureInfo.InvariantCulture);
-        if (version > 4) throw new StoreVersionException("任务库来自更新版本，请升级日守后再打开；原文件已保留。");
-        if (version is >= 1 and <= 4 && appId == ApplicationId)
+        if (version > 5) throw new StoreVersionException("任务库来自更新版本，请升级日守后再打开；原文件已保留。");
+        if (version is >= 1 and <= 5 && appId == ApplicationId)
         {
             if (!Equals(Scalar(connection, "PRAGMA quick_check;"), "ok")) throw new StoreVersionException("任务库检查失败，原文件已保留，请从可靠备份恢复。");
-            if (version < 4) Upgrade(connection,version);
+            if (version < 5) Upgrade(connection,version);
             return;
         }
         if (version != 0 || appId != 0 || Convert.ToInt64(Scalar(connection, "SELECT COUNT(*) FROM sqlite_master WHERE name NOT LIKE 'sqlite_%';"), CultureInfo.InvariantCulture) != 0)
@@ -72,6 +72,8 @@ public sealed class TaskRepository(string databasePath, bool readOnly = false)
             """;
         command.ExecuteNonQuery();
         }
+        if(version < 4)
+        {
         command.CommandText = """
             CREATE TABLE reminder_days (
                 task_id TEXT NOT NULL REFERENCES tasks(id), local_date TEXT NOT NULL,
@@ -87,8 +89,10 @@ public sealed class TaskRepository(string databasePath, bool readOnly = false)
             CREATE INDEX reminder_deliveries_by_task_status ON reminder_deliveries(task_id,status);
             CREATE INDEX reminder_deliveries_by_status ON reminder_deliveries(status);
             CREATE INDEX reminder_deliveries_by_date ON reminder_deliveries(local_date);
-            PRAGMA user_version=4;
             """;
+        command.ExecuteNonQuery();
+        }
+        command.CommandText="CREATE TABLE app_metadata(id INTEGER PRIMARY KEY CHECK(id=1),revision_floor INTEGER NOT NULL CHECK(revision_floor>=0)); INSERT INTO app_metadata SELECT 1,COALESCE(MAX(revision),0) FROM tasks; PRAGMA user_version=5;";
         command.ExecuteNonQuery(); transaction.Commit();
     }
 
@@ -113,17 +117,11 @@ public sealed class TaskRepository(string databasePath, bool readOnly = false)
         command.CommandText = expectedRevision is null
             ? "INSERT INTO tasks (id,revision,title,kind,state,paused,url,notes,times,weekdays,repeat_minutes,max_extra,due_date,created_at,updated_at,completed_at,before_completion,paused_before_completion,archived_at) VALUES ($id,$revision,$title,$kind,$state,$paused,$url,$notes,$times,$weekdays,$repeat,$max,$due,$created,$updated,$completed,$before,$wasPaused,$archived);"
             : "UPDATE tasks SET revision=$revision,title=$title,kind=$kind,state=$state,paused=$paused,url=$url,notes=$notes,times=$times,weekdays=$weekdays,repeat_minutes=$repeat,max_extra=$max,due_date=$due,created_at=$created,updated_at=$updated,completed_at=$completed,before_completion=$before,paused_before_completion=$wasPaused,archived_at=$archived WHERE id=$id AND revision=$expected;";
-        Add(command, "$id", item.Id.ToString()); Add(command, "$revision", item.Revision); Add(command, "$title", item.Title);
-        Add(command, "$kind", (int)item.Kind); Add(command, "$state", (int)item.State); Add(command, "$paused", item.Paused);
-        Add(command, "$url", item.Url); Add(command, "$notes", item.Notes); Add(command, "$times", item.Reminder.Times);
-        Add(command, "$weekdays", item.Reminder.Weekdays); Add(command, "$repeat", item.Reminder.RepeatMinutes); Add(command, "$max", item.Reminder.MaxExtraReminders);
-        Add(command, "$due", item.DueDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
-        Add(command, "$created", Stamp(item.CreatedAt)); Add(command, "$updated", Stamp(item.UpdatedAt));
-        Add(command, "$completed", item.CompletedAt is { } completed ? Stamp(completed) : null);
-        Add(command, "$before", item.BeforeCompletion is { } before ? (int)before : null); Add(command, "$wasPaused", item.PausedBeforeCompletion);
-        Add(command, "$archived", item.ArchivedAt is { } archived ? Stamp(archived) : null);
+        BindTask(command,item);
         if (expectedRevision is { } revision) Add(command, "$expected", revision);
         if (command.ExecuteNonQuery() != 1) throw new TaskConflictException();
+        using var floor = connection.CreateCommand(); floor.Transaction=transaction;
+        floor.CommandText="UPDATE app_metadata SET revision_floor=MAX(revision_floor,$revision) WHERE id=1;"; Add(floor,"$revision",item.Revision); floor.ExecuteNonQuery();
         using var eventCommand = connection.CreateCommand();
         eventCommand.Transaction = transaction;
         eventCommand.CommandText = "INSERT INTO task_events VALUES ($id,$task,$kind,$at);";
@@ -152,6 +150,19 @@ public sealed class TaskRepository(string databasePath, bool readOnly = false)
         Add(deliveryCommand,"$cancel",!ReminderPlanner.Active(item) || eventKind is "snoozed" or "checked-still-waiting");
         deliveryCommand.ExecuteNonQuery();
         transaction.Commit();
+    }
+
+    private static void BindTask(SqliteCommand command,TaskItem item)
+    {
+        Add(command, "$id", item.Id.ToString()); Add(command, "$revision", item.Revision); Add(command, "$title", item.Title);
+        Add(command, "$kind", (int)item.Kind); Add(command, "$state", (int)item.State); Add(command, "$paused", item.Paused);
+        Add(command, "$url", item.Url); Add(command, "$notes", item.Notes); Add(command, "$times", item.Reminder.Times);
+        Add(command, "$weekdays", item.Reminder.Weekdays); Add(command, "$repeat", item.Reminder.RepeatMinutes); Add(command, "$max", item.Reminder.MaxExtraReminders);
+        Add(command, "$due", item.DueDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+        Add(command, "$created", Stamp(item.CreatedAt)); Add(command, "$updated", Stamp(item.UpdatedAt));
+        Add(command, "$completed", item.CompletedAt is { } completed ? Stamp(completed) : null);
+        Add(command, "$before", item.BeforeCompletion is { } before ? (int)before : null); Add(command, "$wasPaused", item.PausedBeforeCompletion);
+        Add(command, "$archived", item.ArchivedAt is { } archived ? Stamp(archived) : null);
     }
 
     public IReadOnlyList<TaskCheck> LoadChecks(Guid taskId)

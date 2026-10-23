@@ -35,6 +35,7 @@
        <StackPanel>
         <TextBlock Text="留一点心，少一件遗忘。" FontSize="11" Foreground="{StaticResource Muted}" Margin="10,0,0,23" />
         <Button x:Name="TodayNav" Content="◉    我的事项" Click="NavigateToday" Style="{StaticResource NavigationButton}" Background="#E0EBE1" Foreground="#2D685B" FontWeight="SemiBold" />
+        <Button x:Name="DataNav" Content="◷    历史与备份" Click="DataClick" Style="{StaticResource NavigationButton}" />
         <Button x:Name="RoadmapNav" Content="≡    制作进度" Click="NavigateRoadmap" Style="{StaticResource NavigationButton}" />
         <Button x:Name="SettingsNav" Content="☷    外观与操作" Click="NavigateSettings" Style="{StaticResource NavigationButton}" />
         <Border Height="1" Background="#D6E0D7" Margin="10,20,10,16" />
@@ -92,6 +93,7 @@
           </DataTemplate>
          </ItemsControl.ItemTemplate>
         </ItemsControl>
+        <Button x:Name="DataToolsButton" Content="检查历史与备份" Click="DataClick" Margin="0,5,0,0" Padding="14,10" />
         <Button Content="预览提醒样式（演示）" Click="PreviewClick" Margin="0,5,0,0" Padding="14,10" Background="Transparent" />
         <TextBlock Text="今天已检查 ≠ 任务已完成 · 提醒使用电脑本地时间" Foreground="{StaticResource Muted}" FontSize="10" HorizontalAlignment="Center" Margin="0,12,0,0" TextWrapping="Wrap" />
        </StackPanel>
@@ -101,7 +103,7 @@
         <TextBlock Text="一步一步，做成日常。" FontSize="26" FontWeight="SemiBold" Margin="0,7,0,10" TextWrapping="Wrap" />
         <TextBlock Text="沿用已有项目的分阶段制作与验收流程。" Foreground="{StaticResource Muted}" Margin="0,0,0,24" TextWrapping="Wrap" />
         <TextBlock x:Name="RoadmapText" FontSize="14" LineHeight="29" TextWrapping="Wrap" />
-        <Border Background="#E7EFE4" CornerRadius="12" Padding="16" Margin="0,22,0,0"><TextBlock Text="当前交付 L4：重启和恢复后的汇总补提醒、持久去重与登录启动。下一步完善历史、备份恢复与完整体验验收。" TextWrapping="Wrap" Foreground="#4E6B5B" LineHeight="22" /></Border>
+        <Border Background="#E7EFE4" CornerRadius="12" Padding="16" Margin="0,22,0,0"><TextBlock Text="当前 L5：历史查询、备份预览、合并与替换恢复已接入。开发验证与至少三天实际试用分开记录，试用仍待进行。" TextWrapping="Wrap" Foreground="#4E6B5B" LineHeight="22" /></Border>
        </StackPanel>
       </ScrollViewer>
       <ScrollViewer x:Name="SettingsPage" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
@@ -128,7 +130,7 @@
      </Grid>
     </Grid>
     <Border Grid.Row="2" BorderBrush="#D4DFD5" BorderThickness="0,1,0,0" Margin="22,0">
-     <DockPanel VerticalAlignment="Center"><TextBlock x:Name="StatusLabel" Text="●  本地任务 · L4" Foreground="#667E6D" FontSize="10" /><TextBlock x:Name="ShortcutLabel" Text="Ctrl + Alt + D  随时唤起    ·    0.4.0-l4" Foreground="{StaticResource Muted}" HorizontalAlignment="Right" FontSize="10" /></DockPanel>
+     <DockPanel VerticalAlignment="Center"><TextBlock x:Name="StatusLabel" Text="●  本地任务 · L5" Foreground="#667E6D" FontSize="10" /><TextBlock x:Name="ShortcutLabel" Text="Ctrl + Alt + D  随时唤起    ·    0.5.0-l5" Foreground="{StaticResource Muted}" HorizontalAlignment="Right" FontSize="10" /></DockPanel>
     </Border>
    </Grid>
   </Border>

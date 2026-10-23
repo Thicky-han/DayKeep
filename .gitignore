@@ -9,6 +9,8 @@ release/
 *.suo
 *.log
 *.backup.json
+*.daykeep.json
+Recovery/
 *.db
 *.db-shm
 *.db-wal

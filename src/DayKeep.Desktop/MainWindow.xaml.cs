@@ -22,6 +22,7 @@ public partial class MainWindow : Window
     private IReadOnlyList<TaskItem> _allTasks = [];
     private bool _dataReady;
     private TaskEditorWindow? _editor;
+    private TaskDataWindow? _dataWindow;
     private HashSet<Guid> _checkedToday = [];
     private IReadOnlyList<ReminderProgress> _progress = [];
     private readonly ILoginStartup _loginStartup;
@@ -43,7 +44,7 @@ public partial class MainWindow : Window
         _tasks = tasks ?? new TaskService(new TaskRepository(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DayKeep", "tasks.db")));
         InitializeComponent();
         DateLabel.Text = DateTime.Today.ToString("M 月 d 日 · dddd", CultureInfo.GetCultureInfo("zh-CN"));
-        RoadmapText.Text = "L0   工程基础与半透明桌面界面  ·  已完成\n\nL1   任务管理、状态模型与本地数据库  ·  已完成\n\nL2   固定时间、高亮弹窗与每日跟进  ·  已完成\n\nL3   未完成重复、稍后提醒与截止日期  ·  已完成\n\nL4   重启 / 休眠补提醒、去重与启动设置  ·  当前阶段\n\nL5   历史记录、备份恢复与体验验收\n\nL6   图标定稿、安装包、开源发行与使用说明";
+        RoadmapText.Text = "L0   工程基础与半透明桌面界面  ·  已完成\n\nL1   任务管理、状态模型与本地数据库  ·  已完成\n\nL2   固定时间、高亮弹窗与每日跟进  ·  已完成\n\nL3   未完成重复、稍后提醒与截止日期  ·  已完成\n\nL4   重启 / 休眠补提醒、去重与启动设置  ·  已交付\n\nL5   历史记录、备份恢复与体验验收  ·  待三天实测\n\nL6   图标定稿、安装包、开源发行与使用说明";
         OpacitySlider.Value = _settings.SurfaceOpacity;
         ApplyAppearance();
         _ready = true;
@@ -88,7 +89,7 @@ public partial class MainWindow : Window
     }
 
     public void ToggleVisibility() { if (IsVisible) HideToTray(); else ShowFromTray(); }
-    public void HideToTray() { _preview?.Close(); _editor?.Hide(); Hide(); }
+    public void HideToTray() { _preview?.Close(); _editor?.Hide(); _dataWindow?.Hide(); Hide(); }
     public void ShowFromTray()
     {
         Show();
@@ -96,6 +97,7 @@ public partial class MainWindow : Window
         Activate();
         WindowPlacement.EnsureVisible(this);
         if (_editor is not null) _editor.Show();
+        if (_dataWindow is not null) _dataWindow.Show();
     }
     public void SetCompact(bool compact)
     {
@@ -155,7 +157,16 @@ public partial class MainWindow : Window
     }
     private void OnKeyDown(object sender, System.Windows.Input.KeyEventArgs e) { if (e.Key == Key.Escape) { HideToTray(); e.Handled = true; } }
     private void OnClosing(object? sender, CancelEventArgs e) { if (!AllowClose) { e.Cancel = true; HideToTray(); } }
-    private void OnClosed(object? sender, EventArgs e) { Reminders?.Dispose(); _preview?.Close(); _editor?.Close(); _hotkey?.Dispose(); }
+    private void OnClosed(object? sender, EventArgs e) { Reminders?.Dispose(); _preview?.Close(); _editor?.Close(); _dataWindow?.Close(); _hotkey?.Dispose(); }
+
+    private void DataClick(object sender,RoutedEventArgs e)=>OpenDataTools();
+    public TaskDataWindow? OpenDataTools(IDataFilePicker? picker=null)
+    {
+        if(!_dataReady) return null;
+        if(_dataWindow is not null) {_dataWindow.Show();_dataWindow.Activate();return _dataWindow;}
+        _dataWindow=new TaskDataWindow(_tasks,Reminders?.Zone ?? TimeZoneInfo.Local,()=>_editor is not null,ReloadTasks,picker) {Owner=this};
+        _dataWindow.Closed+=(_,_)=>_dataWindow=null;_dataWindow.Show();return _dataWindow;
+    }
 
     public ReminderController EnableReminders(Func<DateTimeOffset>? clock = null, TimeZoneInfo? zone = null, Func<bool>? canShow = null, Action<Uri>? openLink = null)
     {
@@ -203,6 +214,8 @@ public partial class MainWindow : Window
         }
         catch (Exception error) when (DataError(error) is not null) { ShowDataError(DataError(error)!); }
         NewTaskButton.IsEnabled = _dataReady;
+        DataNav.IsEnabled = _dataReady;
+        DataToolsButton.IsEnabled = _dataReady;
         TaskList.IsEnabled = _dataReady;
         ApplyTaskFilter();
         Reminders?.Tick();
@@ -274,7 +287,7 @@ public partial class MainWindow : Window
         TaskValidationException or TaskConflictException or StoreVersionException => error.Message,
         SqliteException => "任务数据无法读取或保存，操作未确认成功。原文件已保留，请检查文件权限、占用或数据完整性后重新读取。",
         IOException or UnauthorizedAccessException => "本地文件无法读写，原文件已保留。请检查文件夹权限和磁盘空间后重试。",
-        FormatException or InvalidCastException or IndexOutOfRangeException or ArgumentOutOfRangeException => "任务数据格式异常，原文件已保留。请检查备份或升级程序后再试。",
+        FormatException or InvalidCastException or IndexOutOfRangeException or ArgumentOutOfRangeException or OverflowException => "任务数据格式异常，原文件已保留。请检查备份或升级程序后再试。",
         _ => null
     };
 }

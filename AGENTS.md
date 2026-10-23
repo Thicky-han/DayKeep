@@ -27,7 +27,16 @@ fallback. Defer on unavailable desktop/fullscreen and fit in monitor work area.
 Login startup is opt-in HKCU Run with quoted exe and --background; never enable it
 on installation/upgrade. Test its adapter in an isolated registry key. Single-instance
 tests use isolated databases and named objects, preserving the user's running app.
-Next is L5 after L4 handoff and maintainer instruction. Previews never update tasks.
+L5 adds history and versioned logical backups. Schema 5 adds a revision floor;
+imports rebase revisions while keeping stable delivery keys. Preview freezes the
+reviewed file and hashes the target. Merge keeps complete local same-ID groups;
+replace restores the full source only after writing a recovery backup. Failures
+must preserve data; never overwrite exports. Keep impact confirmation and the
+open-editor guard. L5 development is delivered; human trial remains pending.
+The maintainer explicitly requested L6 on 2026-10-23 while trial is pending.
+Proceed with L6 preparation without declaring trial or hardware acceptance passed.
+Package all reviewable materials before asking for final publishing confirmation.
+Previews never update tasks.
 
 Maintain separate shell, domain, persistence and reminder scheduling boundaries.
 Only the surface brush should be translucent; text and controls remain opaque.

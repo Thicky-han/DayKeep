@@ -7,6 +7,24 @@ public sealed class TaskService(TaskRepository repository, Func<DateTimeOffset>?
     public TaskRepository Repository => repository;
     public void Initialize() { _initialized=false; repository.Initialize(); _initialized=true; }
     public IReadOnlyList<TaskItem> LoadAll() => repository.LoadAll();
+    public DataSnapshot Capture() {RequireInitialized();return repository.Capture();}
+    public HistoryResult History(HistoryQuery query,TimeZoneInfo zone) {RequireInitialized();return repository.LoadHistory(query,zone);}
+    public void ExportBackup(string path) {RequireInitialized();BackupFile.Write(path,Capture(),Now);}
+    public ImportPreview PreviewImport(string path)
+    {
+        RequireInitialized();var source=BackupFile.Read(path);var current=Capture();var preview=new ImportPreview(source,BackupFile.Hash(current),current);
+        try {TaskRepository.PrepareImport(current,source.Data,ImportMode.Merge,Now);} catch(TaskValidationException error) {preview.MergeError=error.Message;}
+        return preview;
+    }
+    public ImportResult ImportBackup(ImportPreview preview,ImportMode mode)
+    {
+        RequireInitialized();return repository.ApplyImport(preview,mode,Now,current=>
+        {
+            var folder=Path.Combine(Path.GetDirectoryName(repository.DatabasePath)!,"Recovery");Directory.CreateDirectory(folder);
+            var path=Path.Combine(folder,$"DayKeep-before-import-{DateTime.UtcNow:yyyyMMdd-HHmmss}-{Guid.NewGuid():N}.daykeep.json");
+            BackupFile.Write(path,current,Now);return path;
+        });
+    }
     public TaskItem Create(TaskDraft draft) => Commit(TaskRules.Create(draft, Now), null, "created");
     public TaskItem Edit(TaskItem item, TaskDraft draft) => Commit(TaskRules.Edit(item, draft, Now), item.Revision, "edited");
     public TaskItem TogglePause(TaskItem item) => Commit(TaskRules.Pause(item, Now), item.Revision, item.Paused ? "resumed" : "paused");

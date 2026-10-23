@@ -178,13 +178,14 @@ internal static class SmokeRunner
                 ReminderUiChecks.Run(directory,Check);
                 RepeatUiChecks.Run(directory,Check);
                 RecoveryUiChecks.Run(directory,Check);
+                DataUiChecks.Run(directory,Check);
                 results.Add(new { name = "Global hotkey registration observation", registered = window.GlobalHotkeyRegistered });
             }
             catch (Exception error) { failures++; results.Add(new { name = "Smoke runner", passed = false, error = error.ToString() }); }
             finally
             {
                 if (window is not null) { window.AllowClose = true; window.Close(); }
-                File.WriteAllText(Path.Combine(directory, "report.json"), JsonSerializer.Serialize(new { stage = "L4", failures, checks = results, scope = "Real WPF task/reminder actions and SQLite with controlled clock; actual clock measured separately; no human tray/keyboard acceptance" }, new JsonSerializerOptions { WriteIndented = true }));
+                File.WriteAllText(Path.Combine(directory, "report.json"), JsonSerializer.Serialize(new { stage = "L5", failures, checks = results, scope = "Real WPF task/reminder/history/backup actions and SQLite with controlled clock; file pickers injected, actual clock measured separately; no human multi-day acceptance" }, new JsonSerializerOptions { WriteIndented = true }));
                 application.Shutdown(failures == 0 ? 0 : 1);
             }
         }));

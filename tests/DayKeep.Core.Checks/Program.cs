@@ -47,6 +47,8 @@ if (args.Length > 1 && args[1] == "--write-restart")
     var queueAt=new DateTimeOffset(2026,10,22,9,0,0,TimeSpan.Zero);
     foreach(var occurrence in ReminderPlanner.Due(durable.ReminderSnapshot(new(2026,10,22)),queueAt,queueAt,TimeZoneInfo.Utc,true))
     { durable.QueueDelivery(occurrence,null,queueAt,TimeZoneInfo.Utc); if(occurrence.Task.Title=="显示后尚未收起") durable.SetDeliveryState([occurrence.Key],DeliveryState.Shown); }
+    service.ExportBackup(Path.Combine(directory,"restart.daykeep.json"));daily.ExportBackup(Path.Combine(directory,"daily.daykeep.json"));
+    delayed.ExportBackup(Path.Combine(directory,"snooze.daykeep.json"));durable.ExportBackup(Path.Combine(directory,"outbox.daykeep.json"));
     Console.WriteLine("Restart fixture written by process " + Environment.ProcessId);
     return;
 }
@@ -74,9 +76,31 @@ if (args.Length > 1 && args[1] == "--read-restart")
     var deliveryKeys=durableSnapshot.Deliveries.Select(d=>d.Key).ToArray();
     durable.SetDeliveryState(deliveryKeys,DeliveryState.Dismissed);
     Assert(Open("outbox-restart.db").ReminderSnapshot(new(2026,10,22)).Deliveries.All(d=>d.State==DeliveryState.Dismissed));
+    foreach(var name in new[]{"restart","daily","snooze","outbox"})
+    {
+        var imported=Open("imported-"+name+".db");imported.Create(new("将被恢复备份保留的本机事项",TaskKind.Todo));
+        var result=imported.ImportBackup(imported.PreviewImport(Path.Combine(directory,name+".daykeep.json")),ImportMode.Replace);
+        Assert(BackupFile.Read(result.RecoveryPath).Data.Tasks.Single().Title=="将被恢复备份保留的本机事项");
+    }
+    var importedOutbox=Open("imported-outbox.db");var importedSnapshot=importedOutbox.ReminderSnapshot(new(2026,10,22));
+    Assert(importedSnapshot.Deliveries.Select(d=>d.Key).ToHashSet().SetEquals(deliveryKeys));
+    Assert(importedSnapshot.Deliveries.Count(d=>d.State==DeliveryState.Pending)==1 && importedSnapshot.Deliveries.Count(d=>d.State==DeliveryState.Shown)==1);
+    importedOutbox.SetDeliveryState(importedSnapshot.Deliveries.Select(d=>d.Key).ToArray(),DeliveryState.Dismissed);
     File.WriteAllText(Path.Combine(directory, "restart-report.json"), JsonSerializer.Serialize(new { passed = true, processId = Environment.ProcessId, scope = "Fresh process restored all task fields and undid completion with original pause state" }));
     Console.WriteLine("Cross-process tasks, snooze, budgets and L4 pending/shown/dismissed delivery restore passed in process " + Environment.ProcessId);
     return;
+}
+if(args.Length>1 && args[1]=="--read-imported")
+{
+    var service=Open("imported-restart.db");var completed=service.LoadAll().Single();Assert(completed.State==TaskState.Completed);
+    var undone=service.UndoComplete(completed);Assert(undone.State==TaskState.Waiting && undone.Paused && undone.Url=="https://example.org/patent" && undone.Reminder.Weekdays==31);
+    var daily=Open("imported-daily.db").ReminderSnapshot(new(2026,10,22));Assert(daily.Checks.Count==2 && daily.CheckedWaitingTasks.Count==1);
+    var delayed=Open("imported-snooze.db");var progress=delayed.ReminderSnapshot(new(2026,10,22)).Progress.Single();
+    Assert(progress.ExtraCount==1 && progress.SnoozedUntil==new DateTimeOffset(2026,10,22,10,31,0,TimeSpan.Zero) && delayed.Capture().Days.Single().ExtraCount==1);
+    var outbox=Open("imported-outbox.db");var snapshot=outbox.ReminderSnapshot(new(2026,10,22));Assert(snapshot.Deliveries.Count==2 && snapshot.Deliveries.All(d=>d.State==DeliveryState.Dismissed));
+    Assert(ReminderPlanner.Due(snapshot,new(2026,10,22,9,0,0,TimeSpan.Zero),new(2026,10,22,8,59,0,TimeSpan.Zero),TimeZoneInfo.Utc,true).Count==0);
+    File.WriteAllText(Path.Combine(directory,"import-restart-report.json"),JsonSerializer.Serialize(new {stage="L5",passed=true,processId=Environment.ProcessId,scope="Actual JSON exported in process one, previewed/imported in process two, reopened in process three; completion undo, checks, snooze, budgets, stable keys and durable dismissal retained"}));
+    Console.WriteLine("L5 imported backups reopened successfully in process "+Environment.ProcessId);return;
 }
 
 var results = new List<object>();
@@ -126,10 +150,11 @@ Test("Missing directory is created only for new owned database", () => { var ser
 ReminderChecks.Run(Test,directory);
 RepeatChecks.Run(Test,directory);
 RecoveryChecks.Run(Test,directory);
+DataChecks.Run(Test,directory);
 using (var connection = new SqliteConnection($"Data Source={Path.Combine(directory,"tasks.db")};Pooling=False"))
 {
     connection.Open(); using var command = connection.CreateCommand(); command.CommandText = "SELECT sqlite_version();";
     Console.WriteLine("Bundled SQLite version: " + command.ExecuteScalar());
 }
-File.WriteAllText(Path.Combine(directory,"core-report.json"), JsonSerializer.Serialize(new { stage = "L4", failures, count = results.Count, checks = results }, new JsonSerializerOptions { WriteIndented = true }));
+File.WriteAllText(Path.Combine(directory,"core-report.json"), JsonSerializer.Serialize(new { stage = "L5", failures, count = results.Count, checks = results }, new JsonSerializerOptions { WriteIndented = true }));
 if (failures > 0) Environment.Exit(1);

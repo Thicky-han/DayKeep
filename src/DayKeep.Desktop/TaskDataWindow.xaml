@@ -1,0 +1,76 @@
+<Window x:Class="DayKeep.TaskDataWindow"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ Title="日守 · 历史与备份" Width="830" Height="760" WindowStyle="None"
+ AllowsTransparency="True" Background="Transparent" ResizeMode="NoResize" ShowInTaskbar="False"
+ WindowStartupLocation="CenterOwner" FontFamily="Segoe UI, Microsoft YaHei UI" Foreground="{StaticResource Ink}"
+ UseLayoutRounding="True" Loaded="OnLoaded" KeyDown="OnKeyDown">
+ <Window.Resources>
+  <Style TargetType="TextBox"><Setter Property="Padding" Value="10,8" /><Setter Property="FontSize" Value="13" /><Setter Property="Foreground" Value="{StaticResource Ink}" /><Setter Property="Background" Value="White" /><Setter Property="BorderBrush" Value="#CBDACF" /><Setter Property="BorderThickness" Value="1" />
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="TextBox"><Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8"><ScrollViewer x:Name="PART_ContentHost" /></Border></ControlTemplate></Setter.Value></Setter>
+  </Style>
+  <Style TargetType="DatePicker"><Setter Property="Height" Value="34" /><Setter Property="Padding" Value="4" /><Setter Property="Foreground" Value="{StaticResource Ink}" /><Setter Property="BorderBrush" Value="#CBDACF" /><Setter Property="VerticalContentAlignment" Value="Center" /></Style>
+  <Style x:Key="Label" TargetType="TextBlock"><Setter Property="FontSize" Value="11" /><Setter Property="Foreground" Value="{StaticResource Muted}" /><Setter Property="Margin" Value="0,0,0,6" /></Style>
+ </Window.Resources>
+ <Border Margin="15" CornerRadius="21" BorderBrush="#BACCC5" BorderThickness="1">
+  <Border.Effect><DropShadowEffect BlurRadius="25" ShadowDepth="5" Opacity="0.15" Color="#243B3A" /></Border.Effect>
+  <Grid>
+   <Border Background="#F0F7F9F3" CornerRadius="20" />
+   <Grid Margin="27,18,27,22">
+    <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+    <DockPanel MouseLeftButtonDown="DragHeader"><Button DockPanel.Dock="Right" Content="×" Click="CloseClick" Style="{StaticResource ChromeButton}" FontSize="22" AutomationProperties.Name="关闭历史与备份" /><StackPanel><TextBlock Text="每一步，都有迹可循。" FontSize="24" FontWeight="SemiBold" /><TextBlock Text="历史与备份 / YOUR RECORDS" FontSize="11" Foreground="{StaticResource Muted}" Margin="0,7,0,0" /></StackPanel></DockPanel>
+    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,22,0,20"><Button x:Name="HistoryTab" Content="检查历史" Click="HistoryClick" Padding="22,10" Background="#DCE9DE" Margin="0,0,10,0" /><Button x:Name="BackupTab" Content="备份与恢复" Click="BackupClick" Padding="22,10" /></StackPanel>
+    <Grid Grid.Row="2">
+     <Grid x:Name="HistoryPage">
+      <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+      <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="16" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+       <StackPanel><TextBlock Text="搜索名称、操作或检查备注" Style="{StaticResource Label}" /><TextBox x:Name="SearchInput" MaxLength="120" AutomationProperties.Name="历史搜索" /></StackPanel>
+       <StackPanel Grid.Column="2"><TextBlock Text="事项（包括已完成和归档）" Style="{StaticResource Label}" /><ComboBox x:Name="TaskInput" DisplayMemberPath="Label" AutomationProperties.Name="历史事项" /></StackPanel>
+      </Grid>
+      <WrapPanel Grid.Row="1" Margin="0,15,0,18" VerticalAlignment="Bottom">
+       <StackPanel Margin="0,0,12,7"><TextBlock Text="从日期（可留空）" Style="{StaticResource Label}" /><DatePicker x:Name="FromInput" Width="151" SelectedDateFormat="Short" AutomationProperties.Name="历史开始日期" /></StackPanel>
+       <StackPanel Margin="0,0,16,7"><TextBlock Text="到日期（可留空）" Style="{StaticResource Label}" /><DatePicker x:Name="ToInput" Width="151" SelectedDateFormat="Short" AutomationProperties.Name="历史结束日期" /></StackPanel>
+       <Button x:Name="QueryButton" Content="查询" Click="QueryClick" Style="{StaticResource PrimaryButton}" Padding="19,8" VerticalAlignment="Bottom" Margin="0,0,9,6" /><Button x:Name="ResetButton" Content="重置" Click="ResetClick" Padding="16,8" VerticalAlignment="Bottom" Margin="0,0,0,6" />
+      </WrapPanel>
+      <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+       <StackPanel>
+        <Border x:Name="HistoryEmpty" Background="#CFFFFFFF" CornerRadius="12" Padding="22"><TextBlock Text="这里还没有匹配的记录。" Foreground="{StaticResource Muted}" /></Border>
+        <ItemsControl x:Name="HistoryList"><ItemsControl.ItemTemplate><DataTemplate>
+         <Border Background="#DFFFFFFF" CornerRadius="12" BorderBrush="#D9E3D9" BorderThickness="1" Padding="17,13" Margin="0,0,0,10"><StackPanel>
+          <TextBlock Text="{Binding Title}" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" />
+          <TextBlock Text="{Binding Action}" FontSize="12" Foreground="#347568" Margin="0,7,0,0" />
+          <TextBlock Text="{Binding Time}" FontSize="10" Foreground="{StaticResource Muted}" Margin="0,5,0,0" TextWrapping="Wrap" />
+          <TextBlock Text="{Binding Notes}" FontSize="12" Margin="0,7,0,0" TextWrapping="Wrap"><TextBlock.Style><Style TargetType="TextBlock"><Style.Triggers><DataTrigger Binding="{Binding Notes}" Value=""><Setter Property="Visibility" Value="Collapsed" /></DataTrigger></Style.Triggers></Style></TextBlock.Style></TextBlock>
+         </StackPanel></Border>
+        </DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+       </StackPanel>
+      </ScrollViewer>
+      <TextBlock x:Name="HistoryCount" Grid.Row="3" FontSize="11" Foreground="{StaticResource Muted}" Margin="0,12,0,0" TextWrapping="Wrap" />
+     </Grid>
+     <ScrollViewer x:Name="BackupPage" Visibility="Collapsed" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+      <StackPanel Margin="0,0,8,0">
+       <Border Background="#DFFFFFFF" CornerRadius="13" Padding="19" BorderBrush="#D9E3D9" BorderThickness="1"><StackPanel>
+        <TextBlock Text="把跟进，妥善留存。" FontSize="18" FontWeight="SemiBold" />
+        <TextBlock Text="导出全部事项、检查、完成撤销、延期与提醒记录。备份为明文文件，请放在你信任的位置。外观、登录启动设置不包含在内。" FontSize="12" Foreground="{StaticResource Muted}" TextWrapping="Wrap" LineHeight="21" Margin="0,9,0,14" />
+        <Button x:Name="ExportButton" Content="导出完整备份…" Click="ExportClick" HorizontalAlignment="Left" Style="{StaticResource PrimaryButton}" />
+       </StackPanel></Border>
+       <TextBlock Text="从备份继续" FontSize="18" FontWeight="SemiBold" Margin="0,23,0,12" />
+       <WrapPanel><Button x:Name="ChooseButton" Content="选择备份并预览…" Click="ChooseClick" Margin="0,0,10,8" /><Button x:Name="RefreshPreviewButton" Content="重新预览" Click="RefreshPreviewClick" IsEnabled="False" Margin="0,0,0,8" /></WrapPanel>
+       <TextBox x:Name="FilePathLabel" IsReadOnly="True" TextWrapping="Wrap" Background="Transparent" BorderThickness="0" FontSize="11" Padding="0,2,0,8" AutomationProperties.Name="已选备份路径" />
+       <Border x:Name="PreviewPanel" Visibility="Collapsed" Background="#E7EFE4" CornerRadius="13" Padding="18"><StackPanel>
+        <TextBlock x:Name="PreviewLabel" FontSize="12" TextWrapping="Wrap" LineHeight="22" />
+        <ComboBox x:Name="ModeInput" SelectedIndex="0" SelectionChanged="ModeChanged" Margin="0,12,0,10" AutomationProperties.Name="导入方式"><ComboBoxItem Content="合并 · 保留本机同 ID 事项" /><ComboBoxItem Content="替换 · 恢复整份备份" /></ComboBox>
+        <TextBlock x:Name="PlanLabel" FontSize="12" TextWrapping="Wrap" LineHeight="22" />
+        <TextBlock Text="确认前会自动保存当前数据的恢复备份。预览后若任务或提醒记录发生变化，需要重新预览。" FontSize="11" Foreground="{StaticResource Muted}" TextWrapping="Wrap" LineHeight="20" Margin="0,8,0,12" />
+        <CheckBox x:Name="ConfirmInput" Checked="ConfirmChanged" Unchecked="ConfirmChanged"><TextBlock Text="我已核对上方影响，确认按此方式导入。" FontSize="12" TextWrapping="Wrap" /></CheckBox>
+        <Button x:Name="ImportButton" Content="确认导入" Click="ImportClick" IsEnabled="False" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Left" Margin="0,15,0,0" />
+       </StackPanel></Border>
+       <StackPanel x:Name="RecoveryPanel" Visibility="Collapsed" Margin="0,14,0,0"><TextBlock Text="导入前的恢复备份（可复制路径）" Style="{StaticResource Label}" /><TextBox x:Name="RecoveryPath" IsReadOnly="True" TextWrapping="Wrap" AutomationProperties.Name="自动恢复备份路径" /></StackPanel>
+      </StackPanel>
+     </ScrollViewer>
+    </Grid>
+    <TextBlock x:Name="StatusLabel" Grid.Row="3" FontSize="12" TextWrapping="Wrap" Margin="0,16,0,0" LineHeight="21" Foreground="{StaticResource Muted}" Text="今天已检查 ≠ 任务已完成。" />
+   </Grid>
+  </Grid>
+ </Border>
+</Window>
