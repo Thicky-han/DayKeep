@@ -13,7 +13,9 @@ New-Item -ItemType Directory -Path $output | Out-Null
 $payload=Join-Path $output 'payload'
 & (Join-Path $PSScriptRoot 'publish-preview.ps1') -OutputDirectory $payload
 Get-ChildItem -LiteralPath $projectRoot -Filter '*.md' -File | ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $payload }
-Copy-Item -LiteralPath (Join-Path $projectRoot 'docs') -Destination $payload -Recurse
+$docsRoot=Join-Path $payload 'docs'
+New-Item -ItemType Directory -Path $docsRoot -Force | Out-Null
+Get-ChildItem -LiteralPath (Join-Path $projectRoot 'docs') -Force | ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $docsRoot -Recurse -Force }
 $assetRoot=Join-Path $payload 'assets'; New-Item -ItemType Directory -Path $assetRoot | Out-Null
 Copy-Item -LiteralPath (Join-Path $projectRoot 'assets\brand') -Destination $assetRoot -Recurse
 Copy-Item -LiteralPath (Join-Path $projectRoot 'assets\screenshots') -Destination $assetRoot -Recurse
