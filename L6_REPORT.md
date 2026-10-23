@@ -35,7 +35,22 @@ scripts/audit-release.ps1 检查当前文本及所有可达提交中的常见密
 
 最终预发行候选未签名；Windows 可能显示未知发布者。GitHub 仓库/预发行 Release 的公开操作等待维护者打包后确认；尚未有云端 CI 或未登录公开下载验证。
 
-## 保留事项
+## 最终打包结果
+
+候选包已完成验证，对应源码提交 **93f6307b52e908c9fe4b31c97c4472286b8fa97c**。最终目录为 release/DayKeep-0.6.0-l6-93f6307b；本结果记录只更新文档，不改动已验证附件。计划确认后将 v0.6.0-l6 预发行标签绑定该构建提交，main 保留后续报告。
+
+| 附件 | 字节数 | SHA-256 |
+| --- | --- | --- |
+| DayKeep-0.6.0-l6-win-x64.zip | 77,916,592 | 36397C87B3B287852A8AE8E0F29493208F7D03ACC85607A7D29BA22376171211 |
+| DayKeep-0.6.0-l6-source.zip | 414,020 | D6FB82E7B2ACA083F5C79FB5ECAFCC342BBF6DB24E60314D276910D9846F1CEF |
+
+同目录附 RELEASE_NOTES.md、package-report.json 与 SHA256SUMS（覆盖两份 ZIP、说明和验证报告）。源码 ZIP 为构建提交的 git archive；成品 SOURCE_INFO.md/PACKAGE.json 记录同一提交，运行时 .NET Core/WindowsDesktop 10.0.13，框架与 SQLite 许可已附。
+
+13/13 项实际包检查通过：解压清单哈希、便携卸载拒绝、Windows PowerShell 5.1 安装到中文/空格路径、幂等重装、隔离快捷方式及未知目标保护、路径越界拒绝、篡改包拒绝、未知目录保留、已改文件阻止重装/卸载、额外文件保护、已安装 exe 真实 WPF、卸载范围与源码/九语文件检查。安装后的同一套 98 项 WPF 全部通过，不累计为额外 98 种用例。证据 .cache/release-0.6.0-l6-93f6307b，原生日常数据未读取。
+
+第一轮发现系统 PowerShell 环境的 Get-FileHash 不可用，改为直接使用 .NET SHA-256 流式校验后，重新从干净提交打包并通过全部检查；未把失败的旧候选记作合格交付。包已解压/安装/运行/卸载测试，开发桌面 DayKeep 日守入口也已指向 dist/l6-win-x64，未强制关闭使用者旧窗口。
+
+## 尚待实测与发布
 
 至少三天真实试用待执行，见 docs/TRIAL_CHECKLIST.md。真实睡眠/锁屏、物理多屏/混合 DPI、独占全屏、真人快捷键、注销再登录启动仍未完整验证。L4 最后一次真实分钟观测因 desktopAvailable=false 未显示，保留该缺口，不用模拟替代。应用停止/电脑关机不能投递，桌面不可用/外部全屏会暂缓；重要事项不能仅凭此程序推定已经缴费。
 
