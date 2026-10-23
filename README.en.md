@@ -2,11 +2,11 @@
 
 [简体中文](README.md) · [繁體中文](README.zh-TW.md) · [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [Português](README.pt.md)
 
-[Download Windows ZIP](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-win-x64.zip) · [Corresponding source](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-source.zip) · [Checksums](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/SHA256SUMS) · [Release page](https://github.com/Thicky-han/DayKeep/releases/tag/v0.6.0-l6)
+[Download Windows ZIP](https://github.com/Thicky-han/DayKeep/releases/download/v0.7.0-beta.1/DayKeep-0.7.0-beta.1-win-x64.zip) · [Corresponding source](https://github.com/Thicky-han/DayKeep/releases/download/v0.7.0-beta.1/DayKeep-0.7.0-beta.1-source.zip) · [Checksums](https://github.com/Thicky-han/DayKeep/releases/download/v0.7.0-beta.1/SHA256SUMS) · [Release page](https://github.com/Thicky-han/DayKeep/releases/tag/v0.7.0-beta.1)
 
 **One small step each day, until it is done.** A local Windows desktop reminder for tasks that need repeated checking, such as a patent payment portal that has not opened yet. Checking today and completing the whole task are separate actions.
 
-Local update candidate **0.7.0-beta.1** adds nine interface languages and a visible language selector, alongside history and backup/restore. Public release requires the maintainer's confirmation; see the [language update report](LANGUAGE_UPDATE_REPORT.md) for actual build and packaging results. The links above still download the published **0.6.0-l6 (Simplified Chinese UI only)**, not this candidate. Three days of real use remain pending. This build is unsigned.
+Current public pre-release **0.7.0-beta.1** was approved for publication by the maintainer. It adds nine interface languages and a visible language selector, alongside history and backup/restore. The links above provide this version's binary, source and checksums; see the [language update report](LANGUAGE_UPDATE_REPORT.md) for build, packaging and publication-verification progress. Older **0.6.0-l6** has a Simplified Chinese-only UI; its original assets and tag remain unchanged. Frozen documents inside the approved package describe its candidate state at packaging time. Three days of real use remain pending. This build is unsigned.
 
 ![Main window with synthetic tasks](assets/screenshots/main-en.png)
 
@@ -20,7 +20,7 @@ Your task names, notes, links and original records are not translated. Switching
 
 ## Install and open
 
-1. Extract the entire candidate DayKeep-0.7.0-beta.1-win-x64.zip. Run on Windows x64; the .NET runtime is included, no SDK needed. Do not run inside the ZIP or copy only the executable. The published older ZIP installs similarly but has no language selector.
+1. Extract the entire DayKeep-0.7.0-beta.1-win-x64.zip. Run on Windows x64; the .NET runtime is included, no SDK needed. Do not run inside the ZIP or copy only the executable. The older 0.6.0-l6 ZIP installs similarly but has no language selector.
 2. Portable use: open DayKeep.exe. Check the package source and SHA256SUMS first; Windows may show an unknown publisher.
 3. Per-user installation: run Install.cmd. It installs to LocalApplicationData/Programs/DayKeep/0.7.0-beta.1 and creates DayKeep desktop/Start menu shortcuts, without administrator access. Its PowerShell execution-policy exception applies only to that process.
 4. Before upgrading, export a backup, save forms, and use the old tray menu **退出日守** (Exit). The × button only hides. Versions use separate program folders; old folders are retained. A repeated install accepts only the same intact build. Unknown folders or shortcuts are preserved.

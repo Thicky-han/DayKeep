@@ -2,9 +2,9 @@
 
 [简体中文](README.md) · [繁體中文](README.zh-TW.md) · [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [Português](README.pt.md)
 
-[Windows ZIP をダウンロード](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-win-x64.zip) · [対応ソース](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-source.zip) · [検査値](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/SHA256SUMS) · [リリース](https://github.com/Thicky-han/DayKeep/releases/tag/v0.6.0-l6)
+[Windows ZIP をダウンロード](https://github.com/Thicky-han/DayKeep/releases/download/v0.7.0-beta.1/DayKeep-0.7.0-beta.1-win-x64.zip) · [対応ソース](https://github.com/Thicky-han/DayKeep/releases/download/v0.7.0-beta.1/DayKeep-0.7.0-beta.1-source.zip) · [検査値](https://github.com/Thicky-han/DayKeep/releases/download/v0.7.0-beta.1/SHA256SUMS) · [リリース](https://github.com/Thicky-han/DayKeep/releases/tag/v0.7.0-beta.1)
 
-毎日少しずつ、完了するまで。特許料金の支払い受付など、まだ利用できず毎日確認したい用事のための Windows ローカル通知アプリです。「今日確認した」と「用事を完了した」を区別します。ローカルの更新候補 **0.7.0-beta.1** は9言語の画面と見つけやすい言語切替を追加します。公開には管理者の確認が必要です。実際のビルド・パッケージ検証結果は [言語更新報告](LANGUAGE_UPDATE_REPORT.md) を参照してください。上のリンクは公開済みの **0.6.0-l6（画面は簡体字中国語のみ）** のままです。3日間の実利用試験は未完了です。コード署名はありません。
+毎日少しずつ、完了するまで。特許料金の支払い受付など、まだ利用できず毎日確認したい用事のための Windows ローカル通知アプリです。「今日確認した」と「用事を完了した」を区別します。現在の公開プレリリース **0.7.0-beta.1** は管理者の公開承認を得て、9言語の画面と見つけやすい言語切替を追加しました。上のリンクは本版のプログラム、対応ソースと検査値です。実際のビルド・パッケージ・公開検証の進捗は [言語更新報告](LANGUAGE_UPDATE_REPORT.md) を参照してください。旧版 **0.6.0-l6** は簡体字中国語のみで、元の添付ファイルとタグは変更しません。承認済みパッケージ内の固定文書は梱包時点の候補状態を記録しています。3日間の実利用試験は未完了です。コード署名はありません。
 
 ![架空の用事を表示した画面](assets/screenshots/main.png)
 
@@ -18,7 +18,7 @@
 
 ## インストールと更新
 
-本更新候補の DayKeep-0.7.0-beta.1-win-x64.zip をすべて展開してください。公開済み旧版も同じ方法ですが言語切替はありません。Windows x64 用でランタイムを同梱し、SDK は不要です。ZIP 内からの実行や exe だけのコピーは避けてください。入手元と SHA256SUMS を確認し、DayKeep.exe を開けばポータブル利用できます。Windows が不明な発行元を表示する場合があります。
+DayKeep-0.7.0-beta.1-win-x64.zip をすべて展開してください。旧版 0.6.0-l6 も同じ方法ですが言語切替はありません。Windows x64 用でランタイムを同梱し、SDK は不要です。ZIP 内からの実行や exe だけのコピーは避けてください。入手元と SHA256SUMS を確認し、DayKeep.exe を開けばポータブル利用できます。Windows が不明な発行元を表示する場合があります。
 
 Install.cmd は管理者権限なしで LocalApplicationData/Programs/DayKeep/0.7.0-beta.1 に配置し、デスクトップとスタートメニューに DayKeep を作成します。PowerShell の実行ポリシー例外はそのプロセスだけです。ログイン起動は有効にしません。旧版のフォームを保存し、トレイの「退出日守」で終了してから更新してください。× は非表示にするだけです。バージョン別フォルダーを使い、旧版や不明なフォルダーを上書きしません。同一版の再インストールは同じ完全なファイルだけを受け付けます。初回に DB を schema 5 へトランザクション移行し、L1–L4 は読めなくなります。先にバックアップしてください。
 

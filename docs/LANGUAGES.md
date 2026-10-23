@@ -1,6 +1,6 @@
 # DayKeep 界面语言 / Interface languages
 
-适用候选：0.7.0-beta.1。该版本尚待打包验证与维护者公开发布确认。已公开的 0.6.0-l6 只有简体中文界面，九语 README 不代表旧版具有语言切换。
+适用版本：[公开预发行版 0.7.0-beta.1](https://github.com/Thicky-han/DayKeep/releases/tag/v0.7.0-beta.1)，已获维护者确认发布。[Windows x64 ZIP](https://github.com/Thicky-han/DayKeep/releases/download/v0.7.0-beta.1/DayKeep-0.7.0-beta.1-win-x64.zip) · [对应源码](https://github.com/Thicky-han/DayKeep/releases/download/v0.7.0-beta.1/DayKeep-0.7.0-beta.1-source.zip) · [SHA256SUMS](https://github.com/Thicky-han/DayKeep/releases/download/v0.7.0-beta.1/SHA256SUMS)。实际构建、打包及公开验证进度见 [语言更新报告](../LANGUAGE_UPDATE_REPORT.md)。历史版本 0.6.0-l6 只有简体中文界面，九语 README 不代表旧版具有语言切换；原标签和附件不变，批准包内冻结文档反映打包时的候选状态。
 
 ## 入口与支持列表
 

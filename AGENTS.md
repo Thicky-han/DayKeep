@@ -73,12 +73,15 @@ Thicky-han/DayKeep. Pre-release v0.6.0-l6 is fixed at build commit
 tag. Publication and documentation commits after that build did not change its
 approved assets. Do not overwrite the old release when preparing an update.
 
-The maintainer requested the 0.7.0-beta.1 language update on 2026-10-23 and asked
-for confirmation after packaging. This new candidate is not approved for public
-publication. Prepare and verify the local binary/source archives and SHA256SUMS,
-then ask; do not push, tag or publish this update before that confirmation.
-See LANGUAGE_UPDATE_REPORT.md for current evidence; pending results stay pending.
-Do not reuse historical L6 counts as proof that the new build passed.
+The maintainer requested the 0.7.0-beta.1 language update on 2026-10-23 and explicitly
+confirmed publication after reviewing the verified packages. Publish v0.7.0-beta.1
+as a pre-release at build commit 28ae94556938314627234343c29f24e17c44f730.
+Preserve the approved files in release/DayKeep-0.7.0-beta.1-28ae9455 and their hashes;
+do not rebuild or alter those attachments during publication. Main may record
+publication status and update download links without changing the frozen packages.
+See LANGUAGE_UPDATE_REPORT.md for actual evidence; pending results stay pending.
+This approval applies to this reviewed update. Do not reuse historical L6 counts
+as proof that the new build passed or treat approval as permission for future releases.
 
 0.7 supports zh-CN, zh-TW, en, ja, ko, fr, de, es and pt. Keep the top-level
 Language / 语言 selector visible and reachable in expanded and compact windows;

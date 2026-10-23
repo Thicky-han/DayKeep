@@ -2,9 +2,9 @@
 
 [简体中文](README.md) · [繁體中文](README.zh-TW.md) · [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [Português](README.pt.md)
 
-[Descargar ZIP de Windows](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-win-x64.zip) · [Código fuente](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-source.zip) · [Sumas de comprobación](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/SHA256SUMS) · [Publicación](https://github.com/Thicky-han/DayKeep/releases/tag/v0.6.0-l6)
+[Descargar ZIP de Windows](https://github.com/Thicky-han/DayKeep/releases/download/v0.7.0-beta.1/DayKeep-0.7.0-beta.1-win-x64.zip) · [Código fuente](https://github.com/Thicky-han/DayKeep/releases/download/v0.7.0-beta.1/DayKeep-0.7.0-beta.1-source.zip) · [Sumas de comprobación](https://github.com/Thicky-han/DayKeep/releases/download/v0.7.0-beta.1/SHA256SUMS) · [Publicación](https://github.com/Thicky-han/DayKeep/releases/tag/v0.7.0-beta.1)
 
-Un paso cada día, hasta terminar. Recordatorios locales para Windows de tareas que requieren comprobaciones, como un portal de pago de patentes aún cerrado. Comprobar hoy no completa toda la tarea. La candidata local **0.7.0-beta.1** añade nueve idiomas de interfaz y un selector visible. Su publicación requiere la confirmación del responsable; los resultados reales de compilación y empaquetado figuran en el [informe de actualización de idiomas](LANGUAGE_UPDATE_REPORT.md). Los enlaces de arriba siguen siendo de **0.6.0-l6 (interfaz solo en chino simplificado)**. La prueba real de tres días sigue pendiente. Binarios sin firma.
+Un paso cada día, hasta terminar. Recordatorios locales para Windows de tareas que requieren comprobaciones, como un portal de pago de patentes aún cerrado. Comprobar hoy no completa toda la tarea. La versión preliminar pública actual **0.7.0-beta.1** cuenta con la aprobación del responsable y añade nueve idiomas de interfaz y un selector visible. Los enlaces de arriba ofrecen esta versión, sus fuentes y sus sumas; los resultados de compilación, empaquetado y el avance de las verificaciones públicas figuran en el [informe de actualización de idiomas](LANGUAGE_UPDATE_REPORT.md). La anterior **0.6.0-l6** solo tiene interfaz en chino simplificado; sus adjuntos y etiqueta originales no cambian. Los documentos congelados del paquete aprobado reflejan su estado de candidata al empaquetarlo. La prueba real de tres días sigue pendiente. Binarios sin firma.
 
 ![Ventana con tareas ficticias](assets/screenshots/main.png)
 
@@ -18,7 +18,7 @@ Tus nombres de tareas, notas, enlaces y registros originales no se traducen. El 
 
 ## Instalar y actualizar
 
-Extrae toda la candidata DayKeep-0.7.0-beta.1-win-x64.zip. El ZIP publicado anterior se usa igual, pero no tiene selector de idioma. Windows x64, entorno .NET incluido, sin SDK. No ejecutes dentro del ZIP ni copies solo el exe. Comprueba origen y SHA256SUMS; abre DayKeep.exe para uso portátil. Windows puede mostrar un editor desconocido.
+Extrae todo DayKeep-0.7.0-beta.1-win-x64.zip. El ZIP anterior 0.6.0-l6 se usa igual, pero no tiene selector de idioma. Windows x64, entorno .NET incluido, sin SDK. No ejecutes dentro del ZIP ni copies solo el exe. Comprueba origen y SHA256SUMS; abre DayKeep.exe para uso portátil. Windows puede mostrar un editor desconocido.
 
 Install.cmd instala sin administrador en LocalApplicationData/Programs/DayKeep/0.7.0-beta.1 y crea accesos DayKeep en escritorio/Inicio. La excepción de política PowerShell solo afecta a ese proceso. No activa el inicio de sesión. Antes de actualizar, exporta copia, guarda formularios y sal de la versión anterior con「退出日守」en la bandeja; × solo oculta. Cada versión conserva su carpeta; las carpetas/accesos desconocidos no se sobrescriben. Reinstalar la misma versión exige archivos idénticos e intactos. El primer inicio migra mediante transacción a schema 5, que L1–L4 no pueden leer.
 

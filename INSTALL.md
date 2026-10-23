@@ -1,10 +1,10 @@
 # DayKeep 日守：使用说明
 
-更新候选版本 0.7.0-beta.1，增加九语界面切换，支持固定时间、追加、延期、每日检查、截止高亮，以及恢复后的汇总补提醒和可选登录启动。本候选尚未发布，需打包验证后由维护者确认。程序停止或电脑关机期间不会显示弹窗，重新运行并进入可用桌面后再汇总。
+当前公开预发行版本 0.7.0-beta.1 已获维护者确认发布，增加九语界面切换，支持固定时间、追加、延期、每日检查、截止高亮，以及恢复后的汇总补提醒和可选登录启动。实际打包证据与公开验证进度见 [语言更新报告](LANGUAGE_UPDATE_REPORT.md)。程序停止或电脑关机期间不会显示弹窗，重新运行并进入可用桌面后再汇总。
 
 ## 打开
 
-已公开的 [GitHub 0.6.0-l6 预发行页](https://github.com/Thicky-han/DayKeep/releases/tag/v0.6.0-l6) 提供旧版 Windows x64 ZIP、对应源码及 SHA256SUMS；该旧包只有简体中文界面，不含本次语言切换。下面按本地 0.7.0-beta.1 候选介绍，不代表该版本已经公开。
+从 [GitHub 0.7.0-beta.1 预发行页](https://github.com/Thicky-han/DayKeep/releases/tag/v0.7.0-beta.1) 获取 [Windows x64 ZIP](https://github.com/Thicky-han/DayKeep/releases/download/v0.7.0-beta.1/DayKeep-0.7.0-beta.1-win-x64.zip)、[对应源码](https://github.com/Thicky-han/DayKeep/releases/download/v0.7.0-beta.1/DayKeep-0.7.0-beta.1-source.zip) 和 [SHA256SUMS](https://github.com/Thicky-han/DayKeep/releases/download/v0.7.0-beta.1/SHA256SUMS)。旧版 0.6.0-l6 只有简体中文界面，其原标签和附件保持不变。已批准包内的冻结文档反映打包时的候选状态；此处记录确认发布后的入口，不重建或修改原包。
 
 将整个 DayKeep-0.7.0-beta.1-win-x64.zip 解压后，双击 DayKeep.exe 即可。Install.cmd 可为当前用户安装到 LocalApplicationData/Programs/DayKeep/0.7.0-beta.1，并创建 DayKeep 桌面/开始菜单入口；无需管理员。使用系统 Windows PowerShell，执行策略例外仅限当前进程，不更改机器策略。安装不启动程序、不启用登录启动，不强制退出旧版。文件清单会逐项核对 SHA-256，未知或修改的现有目录保留。
 

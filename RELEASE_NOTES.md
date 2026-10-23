@@ -1,8 +1,8 @@
-# DayKeep 0.7.0-beta.1 更新候选
+# DayKeep 0.7.0-beta.1 · 九语界面更新
 
-2026-10-23，Windows x64，自包含运行时，无需 .NET SDK。**本候选尚未公开发布；先完成本地打包验证并交付附件，再由维护者确认本次发布。** 至少三天真实试用及未完成的实机验收继续待验收。
+2026-10-23，Windows x64，自包含运行时，无需 .NET SDK。**维护者已在本地验证与打包后明确确认公开本次预发行更新。** 至少三天真实试用及未完成的实机验收继续待验收。
 
-[公开仓库](https://github.com/Thicky-han/DayKeep) 已存在；[已发布旧版 0.6.0-l6](https://github.com/Thicky-han/DayKeep/releases/tag/v0.6.0-l6) 只有简体中文应用界面。旧标签固定于 93f6307b52e908c9fe4b31c97c4472286b8fa97c，旧附件、原发行说明与校验值不改动。本说明属于新的 0.7 候选，不表示旧下载链接已提供新版。
+[当前发行页](https://github.com/Thicky-han/DayKeep/releases/tag/v0.7.0-beta.1) · [已发布旧版 0.6.0-l6](https://github.com/Thicky-han/DayKeep/releases/tag/v0.6.0-l6)。旧版只有简体中文应用界面，旧标签固定于 93f6307b52e908c9fe4b31c97c4472286b8fa97c；旧附件、原发行说明与校验值不改动。
 
 ## 本次变化
 
@@ -14,7 +14,9 @@
 
 ## 成品、安装与升级
 
-待打包附件：DayKeep-0.7.0-beta.1-win-x64.zip、DayKeep-0.7.0-beta.1-source.zip、SHA256SUMS、本说明和 package-report.json。完成情况与本次检查结果见 [语言更新报告](LANGUAGE_UPDATE_REPORT.md)；当前检查数量和最终构建提交尚待填写，不将旧版 98 项 WPF 当作新候选证据。源码 ZIP 对应构建提交，完整提交号写入成品 SOURCE_INFO.md 与 PACKAGE.json。
+发行附件：DayKeep-0.7.0-beta.1-win-x64.zip、DayKeep-0.7.0-beta.1-source.zip、SHA256SUMS、冻结版 RELEASE_NOTES.md 和 package-report.json。构建提交固定为 28ae94556938314627234343c29f24e17c44f730，与源码 ZIP、成品 SOURCE_INFO.md、PACKAGE.json 一致。完整验证和校验值见 [语言更新报告](LANGUAGE_UPDATE_REPORT.md)。
+
+本文件为 main 的当前说明；附件同名文件及 ZIP 内文档保留打包时等待确认的文字和旧版下载入口，不改写已批准的附件。当前公开状态以 Release 页面及 main 报告为准。
 
 将整个 ZIP 解压，可直接运行 DayKeep.exe，或双击 Install.cmd 为当前用户安装到 LocalApplicationData/Programs/DayKeep/0.7.0-beta.1，无管理员、无自动登录启动。不同版本目录保留；同版本只接受一致完整的重装。安装目录 Uninstall.cmd 仅移除本版本清单文件；未知、修改文件保留并阻止移除，任务数据不删除。未签名，先核对来源与 SHA256SUMS。分发需附 LICENSE 与完整对应源码，不能只发 exe。
 
@@ -22,7 +24,7 @@
 
 ## 验证与边界
 
-本候选的构建、核心回归、WPF/九语切换、渲染、单实例、打包/安装/卸载及源码审查结果，需按本轮实际证据填写 LANGUAGE_UPDATE_REPORT.md 与 package-report.json。新候选尚无已发布的云端 CI 或公开下载结果；旧版结果留在 L6_REPORT.md。
+本轮通过 135 项核心、121 项 WPF（含 23 项语言检查）及 14 项打包/安装/卸载检查，安装后的成品再次通过全部 121 项 WPF。云端 CI 和匿名下载实际结果单独记录于 LANGUAGE_UPDATE_REPORT.md，不使用旧版 L6_REPORT.md 的结果代替。
 
 受控测试不替代人类键鼠和连续使用。真实休眠/锁屏、多屏/混合 DPI、独占全屏、注销后启动及至少三天实际使用没有在此宣告通过；L4 最终真实分钟观测因桌面门控未显示，缺口保留。九种译文也未声称经过各语言母语者全面校对。系统原生对话框、文件路径和底层技术详情可保留原语言。
 

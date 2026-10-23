@@ -2,13 +2,13 @@
 
 [简体中文](README.md) · [繁體中文](README.zh-TW.md) · [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [Português](README.pt.md)
 
-[下载 Windows ZIP](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-win-x64.zip) · [对应源码](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-source.zip) · [校验文件](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/SHA256SUMS) · [发行页](https://github.com/Thicky-han/DayKeep/releases/tag/v0.6.0-l6)
+[下载 Windows ZIP](https://github.com/Thicky-han/DayKeep/releases/download/v0.7.0-beta.1/DayKeep-0.7.0-beta.1-win-x64.zip) · [对应源码](https://github.com/Thicky-han/DayKeep/releases/download/v0.7.0-beta.1/DayKeep-0.7.0-beta.1-source.zip) · [校验文件](https://github.com/Thicky-han/DayKeep/releases/download/v0.7.0-beta.1/SHA256SUMS) · [发行页](https://github.com/Thicky-han/DayKeep/releases/tag/v0.7.0-beta.1)
 
 ![DayKeep 回环时钟](assets/brand/daykeep-mark.png)
 
 **每天一步，直到完成。** DayKeep 是 Windows 本地桌面提醒器，适合“尚未开放，需要每天查看”的事项，例如专利缴费入口。固定时间弹出高亮提醒，未处理按间隔追加；今日检查与整件事完成分别记录。
 
-本地更新候选 **0.7.0-beta.1** 为应用加入九种界面语言、显眼的语言切换入口，并保留历史查询和备份恢复。公开发布仍需维护者确认，实际构建与打包结果见 [语言更新报告](LANGUAGE_UPDATE_REPORT.md)。上方下载链接仍指向已公开的 **0.6.0-l6（界面仅简体中文）**，不是本次候选。三天真实试用仍待验收；成品未签名。
+当前公开预发行版 **0.7.0-beta.1** 已获维护者确认发布，提供九种界面语言、显眼的语言切换入口，并保留历史查询和备份恢复。上方链接指向本版成品、对应源码与校验文件；实际构建、打包及发布验证进度见 [语言更新报告](LANGUAGE_UPDATE_REPORT.md)。旧版 **0.6.0-l6** 的界面仅简体中文，其原附件与标签保持不变。包内冻结文档记录打包时的候选状态，不影响已确认的本次发布。三天真实试用仍待验收；成品未签名。
 
 ![主窗口（合成事项）](assets/screenshots/main.png)
 
@@ -22,7 +22,7 @@
 
 ## 安装与首次打开
 
-1. 将本次候选包 DayKeep-0.7.0-beta.1-win-x64.zip **全部解压**到普通文件夹。不要在压缩包内运行，不要只拷贝 exe；Windows x64，自包含运行时，无需 .NET SDK。公开的旧包可按同样方法使用，但没有语言切换功能。
+1. 将 DayKeep-0.7.0-beta.1-win-x64.zip **全部解压**到普通文件夹。不要在压缩包内运行，不要只拷贝 exe；Windows x64，自包含运行时，无需 .NET SDK。旧版 0.6.0-l6 可按同样方法使用，但没有语言切换功能。
 2. 免安装：双击解压后的 DayKeep.exe。当前无代码签名；先核对来源与 SHA256SUMS，Windows 可能显示未知发布者。
 3. 按用户安装：双击 Install.cmd，安装到当前用户 LocalApplicationData/Programs/DayKeep/0.7.0-beta.1，并建立 DayKeep 桌面/开始菜单入口，无需管理员。它调用随包 PowerShell 脚本，执行策略例外仅限该进程，不更改系统策略。
 4. 安装不会启用登录启动，也不会自动关闭旧版本。升级前保存表单、从旧版托盘“退出日守”，导出可靠备份；× 只会收起。新版本首次运行会事务升级任务库，L1—L4 不能读取 schema 5。

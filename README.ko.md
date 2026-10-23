@@ -2,9 +2,9 @@
 
 [简体中文](README.md) · [繁體中文](README.zh-TW.md) · [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [Português](README.pt.md)
 
-[Windows ZIP 다운로드](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-win-x64.zip) · [대응 소스](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-source.zip) · [체크섬](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/SHA256SUMS) · [출시 페이지](https://github.com/Thicky-han/DayKeep/releases/tag/v0.6.0-l6)
+[Windows ZIP 다운로드](https://github.com/Thicky-han/DayKeep/releases/download/v0.7.0-beta.1/DayKeep-0.7.0-beta.1-win-x64.zip) · [대응 소스](https://github.com/Thicky-han/DayKeep/releases/download/v0.7.0-beta.1/DayKeep-0.7.0-beta.1-source.zip) · [체크섬](https://github.com/Thicky-han/DayKeep/releases/download/v0.7.0-beta.1/SHA256SUMS) · [출시 페이지](https://github.com/Thicky-han/DayKeep/releases/tag/v0.7.0-beta.1)
 
-매일 한 걸음, 완료할 때까지. 특허 납부 창구처럼 아직 열리지 않아 날마다 확인해야 하는 일을 위한 Windows 로컬 알림 앱입니다. 오늘 확인한 것과 작업 전체의 완료를 구분합니다. 로컬 업데이트 후보 **0.7.0-beta.1**는 9개 화면 언어와 찾기 쉬운 언어 선택기를 추가합니다. 공개하려면 유지관리자의 확인이 필요하며 실제 빌드와 패키지 검증 결과는 [언어 업데이트 보고서](LANGUAGE_UPDATE_REPORT.md)를 참고하세요. 위 링크는 기존 공개판 **0.6.0-l6(화면은 중국어 간체만 지원)**이며 이번 후보가 아닙니다. 3일 실제 사용 검수는 대기 중입니다. 코드 서명은 없습니다.
+매일 한 걸음, 완료할 때까지. 특허 납부 창구처럼 아직 열리지 않아 날마다 확인해야 하는 일을 위한 Windows 로컬 알림 앱입니다. 오늘 확인한 것과 작업 전체의 완료를 구분합니다. 현재 공개 사전 출시판 **0.7.0-beta.1**은 유지관리자의 공개 승인을 받았으며 9개 화면 언어와 찾기 쉬운 언어 선택기를 추가합니다. 위 링크는 이번 버전의 프로그램, 소스와 체크섬입니다. 실제 빌드, 패키지와 공개 검증 진행 상황은 [언어 업데이트 보고서](LANGUAGE_UPDATE_REPORT.md)를 참고하세요. 이전 **0.6.0-l6**는 중국어 간체 화면만 지원하며 원래 첨부 파일과 태그는 유지됩니다. 승인된 패키지 안의 고정 문서는 패키징 당시 후보 상태를 기록합니다. 3일 실제 사용 검수는 대기 중입니다. 코드 서명은 없습니다.
 
 ![가상 작업으로 구성한 화면](assets/screenshots/main.png)
 
@@ -18,7 +18,7 @@
 
 ## 설치와 업데이트
 
-이번 후보 DayKeep-0.7.0-beta.1-win-x64.zip 전체를 압축 해제하세요. 공개된 이전 ZIP도 사용법은 같지만 언어 선택기는 없습니다. Windows x64용 런타임이 포함되어 SDK가 필요 없습니다. ZIP 안에서 실행하거나 exe만 복사하지 마세요. 출처와 SHA256SUMS를 확인한 뒤 DayKeep.exe를 실행하면 포터블로 사용할 수 있습니다. Windows가 알 수 없는 게시자로 표시할 수 있습니다.
+DayKeep-0.7.0-beta.1-win-x64.zip 전체를 압축 해제하세요. 이전 0.6.0-l6 ZIP도 사용법은 같지만 언어 선택기는 없습니다. Windows x64용 런타임이 포함되어 SDK가 필요 없습니다. ZIP 안에서 실행하거나 exe만 복사하지 마세요. 출처와 SHA256SUMS를 확인한 뒤 DayKeep.exe를 실행하면 포터블로 사용할 수 있습니다. Windows가 알 수 없는 게시자로 표시할 수 있습니다.
 
 Install.cmd는 관리자 권한 없이 LocalApplicationData/Programs/DayKeep/0.7.0-beta.1에 설치하고 바탕 화면/시작 메뉴에 DayKeep 바로 가기를 만듭니다. PowerShell 실행 정책 예외는 해당 프로세스에만 적용됩니다. 로그인 시작은 자동으로 켜지지 않습니다. 업데이트 전에 백업을 내보내고 양식을 저장한 뒤 이전 버전 트레이의「退出日守」로 종료하세요. ×는 숨기기입니다. 버전별 폴더를 사용해 이전 버전과 알 수 없는 파일을 보존합니다. 같은 버전 재설치는 동일하고 온전한 파일만 허용합니다. 첫 실행은 DB를 schema 5로 트랜잭션 업그레이드하며 L1–L4는 업그레이드된 DB를 읽지 못합니다.
 

@@ -2,9 +2,9 @@
 
 [简体中文](README.md) · [繁體中文](README.zh-TW.md) · [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [Português](README.pt.md)
 
-[下載 Windows ZIP](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-win-x64.zip) · [對應原始碼](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-source.zip) · [校驗檔案](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/SHA256SUMS) · [發行頁](https://github.com/Thicky-han/DayKeep/releases/tag/v0.6.0-l6)
+[下載 Windows ZIP](https://github.com/Thicky-han/DayKeep/releases/download/v0.7.0-beta.1/DayKeep-0.7.0-beta.1-win-x64.zip) · [對應原始碼](https://github.com/Thicky-han/DayKeep/releases/download/v0.7.0-beta.1/DayKeep-0.7.0-beta.1-source.zip) · [校驗檔案](https://github.com/Thicky-han/DayKeep/releases/download/v0.7.0-beta.1/SHA256SUMS) · [發行頁](https://github.com/Thicky-han/DayKeep/releases/tag/v0.7.0-beta.1)
 
-每天一步，直到完成。Windows 本機提醒工具，適合專利繳費入口尚未開放、需要每日查看的事項。「今天已檢查」與整件事完成分別記錄。本機更新候選 **0.7.0-beta.1** 新增九種介面語言及醒目的切換入口，公開發行仍需維護者確認；實際建置與打包結果見 [語言更新報告](LANGUAGE_UPDATE_REPORT.md)。上方下載仍為已公開的 **0.6.0-l6（僅簡體中文介面）**，不是本次候選。至少三天實際試用仍待驗收，成品尚未簽章。
+每天一步，直到完成。Windows 本機提醒工具，適合專利繳費入口尚未開放、需要每日查看的事項。「今天已檢查」與整件事完成分別記錄。目前公開預發行版 **0.7.0-beta.1** 已獲維護者確認發行，新增九種介面語言及醒目的切換入口。上方連結提供本版成品、原始碼與校驗檔；實際建置、打包及公開驗證進度見 [語言更新報告](LANGUAGE_UPDATE_REPORT.md)。舊版 **0.6.0-l6** 僅簡體中文介面，原附件與標籤保留。成品內凍結文件反映打包當時的候選狀態。至少三天實際試用仍待驗收，成品尚未簽章。
 
 ![合成事項主視窗](assets/screenshots/main.png)
 
@@ -18,7 +18,7 @@
 
 ## 安裝與更新
 
-1. 完整解壓本次候選 DayKeep-0.7.0-beta.1-win-x64.zip；Windows x64，內含執行階段，不需 SDK。不要在 ZIP 內開啟或只複製 exe。已公開舊包的使用方式相同，但沒有語言切換。
+1. 完整解壓 DayKeep-0.7.0-beta.1-win-x64.zip；Windows x64，內含執行階段，不需 SDK。不要在 ZIP 內開啟或只複製 exe。舊版 0.6.0-l6 的使用方式相同，但沒有語言切換。
 2. 可直接執行 DayKeep.exe；請核對來源及 SHA256SUMS，Windows 可能顯示未知發行者。
 3. 雙擊 Install.cmd 安裝至目前使用者 LocalApplicationData/Programs/DayKeep/0.7.0-beta.1，建立 DayKeep 桌面與開始功能表捷徑，不需管理員。PowerShell 執行原則例外僅限該程序。
 4. 更新前匯出備份、儲存表單，從舊版系統匣「退出日守」完全結束；× 只是隱藏。新版使用獨立版本目錄，舊版保留；未知或修改過的目錄、捷徑不會任意覆寫。同版本重裝須檔案一致完整。
