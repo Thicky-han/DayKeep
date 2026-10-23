@@ -1,6 +1,8 @@
-# 0.7 界面语言更新候选记录
+# 0.7 界面语言更新发行记录
 
-日期：2026-10-23，Asia/Shanghai。目标版本 0.7.0-beta.1。维护者已在开发与打包验证交付后明确回复“发布”，批准本次预发行更新。**公开执行结果按下表记录，未完成项不标通过。源码和成品内报告保留打包前的冻结状态；本次后续提交只补记验证结果和下载说明，不修改已校验的附件。**
+日期：2026-10-23，Asia/Shanghai。当前版本 0.7.0-beta.1。维护者已在开发与打包验证交付后明确回复“发布”，本次预发行更新已于 20:52:35（12:52:35 UTC）公开。**版本与 main 云端 CI、五附件匿名下载校验均通过。源码和成品内报告保留打包前的冻结状态；本次后续提交只补记验证结果和下载说明，不修改已校验的附件。**
+
+[发行页](https://github.com/Thicky-han/DayKeep/releases/tag/v0.7.0-beta.1) · [Windows 成品](https://github.com/Thicky-han/DayKeep/releases/download/v0.7.0-beta.1/DayKeep-0.7.0-beta.1-win-x64.zip) · [对应源码](https://github.com/Thicky-han/DayKeep/releases/download/v0.7.0-beta.1/DayKeep-0.7.0-beta.1-source.zip) · [校验文件](https://github.com/Thicky-han/DayKeep/releases/download/v0.7.0-beta.1/SHA256SUMS)
 
 ## 已有公开版与本次范围
 
@@ -25,8 +27,9 @@
 | Windows x64 包及对应源码 | 通过 | 干净构建提交 28ae94556938314627234343c29f24e17c44f730；附件与 SHA-256 见下表 |
 | 解压、安装/重装/卸载及包内 WPF | 通过 | .cache/release-0.7.0-beta.1-28ae9455/package-report.json；14 项包检查，安装后 121 项 WPF，0 失败；九语资源/检查源码和教程均验证包含 |
 | 本次维护者发布确认 | 已批准 | 维护者在收到具体附件与验证结果后明确回复“发布” |
-| 本次推送、标签、GitHub Release | 执行中 | v0.7.0-beta.1 标签固定构建提交，五个批准附件原样上传 |
-| 本次云端 CI / 未登录下载校验 | 待执行 | 发布后核对实际运行和匿名下载字节，未完成前不标通过 |
+| 本次推送、标签、GitHub Release | 通过 | main 首次发布提交 f187fad98d11750171abb77b0594e5c41052bd3e；v0.7.0-beta.1 固定于构建提交；公开预发行 Release 421836815，五个批准附件原样上传 |
+| 本次云端 CI | 通过 | [版本构建 39956230227](https://github.com/Thicky-han/DayKeep/actions/runs/39956230227) 与 [main 39956230597](https://github.com/Thicky-han/DayKeep/actions/runs/39956230597) 均 completed/success；云端范围为源码审查、Release 构建和核心检查，未声称云端 WPF 桌面通过 |
+| 本次未登录下载校验 | 通过 | 五附件完整匿名下载，大小与 SHA-256 全部匹配批准本地材料；.cache/publish-v0.7.0-beta.1/downloads-http/verification.json；完成于 12:54:10 UTC |
 
 L6 的 133 项核心、98 项 WPF 与 13 项包检查属于旧版历史证据。新版实际结果为本轮 135 项核心、121 项 WPF 和 14 项包检查；包内程序再次运行全部 121 项 WPF。打包先冻结源码，随后运行安装/卸载与程序检查；本报告在打包后的提交中补记最终结果，故与归档内的冻结报告状态不同。
 
@@ -44,6 +47,8 @@ L6 的 133 项核心、98 项 WPF 与 13 项包检查属于旧版历史证据。
 | 对应源码 ZIP | 598837 | 814CBAD581FB09E87D27DAAE1E52C53BFBE1F4875120FE0AB29158B2F608AED3 |
 
 14 项检查包括全部清单哈希、九语教程/语言帮助、对应源码内九份 JSON 与语言测试、免安装卸载拒绝、Windows PowerShell 5.1 Unicode 路径安装、相同重装、快捷方式未知目标保护、路径穿越、篡改包拒绝、未知目录与修改文件保护、额外文件阻止卸载、安装后程序运行以及仅删除本版本。隔离检查不接触用户任务库或 Windows 登录启动。旧版 v0.6.0-l6 标签再次核对仍为原提交，旧成品 ZIP 的批准 SHA-256 未变。
+
+公开前核对 GitHub 返回的五个附件大小与 SHA-256 digest 均正确，再将草稿发布为 prerelease。公开后使用全新的 .NET HttpClient 完整下载五个公开附件，未设置 Authorization、Cookie 或默认凭据，不经过 gh 的已登录下载通道；逐个文件与批准本地材料比对成功。远端 main 和两个版本标签再次核对一致；本轮没有重建包、覆盖已发布附件或修改 0.6 标签。最终文档提交只补充本节结果，版本标签仍固定于批准构建。
 
 已将通过验证的完整 payload 同步到 dist/0.7.0-beta.1-win-x64，并再次核对清单文件哈希；现有项目桌面快捷方式已指向该目录。未启动正常用户实例或关闭旧版；试用新界面前须保存表单并从旧版托盘退出，防止单实例唤回旧程序。
 
