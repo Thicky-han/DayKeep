@@ -18,10 +18,16 @@ function Read-DayKeepPackage([string]$Root) {
     }
     return $manifest
 }
+function Get-DayKeepHash([string]$Path) {
+    $algorithm=[Security.Cryptography.SHA256]::Create()
+    $stream=[IO.File]::OpenRead($Path)
+    try { return [BitConverter]::ToString($algorithm.ComputeHash($stream)).Replace('-','') }
+    finally { $stream.Dispose(); $algorithm.Dispose() }
+}
 function Test-DayKeepFiles([string]$Root, $Manifest) {
     foreach ($entry in $Manifest.files) {
         $path = Get-DayKeepChild $Root $entry.path
-        if (-not (Test-Path -LiteralPath $path -PathType Leaf) -or (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash -ne $entry.sha256) { throw "Missing or modified package file: $($entry.path)" }
+        if (-not (Test-Path -LiteralPath $path -PathType Leaf) -or (Get-DayKeepHash $path) -ne $entry.sha256) { throw "Missing or modified package file: $($entry.path)" }
     }
 }
 function Assert-DayKeepNotRunning([string]$Root) {
