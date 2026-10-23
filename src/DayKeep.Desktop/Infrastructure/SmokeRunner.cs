@@ -185,7 +185,7 @@ internal static class SmokeRunner
             finally
             {
                 if (window is not null) { window.AllowClose = true; window.Close(); }
-                File.WriteAllText(Path.Combine(directory, "report.json"), JsonSerializer.Serialize(new { stage = "L5", failures, checks = results, scope = "Real WPF task/reminder/history/backup actions and SQLite with controlled clock; file pickers injected, actual clock measured separately; no human multi-day acceptance" }, new JsonSerializerOptions { WriteIndented = true }));
+                File.WriteAllText(Path.Combine(directory, "report.json"), JsonSerializer.Serialize(new { stage = "L6", failures, checks = results, scope = "Real WPF task/reminder/history/backup actions and SQLite with controlled clock; file pickers injected, actual clock measured separately; no human multi-day acceptance" }, new JsonSerializerOptions { WriteIndented = true }));
                 application.Shutdown(failures == 0 ? 0 : 1);
             }
         }));

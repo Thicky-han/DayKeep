@@ -60,6 +60,13 @@ public-content audit, GitHub main and final release confirmation. Do not publish
 a public repository or Release before L6. A user instruction changing this workflow
 takes precedence. No sub-agent delegation is required.
 
+L6 candidate 0.6.0-l6 has nine full localized README tutorials. UI remains zh-CN.
+Packaging requires a clean commit, corresponding-source archive and SHA256SUMS.
+Keep manifest verification, per-version install, no-overwrite rules, unknown-file
+protection and narrow uninstall scope. Tests use isolated paths. Audit reachable
+history and current files. The maintainer asked for confirmation after packaging;
+do not create a remote, push, tag or publish until that confirmation arrives.
+
 The maintainer approved the loop clock with amber reminder dot on 2026-10-22
 before requesting L2. Reuse assets/brand PNG/ICO across all surfaces;
 do not restore the old sunrise or draw another tray-specific variant.

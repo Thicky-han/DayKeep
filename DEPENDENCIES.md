@@ -9,4 +9,4 @@
 - 原创 UI、回环时钟图标与绘制脚本和文档按仓库 LICENSE；GNU 许可全文属于标准许可文本，原样使用。
 - 官方技术依据：[WPF 窗口透明](https://learn.microsoft.com/en-us/dotnet/api/system.windows.window.allowstransparency)、[.NET 安装脚本](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-install-script)、[.NET 支持政策](https://dotnet.microsoft.com/en-us/platform/support/policy)。
 
-开发依赖与缓存不进 Git。L6 检查自包含包内框架许可和对应源码获取方式，不以此文档替代实际包审查。
+开发依赖与缓存不进 Git。L6 包含自包含框架许可、SQLite 许可及对应源码提交信息，不新增安装器依赖；安装脚本使用 Windows PowerShell 和系统 WScript.Shell。2026-10-23 再次从官方 NuGet 源检查直接/传递包，当时未报告已知漏洞。运行时以成品 runtimeconfig.json 和 licenses 为准。

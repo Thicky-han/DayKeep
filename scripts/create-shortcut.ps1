@@ -1,6 +1,6 @@
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
-$applicationPath = Join-Path $projectRoot 'dist\l5-win-x64\DayKeep.exe'
+$applicationPath = Join-Path $projectRoot 'dist\l6-win-x64\DayKeep.exe'
 if (-not (Test-Path -LiteralPath $applicationPath)) { throw 'Run publish-preview.ps1 first.' }
 $desktopDirectory = [Environment]::GetFolderPath('Desktop')
 $shortcutPath = Join-Path $desktopDirectory 'DayKeep 日守.lnk'
@@ -13,6 +13,6 @@ $shortcut.WorkingDirectory = Split-Path -Parent $applicationPath
 $iconPath = Join-Path (Split-Path -Parent $applicationPath) 'DayKeep.ico'
 if (-not (Test-Path -LiteralPath $iconPath)) { throw 'Preview icon is missing; publish the preview again.' }
 $shortcut.IconLocation = "$iconPath,0"
-$shortcut.Description = 'DayKeep 日守 · L5 历史与备份恢复'
+$shortcut.Description = 'DayKeep 日守 · L6 多语教程与备份恢复'
 $shortcut.Save()
 Write-Output "Created desktop shortcut: $shortcutPath"

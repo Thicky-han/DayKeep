@@ -103,7 +103,7 @@
         <TextBlock Text="一步一步，做成日常。" FontSize="26" FontWeight="SemiBold" Margin="0,7,0,10" TextWrapping="Wrap" />
         <TextBlock Text="沿用已有项目的分阶段制作与验收流程。" Foreground="{StaticResource Muted}" Margin="0,0,0,24" TextWrapping="Wrap" />
         <TextBlock x:Name="RoadmapText" FontSize="14" LineHeight="29" TextWrapping="Wrap" />
-        <Border Background="#E7EFE4" CornerRadius="12" Padding="16" Margin="0,22,0,0"><TextBlock Text="当前 L5：历史查询、备份预览、合并与替换恢复已接入。开发验证与至少三天实际试用分开记录，试用仍待进行。" TextWrapping="Wrap" Foreground="#4E6B5B" LineHeight="22" /></Border>
+        <Border Background="#E7EFE4" CornerRadius="12" Padding="16" Margin="0,22,0,0"><TextBlock Text="当前 L6：多语教程、本地成品与对应源码准备。公开发布等待确认，至少三天实际试用仍待验收。" TextWrapping="Wrap" Foreground="#4E6B5B" LineHeight="22" /></Border>
        </StackPanel>
       </ScrollViewer>
       <ScrollViewer x:Name="SettingsPage" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
@@ -130,7 +130,7 @@
      </Grid>
     </Grid>
     <Border Grid.Row="2" BorderBrush="#D4DFD5" BorderThickness="0,1,0,0" Margin="22,0">
-     <DockPanel VerticalAlignment="Center"><TextBlock x:Name="StatusLabel" Text="●  本地任务 · L5" Foreground="#667E6D" FontSize="10" /><TextBlock x:Name="ShortcutLabel" Text="Ctrl + Alt + D  随时唤起    ·    0.5.0-l5" Foreground="{StaticResource Muted}" HorizontalAlignment="Right" FontSize="10" /></DockPanel>
+     <DockPanel VerticalAlignment="Center"><TextBlock x:Name="StatusLabel" Text="●  本地任务 · L6" Foreground="#667E6D" FontSize="10" /><TextBlock x:Name="ShortcutLabel" Text="Ctrl + Alt + D  随时唤起    ·    0.6.0-l6" Foreground="{StaticResource Muted}" HorizontalAlignment="Right" FontSize="10" /></DockPanel>
     </Border>
    </Grid>
   </Border>

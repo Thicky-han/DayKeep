@@ -99,7 +99,7 @@ if(args.Length>1 && args[1]=="--read-imported")
     Assert(progress.ExtraCount==1 && progress.SnoozedUntil==new DateTimeOffset(2026,10,22,10,31,0,TimeSpan.Zero) && delayed.Capture().Days.Single().ExtraCount==1);
     var outbox=Open("imported-outbox.db");var snapshot=outbox.ReminderSnapshot(new(2026,10,22));Assert(snapshot.Deliveries.Count==2 && snapshot.Deliveries.All(d=>d.State==DeliveryState.Dismissed));
     Assert(ReminderPlanner.Due(snapshot,new(2026,10,22,9,0,0,TimeSpan.Zero),new(2026,10,22,8,59,0,TimeSpan.Zero),TimeZoneInfo.Utc,true).Count==0);
-    File.WriteAllText(Path.Combine(directory,"import-restart-report.json"),JsonSerializer.Serialize(new {stage="L5",passed=true,processId=Environment.ProcessId,scope="Actual JSON exported in process one, previewed/imported in process two, reopened in process three; completion undo, checks, snooze, budgets, stable keys and durable dismissal retained"}));
+    File.WriteAllText(Path.Combine(directory,"import-restart-report.json"),JsonSerializer.Serialize(new {stage="L6",passed=true,processId=Environment.ProcessId,scope="Actual JSON exported in process one, previewed/imported in process two, reopened in process three; completion undo, checks, snooze, budgets, stable keys and durable dismissal retained"}));
     Console.WriteLine("L5 imported backups reopened successfully in process "+Environment.ProcessId);return;
 }
 
@@ -156,5 +156,5 @@ using (var connection = new SqliteConnection($"Data Source={Path.Combine(directo
     connection.Open(); using var command = connection.CreateCommand(); command.CommandText = "SELECT sqlite_version();";
     Console.WriteLine("Bundled SQLite version: " + command.ExecuteScalar());
 }
-File.WriteAllText(Path.Combine(directory,"core-report.json"), JsonSerializer.Serialize(new { stage = "L5", failures, count = results.Count, checks = results }, new JsonSerializerOptions { WriteIndented = true }));
+File.WriteAllText(Path.Combine(directory,"core-report.json"), JsonSerializer.Serialize(new { stage = "L6", failures, count = results.Count, checks = results }, new JsonSerializerOptions { WriteIndented = true }));
 if (failures > 0) Environment.Exit(1);

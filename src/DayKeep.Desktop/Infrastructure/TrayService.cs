@@ -20,7 +20,7 @@ public sealed class TrayService : IDisposable
         _menu.Items.Add("预览提醒（演示）", null, (_, _) => preview());
         _menu.Items.Add(new Forms.ToolStripSeparator());
         _menu.Items.Add("退出日守", null, (_, _) => exit());
-        _icon = new Forms.NotifyIcon { Icon = _drawing, Text = "DayKeep 日守 · 持续跟进（L5）", ContextMenuStrip = _menu, Visible = true };
+        _icon = new Forms.NotifyIcon { Icon = _drawing, Text = "DayKeep 日守 · 持续跟进（L6）", ContextMenuStrip = _menu, Visible = true };
         _icon.MouseClick += (_, e) => { if (e.Button == Forms.MouseButtons.Left) show(); };
     }
 

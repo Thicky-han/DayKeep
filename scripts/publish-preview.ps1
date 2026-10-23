@@ -1,5 +1,6 @@
+param([string]$OutputDirectory)
 . (Join-Path $PSScriptRoot 'common.ps1')
-$outputDirectory = Join-Path $projectRoot 'dist\l5-win-x64'
+if (-not $OutputDirectory) { $OutputDirectory = Join-Path $projectRoot 'dist\l6-win-x64' }
 Invoke-Dotnet publish $projectFile --configuration Release --runtime win-x64 --self-contained true --output $outputDirectory '-p:DebugType=None' '-p:DebugSymbols=false' --nologo
 Copy-Item -LiteralPath (Join-Path $projectRoot 'LICENSE') -Destination $outputDirectory
 Copy-Item -LiteralPath (Join-Path $projectRoot 'INSTALL.md') -Destination $outputDirectory
