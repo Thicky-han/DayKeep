@@ -2,7 +2,9 @@
 
 [简体中文](README.md) · [繁體中文](README.zh-TW.md) · [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [Português](README.pt.md)
 
-Un petit pas chaque jour, jusqu'à la fin. DayKeep rappelle les démarches qui demandent des vérifications répétées, par exemple l'ouverture du paiement d'un brevet. Vérifier aujourd'hui ne termine pas la tâche. Version candidate **0.6.0-l6** ; neuf langues de documentation, mais **l'interface est actuellement en chinois simplifié**. L'essai réel de trois jours reste à valider. Publication après confirmation du responsable ; binaire non signé.
+[Télécharger Windows ZIP](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-win-x64.zip) · [Code source](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-source.zip) · [Empreintes](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/SHA256SUMS) · [Version publiée](https://github.com/Thicky-han/DayKeep/releases/tag/v0.6.0-l6)
+
+Un petit pas chaque jour, jusqu'à la fin. DayKeep rappelle les démarches qui demandent des vérifications répétées, par exemple l'ouverture du paiement d'un brevet. Vérifier aujourd'hui ne termine pas la tâche. Préversion **0.6.0-l6**, publiée avec l'accord du responsable ; neuf langues de documentation, mais **l'interface est actuellement en chinois simplifié**. L'essai réel de trois jours reste à valider. Binaire non signé.
 
 ![Fenêtre avec tâches fictives](assets/screenshots/main.png)
 

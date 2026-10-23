@@ -2,11 +2,13 @@
 
 [简体中文](README.md) · [繁體中文](README.zh-TW.md) · [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [Português](README.pt.md)
 
+[下载 Windows ZIP](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-win-x64.zip) · [对应源码](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-source.zip) · [校验文件](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/SHA256SUMS) · [发行页](https://github.com/Thicky-han/DayKeep/releases/tag/v0.6.0-l6)
+
 ![DayKeep 回环时钟](assets/brand/daykeep-mark.png)
 
 **每天一步，直到完成。** DayKeep 是 Windows 本地桌面提醒器，适合“尚未开放，需要每天查看”的事项，例如专利缴费入口。固定时间弹出高亮提醒，未处理按间隔追加；今日检查与整件事完成分别记录。
 
-当前候选版本 **0.6.0-l6**，包含历史查询和备份恢复。本文档提供九种语言，**应用界面目前为简体中文**。三天真实试用仍待验收；打包完成后由维护者确认公开发行，尚非签名正式安装包。
+当前预发行版本 **0.6.0-l6** 已经维护者确认公开，包含历史查询和备份恢复。本文档提供九种语言，**应用界面目前为简体中文**。三天真实试用仍待验收；成品未签名。
 
 ![主窗口（合成事项）](assets/screenshots/main.png)
 
@@ -85,6 +87,6 @@
 
 ## 开发与许可
 
-Windows、PowerShell 7、global.json 固定 SDK。`scripts/bootstrap.ps1` 安装本地工具；依次运行 `scripts/build.ps1`、`scripts/test-core.ps1`、`scripts/test-shell.ps1`、`scripts/check.ps1` 和 `git diff --check`。`scripts/package-release.ps1` 从干净提交生成成品 ZIP、对应源码 ZIP 和 SHA256SUMS，并验证解压、安装/重装/卸载及包内 WPF。真实时钟另用 `scripts/test-reminder-live.ps1`，不把模拟当实测。GitHub CI 尚未运行。
+Windows、PowerShell 7、global.json 固定 SDK。`scripts/bootstrap.ps1` 安装本地工具；依次运行 `scripts/build.ps1`、`scripts/test-core.ps1`、`scripts/test-shell.ps1`、`scripts/check.ps1` 和 `git diff --check`。`scripts/package-release.ps1` 从干净提交生成成品 ZIP、对应源码 ZIP 和 SHA256SUMS，并验证解压、安装/重装/卸载及包内 WPF。真实时钟另用 `scripts/test-reminder-live.ps1`，不把模拟当实测。GitHub CI 与公开下载验证见 [L6 报告](L6_REPORT.md)。
 
 原创代码、文档和已认可的回环时钟 Logo：AGPL-3.0-only；第三方保留各自许可。分发时提供对应完整源码包及 LICENSE，包内 licenses 含 .NET 与 SQLite 材料。[依赖](DEPENDENCIES.md) · [品牌来源](assets/brand/README.md) · [L5 报告](L5_REPORT.md) · [L6 报告](L6_REPORT.md) · [计划](IMPLEMENTATION_PLAN.md)

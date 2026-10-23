@@ -2,9 +2,11 @@
 
 [简体中文](README.md) · [繁體中文](README.zh-TW.md) · [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [Português](README.pt.md)
 
+[Download Windows ZIP](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-win-x64.zip) · [Corresponding source](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-source.zip) · [Checksums](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/SHA256SUMS) · [Release page](https://github.com/Thicky-han/DayKeep/releases/tag/v0.6.0-l6)
+
 **One small step each day, until it is done.** A local Windows desktop reminder for tasks that need repeated checking, such as a patent payment portal that has not opened yet. Checking today and completing the whole task are separate actions.
 
-Candidate **0.6.0-l6**. Documentation is available in nine languages; **the application UI is currently Simplified Chinese**. Three days of real use remain pending. Public release requires the maintainer's confirmation after packaging. This build is unsigned.
+Pre-release **0.6.0-l6** is now public with the maintainer's approval. Documentation is available in nine languages; **the application UI is currently Simplified Chinese**. Three days of real use remain pending. This build is unsigned.
 
 ![Main window with synthetic tasks](assets/screenshots/main.png)
 
@@ -82,6 +84,6 @@ To uninstall an installed version, turn off login startup, save and exit from th
 
 ## Build and license
 
-Use Windows, PowerShell 7 and the SDK pinned in global.json. Run scripts/bootstrap.ps1 if needed, then build.ps1, test-core.ps1, test-shell.ps1 and check.ps1 in scripts/, followed by `git diff --check`. Package with scripts/package-release.ps1 from a clean commit; it creates the binary ZIP, corresponding source ZIP and SHA256SUMS and checks extraction, install/reinstall/uninstall and packaged WPF actions. Real-clock delivery is separately observed with test-reminder-live.ps1. Hosted GitHub CI has not run.
+Use Windows, PowerShell 7 and the SDK pinned in global.json. Run scripts/bootstrap.ps1 if needed, then build.ps1, test-core.ps1, test-shell.ps1 and check.ps1 in scripts/, followed by `git diff --check`. Package with scripts/package-release.ps1 from a clean commit; it creates the binary ZIP, corresponding source ZIP and SHA256SUMS and checks extraction, install/reinstall/uninstall and packaged WPF actions. Real-clock delivery is separately observed with test-reminder-live.ps1. See the [L6 report](L6_REPORT.md) for hosted CI and public download verification.
 
 Original code, docs and approved clock logo: **AGPL-3.0-only**. Distribute LICENSE and corresponding complete source. Third-party licenses remain under licenses/ in the binary package; see [dependencies](DEPENDENCIES.md) and [brand provenance](assets/brand/README.md). [L5 report](L5_REPORT.md) · [L6 report](L6_REPORT.md)

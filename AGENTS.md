@@ -67,6 +67,11 @@ protection and narrow uninstall scope. Tests use isolated paths. Audit reachable
 history and current files. The maintainer asked for confirmation after packaging;
 do not create a remote, push, tag or publish until that confirmation arrives.
 
+The maintainer explicitly confirmed publication on 2026-10-23. Public repository:
+Thicky-han/DayKeep. Pre-release v0.6.0-l6 is fixed at build commit
+93f6307b52e908c9fe4b31c97c4472286b8fa97c. Preserve the approved asset bytes and
+tag; subsequent main commits record publication and documentation only.
+
 The maintainer approved the loop clock with amber reminder dot on 2026-10-22
 before requesting L2. Reuse assets/brand PNG/ICO across all surfaces;
 do not restore the old sunrise or draw another tray-specific variant.

@@ -2,7 +2,9 @@
 
 [简体中文](README.md) · [繁體中文](README.zh-TW.md) · [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [Português](README.pt.md)
 
-每天一步，直到完成。Windows 本機提醒工具，適合專利繳費入口尚未開放、需要每日查看的事項。「今天已檢查」與整件事完成分別記錄。候選版本 **0.6.0-l6**；文件有九種語言，**應用程式介面目前為簡體中文**。至少三天實際試用仍待驗收，公開發行等待維護者確認，成品尚未簽章。
+[下載 Windows ZIP](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-win-x64.zip) · [對應原始碼](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-source.zip) · [校驗檔案](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/SHA256SUMS) · [發行頁](https://github.com/Thicky-han/DayKeep/releases/tag/v0.6.0-l6)
+
+每天一步，直到完成。Windows 本機提醒工具，適合專利繳費入口尚未開放、需要每日查看的事項。「今天已檢查」與整件事完成分別記錄。預發行版 **0.6.0-l6** 已經維護者確認公開；文件有九種語言，**應用程式介面目前為簡體中文**。至少三天實際試用仍待驗收，成品尚未簽章。
 
 ![合成事項主視窗](assets/screenshots/main.png)
 

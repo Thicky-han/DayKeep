@@ -2,7 +2,9 @@
 
 [简体中文](README.md) · [繁體中文](README.zh-TW.md) · [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [Português](README.pt.md)
 
-매일 한 걸음, 완료할 때까지. 특허 납부 창구처럼 아직 열리지 않아 날마다 확인해야 하는 일을 위한 Windows 로컬 알림 앱입니다. 오늘 확인한 것과 작업 전체의 완료를 구분합니다. 후보 버전 **0.6.0-l6**. 문서는 9개 언어이며 **앱 화면은 현재 중국어 간체**입니다. 3일 실제 사용 검수는 대기 중이며, 공개 배포는 패키지 확인 후 유지관리자의 승인이 필요합니다. 코드 서명은 없습니다.
+[Windows ZIP 다운로드](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-win-x64.zip) · [대응 소스](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-source.zip) · [체크섬](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/SHA256SUMS) · [출시 페이지](https://github.com/Thicky-han/DayKeep/releases/tag/v0.6.0-l6)
+
+매일 한 걸음, 완료할 때까지. 특허 납부 창구처럼 아직 열리지 않아 날마다 확인해야 하는 일을 위한 Windows 로컬 알림 앱입니다. 오늘 확인한 것과 작업 전체의 완료를 구분합니다. 사전 출시 버전 **0.6.0-l6**는 유지관리자의 승인 후 공개되었습니다. 문서는 9개 언어이며 **앱 화면은 현재 중국어 간체**입니다. 3일 실제 사용 검수는 대기 중입니다. 코드 서명은 없습니다.
 
 ![가상 작업으로 구성한 화면](assets/screenshots/main.png)
 

@@ -2,7 +2,9 @@
 
 [简体中文](README.md) · [繁體中文](README.zh-TW.md) · [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [Português](README.pt.md)
 
-Jeden Tag ein Schritt, bis es erledigt ist. Lokale Windows-Erinnerungen für wiederholte Prüfungen, etwa ein noch geschlossenes Portal zur Patentgebührenzahlung. Heute geprüft bedeutet nicht vollständig erledigt. Kandidat **0.6.0-l6**; neun Dokumentationssprachen, **die App-Oberfläche ist derzeit vereinfachtes Chinesisch**. Der dreitägige echte Nutzungstest steht aus. Veröffentlichung nach Bestätigung; keine Codesignatur.
+[Windows-ZIP herunterladen](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-win-x64.zip) · [Quelltext](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-source.zip) · [Prüfsummen](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/SHA256SUMS) · [Veröffentlichung](https://github.com/Thicky-han/DayKeep/releases/tag/v0.6.0-l6)
+
+Jeden Tag ein Schritt, bis es erledigt ist. Lokale Windows-Erinnerungen für wiederholte Prüfungen, etwa ein noch geschlossenes Portal zur Patentgebührenzahlung. Heute geprüft bedeutet nicht vollständig erledigt. Vorabversion **0.6.0-l6**, mit Zustimmung veröffentlicht; neun Dokumentationssprachen, **die App-Oberfläche ist derzeit vereinfachtes Chinesisch**. Der dreitägige echte Nutzungstest steht aus. Keine Codesignatur.
 
 ![Hauptfenster mit erfundenen Aufgaben](assets/screenshots/main.png)
 

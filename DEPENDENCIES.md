@@ -2,7 +2,7 @@
 
 - SDK：10.0.402，global.json 固定，tools/sdk.lock.json 记录微软官方 win-x64 ZIP 和 SHA-512。
 - 平台：.NET 10、WPF、Windows Forms NotifyIcon。框架组件按微软分发文件中的 LICENSE/ThirdPartyNotices 等条款提供，不改标为 AGPL 原创代码。
-- GitHub Actions：checkout v6、setup-dotnet v5；工作流按官方仓库标签的完整提交 SHA 固定。L0 尚无云端执行记录。
+- GitHub Actions：checkout v6、setup-dotnet v5；工作流按官方仓库标签的完整提交 SHA 固定。L6 首次公开后的 Windows CI 已通过，具体运行链接见 L6_REPORT.md。
 - 普通预览采用自包含发布时保留框架许可材料；运行时版本以 publish 实际输出为准。
 - L1：Microsoft.Data.Sqlite / Core 10.0.13（MIT），SQLitePCLRaw bundle/core/provider/lib 2.1.13（Apache-2.0）；实际原生 SQLite 3.53.3。准确版本与内容哈希提交在 packages.lock.json，默认锁定还原，NuGet.Config 只使用官方源。来源和原文见 [第三方许可](third-party/README.md)。
 - 2026-10-22 对直接和传递包执行 NuGet 漏洞检查，当时未报告已知漏洞；此结果不是对所有原生缺陷的保证。

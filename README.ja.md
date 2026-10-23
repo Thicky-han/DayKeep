@@ -2,7 +2,9 @@
 
 [简体中文](README.md) · [繁體中文](README.zh-TW.md) · [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [Português](README.pt.md)
 
-毎日少しずつ、完了するまで。特許料金の支払い受付など、まだ利用できず毎日確認したい用事のための Windows ローカル通知アプリです。「今日確認した」と「用事を完了した」を区別します。候補版 **0.6.0-l6**。文書は9言語、**アプリの表示言語は現在、簡体字中国語のみ**です。3日間の実利用試験は未完了で、公開はパッケージ確認後の承認待ちです。コード署名はありません。
+[Windows ZIP をダウンロード](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-win-x64.zip) · [対応ソース](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-source.zip) · [検査値](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/SHA256SUMS) · [リリース](https://github.com/Thicky-han/DayKeep/releases/tag/v0.6.0-l6)
+
+毎日少しずつ、完了するまで。特許料金の支払い受付など、まだ利用できず毎日確認したい用事のための Windows ローカル通知アプリです。「今日確認した」と「用事を完了した」を区別します。プレリリース **0.6.0-l6** は管理者の承認を得て公開済みです。文書は9言語、**アプリの表示言語は現在、簡体字中国語のみ**です。3日間の実利用試験は未完了です。コード署名はありません。
 
 ![架空の用事を表示した画面](assets/screenshots/main.png)
 

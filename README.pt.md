@@ -2,7 +2,9 @@
 
 [简体中文](README.md) · [繁體中文](README.zh-TW.md) · [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [Português](README.pt.md)
 
-Um passo por dia, até concluir. Lembretes locais para Windows de tarefas que exigem verificações, como um portal de pagamento de patente ainda fechado. Verificar hoje não conclui a tarefa inteira. Candidata **0.6.0-l6**; documentação em nove idiomas, **interface atualmente em chinês simplificado**. O teste real de três dias continua pendente. Publicação após confirmação do responsável; binários sem assinatura.
+[Baixar ZIP para Windows](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-win-x64.zip) · [Código-fonte](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-source.zip) · [Somas de verificação](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/SHA256SUMS) · [Lançamento](https://github.com/Thicky-han/DayKeep/releases/tag/v0.6.0-l6)
+
+Um passo por dia, até concluir. Lembretes locais para Windows de tarefas que exigem verificações, como um portal de pagamento de patente ainda fechado. Verificar hoje não conclui a tarefa inteira. Pré-lançamento **0.6.0-l6**, publicado com a aprovação do responsável; documentação em nove idiomas, **interface atualmente em chinês simplificado**. O teste real de três dias continua pendente. Binários sem assinatura.
 
 ![Janela com tarefas fictícias](assets/screenshots/main.png)
 

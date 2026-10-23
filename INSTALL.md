@@ -4,11 +4,13 @@
 
 ## 打开
 
+从 [GitHub 预发行页](https://github.com/Thicky-han/DayKeep/releases/tag/v0.6.0-l6) 下载 Windows x64 ZIP、对应源码及 SHA256SUMS；本节步骤也适用于该公开包。
+
 L6 成品将整个 DayKeep-0.6.0-l6-win-x64.zip 解压后，双击 DayKeep.exe 即可。Install.cmd 可为当前用户安装到 LocalApplicationData/Programs/DayKeep/0.6.0-l6，并创建 DayKeep 桌面/开始菜单入口；无需管理员。使用系统 Windows PowerShell，执行策略例外仅限当前进程，不更改机器策略。安装不启动程序、不启用登录启动，不强制退出旧版。文件清单会逐项核对 SHA-256，未知或修改的现有目录保留。
 
 卸载：关闭登录启动、保存并从托盘退出，在安装版本目录运行 Uninstall.cmd。只移除该版本完整未修改的清单文件及其快捷方式，私人数据和其他版本保留；额外或修改文件会阻止移除。免安装无需此卸载器。请核对来源及 SHA256SUMS；当前未签名，Windows 可能提示未知发布者。
 
-双击桌面 DayKeep 日守，或打开本地预览 dist/l6-win-x64/DayKeep.exe。保留整个文件夹；不要只复制 exe。自包含版本无需安装 .NET。它是未签名开发预览，尚无正式 GitHub 安装包。升级前先保存旧窗口内的表单，再从托盘退出并重开；单纯按 × 只会收起旧实例。
+双击桌面 DayKeep 日守，或打开本地预览 dist/l6-win-x64/DayKeep.exe。保留整个文件夹；不要只复制 exe。自包含版本无需安装 .NET。GitHub 已提供未签名的预发行 ZIP。升级前先保存旧窗口内的表单，再从托盘退出并重开；单纯按 × 只会收起旧实例。
 
 ## 新建和编辑
 

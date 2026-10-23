@@ -2,7 +2,9 @@
 
 [简体中文](README.md) · [繁體中文](README.zh-TW.md) · [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [Português](README.pt.md)
 
-Un paso cada día, hasta terminar. Recordatorios locales para Windows de tareas que requieren comprobaciones, como un portal de pago de patentes aún cerrado. Comprobar hoy no completa toda la tarea. Candidata **0.6.0-l6**; documentación en nueve idiomas, **interfaz actualmente en chino simplificado**. La prueba real de tres días sigue pendiente. Publicación tras confirmación del responsable; binarios sin firma.
+[Descargar ZIP de Windows](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-win-x64.zip) · [Código fuente](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/DayKeep-0.6.0-l6-source.zip) · [Sumas de comprobación](https://github.com/Thicky-han/DayKeep/releases/download/v0.6.0-l6/SHA256SUMS) · [Publicación](https://github.com/Thicky-han/DayKeep/releases/tag/v0.6.0-l6)
+
+Un paso cada día, hasta terminar. Recordatorios locales para Windows de tareas que requieren comprobaciones, como un portal de pago de patentes aún cerrado. Comprobar hoy no completa toda la tarea. Versión preliminar **0.6.0-l6**, publicada con la aprobación del responsable; documentación en nueve idiomas, **interfaz actualmente en chino simplificado**. La prueba real de tres días sigue pendiente. Binarios sin firma.
 
 ![Ventana con tareas ficticias](assets/screenshots/main.png)
 
